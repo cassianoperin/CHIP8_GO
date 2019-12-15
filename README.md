@@ -13,7 +13,7 @@ CHIP-8 Emulator writen in GO.
 ## Requirements
 * GO
 * go get github.com/faiface/pixel/pixelgl
-* go get /usr/local/Cellar/go/1.13.4/libexec/src/github.com/faiface/beep
+* go get github.com/faiface/beep
 * go get github.com/faiface/beep/mp3
 * go get github.com/faiface/beep/speaker
 
