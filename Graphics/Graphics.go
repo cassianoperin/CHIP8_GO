@@ -32,7 +32,7 @@ func drawGraphicsConsole() {
     if CPU.Graphics[index] == 0 {
 			fmt.Printf(" ")
 		} else {
-		  fmt.Printf("#")
+			fmt.Printf("#")
 		}
 	}
 	fmt.Printf("\n")
@@ -125,6 +125,9 @@ func Run() {
 		if CPU.DrawFlag {
 			drawGraphics(CPU.Graphics)
 		}
+
+		// Draw Graphics on Console
+		//drawGraphicsConsole()
 
 		// Update Input Events
 		win.UpdateInput()
