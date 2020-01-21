@@ -347,7 +347,7 @@ func Interpreter() {
 			// Set Vx = Vx SHL 1.
 			// If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
 			case 0x000E:
-				V[0xF] = V[x] & 0x80 // 10000000
+				V[0xF] = V[x] >> 7 // Set V[F] to the Most Important Bit
 				V[x] = V[x] << 1
 				PC += 2
 				fmt.Printf("\t\tOpcode 8xyE executed: Set V[x(%d)]:%d SHIFT LEFT 1\n\n", x, V[x])
