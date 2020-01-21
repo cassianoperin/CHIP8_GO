@@ -275,7 +275,7 @@ func Interpreter() {
 			// Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx. An exclusive OR compares the corrseponding bits from two values,
 			// and if the bits are not both the same, then the corresponding bit in the result is set to 1. Otherwise, it is 0.
 			case 0x0003:
-				fmt.Printf("\t\tOpcode 8xy3 executed:  V[x(%d)]:%d XOR V[y(%d)]:%d \n\n", x, V[x], x, y, V[y])
+				fmt.Printf("\t\tOpcode 8xy3 executed:  V[x(%d)]:%d XOR V[y(%d)]:%d \n\n", x, V[x], y, V[y])
 				V[x] ^= V[y]
 				PC += 2
 				break
