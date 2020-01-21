@@ -68,16 +68,34 @@ func readROM(filename string) {
 	// }
 }
 
+func checkArgs() {
+
+	if len(os.Args) != 2 {
+		fmt.Printf("Usage: %s ROM_FILE\n\n", os.Args[0] )
+	}
+
+}
+
+func testFile(filename string) {
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		fmt.Printf("File '%s' not found.\n\n", os.Args[1])
+		os.Exit(2)
+	}
+}
+
 
 
 ///////////////////////////////////////////////////////////////////
 func main() {
 
+	checkArgs()
+	testFile(os.Args[1])
+
 	// Set initial variables values
 	CPU.Initialize()
 	Sound.Initialize("/Users/cassiano/go/src/Chip8/Sound/beep.mp3")
-	// Read ROM and write it to the RAM (0x200 or 512)
-	readROM("/Users/cassiano/go/src/Chip8/roms/INVADERS")
+	//readROM("/Users/cassiano/go/src/Chip8/roms/INVADERS")
+	readROM(os.Args[1])
 
 	// Start Window System and draw Graphics
 	pixelgl.Run(Graphics.Run)
