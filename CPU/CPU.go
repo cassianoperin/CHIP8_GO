@@ -285,7 +285,7 @@ func Interpreter() {
 			// The values of Vx and Vy are added together. If the result is greater than 8 bits (i.e., > 255,) VF is set to 1, otherwise 0.
 			// Only the lowest 8 bits of the result are kept, and stored in Vx.
 			case 0x0004:
-				if ( V[x] + V[y] > 255) {
+				if ( V[x] + V[y] < V[x]) {
 					V[0xF] = 1
 
 				} else {
@@ -395,10 +395,8 @@ func Interpreter() {
 		case 0xB000:
 			nnn := Opcode & 0x0FFF
 			PC = nnn + uint16(V[0])
-
 			print ("\t\tOpcode Bnnn executed: Jump to location nnn(%d) + V[0(%d)]\n\n", nnn, V[0])
-			// EXIT HERE TO MAP A GAME THAT USES THIS INSTRUCTION
-			os.Exit(2)
+			break
 
 
 		// ############################ 0xC000 instruction set ############################
