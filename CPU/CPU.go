@@ -409,7 +409,7 @@ func Interpreter() {
 			kk := Opcode & 0x00FF
 			V[x] = byte(rand.Float32()*255) & byte(kk)
 			PC += 2
-			fmt.Printf("\t\tOpcode Cxkk executed: V[x(%d)] = %d (random byte AND kk(%d)) = \n\n", x, V[x], kk)
+			fmt.Printf("\t\tOpcode Cxkk executed: V[x(%d)] = %d (random byte AND kk(%d)) = %d\n\n", x, V[x], kk, V[x])
 			break
 
 
