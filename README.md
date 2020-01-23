@@ -9,6 +9,9 @@ CHIP-8 Emulator writen in GO.
 
 [Wikipedia - CHIP-8](https://en.wikipedia.org/wiki/CHIP-8)
 
+## Features
+* Pause (Key: P)
+* CPU Debug Cycle Firward (Key: [ while paused)
 
 ## Requirements
 * GO
