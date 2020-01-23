@@ -1,6 +1,7 @@
 package Graphics
 
 import (
+	"time"
 	"fmt"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -10,14 +11,17 @@ import (
 )
 
 var (
-	win	*pixelgl.Window
+	win		*pixelgl.Window
+	// Pause and Cycle Forward features
+	pause		bool
+	cycle_fwd	bool
 )
 
 const (
 	sizeX		= 64
 	sizeY		= 32
-	screenWidth	= float64(1024)
-	screenHeight 	= float64(768)
+	screenWidth		= float64(1024)
+	screenHeight	= float64(768)
 )
 
 // Print Graphics on Console
@@ -95,10 +99,33 @@ func Keyboard() {
 	for index, key := range CPU.KeyPressed {
 		if win.Pressed(key) {
 			CPU.Key[index] = 1
+
+			// Pause Key
+			if index == 16 {
+				if pause {
+					pause = false
+					time.Sleep(300 * time.Millisecond)
+				} else {
+					pause = true
+					time.Sleep(300 * time.Millisecond)
+				}
+			}
+
+			// Cycle Step Forward Key
+			if index == 17 {
+				if pause {
+					cycle_fwd = true
+					CPU.Interpreter()
+					time.Sleep(300 * time.Millisecond)
+					cycle_fwd = false
+				}
+			}
 		}else {
 			CPU.Key[index] = 0
 		}
 	}
+
+
 }
 
 
@@ -119,7 +146,9 @@ func Run() {
 		Keyboard()
 
 		// Calls CPU Interpreter
-		CPU.Interpreter()
+		if !pause {
+			CPU.Interpreter()
+		}
 
 		// If necessary, DRAW
 		if CPU.DrawFlag {

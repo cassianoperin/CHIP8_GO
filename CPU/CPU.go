@@ -28,7 +28,7 @@ var (
 
 	// True if the screen must be drawn
 	DrawFlag		bool
-	Key			[16]byte
+	Key			[32]byte
 	Cycle		uint16
 
 	// Control the Keys Pressed
@@ -49,6 +49,8 @@ var (
 		13:	pixelgl.KeyDown,
 		14:	pixelgl.KeyQ,
 		15:	pixelgl.KeyW,
+		16:	pixelgl.KeyP,
+		17:	pixelgl.KeyLeftBracket,
 	}
 
 	// Beep sound file
@@ -77,13 +79,12 @@ func Initialize() {
 	for i := 0; i < len(Fontset.Chip8Fontset); i++ {
 		Memory[i] = Fontset.Chip8Fontset[i]
 	}
-	Key			= [16]byte{}
+	Key			= [32]byte{}
 	Cycle		= 0
 
 }
 
 func Debug() {
-
 	fmt.Printf("Cycle: %d\tOpcode: %04X(%04X)\tPC: %d(0x%X)\tSP: %d\tStack: %d\tV: %d\tI: %d\tDT: %d\tST: %d\tKey: %d\n", Cycle, Opcode, Opcode & 0xF000, PC, PC,  SP, Stack, V, I, DelayTimer, SoundTimer, Key)
 }
 
