@@ -33,24 +33,24 @@ var (
 
 	// Control the Keys Pressed
 	KeyPressed = map[uint16]pixelgl.Button{
-		0:	pixelgl.Key0,
+		0:	pixelgl.KeyX,
 		1:	pixelgl.Key1,
-		2:	pixelgl.Key4,
+		2:	pixelgl.Key2,
 		3:	pixelgl.Key3,
-		4:	pixelgl.Key2,
-		5:	pixelgl.Key5,
-		6:	pixelgl.Key6,
-		7:	pixelgl.Key7,
-		8:	pixelgl.Key8,
-		9:	pixelgl.Key9,
-		10:	pixelgl.KeyLeft,
-		11:	pixelgl.KeyRight,
-		12:	pixelgl.KeyUp,
-		13:	pixelgl.KeyDown,
-		14:	pixelgl.KeyQ,
-		15:	pixelgl.KeyW,
-		16:	pixelgl.KeyP,
-		17:	pixelgl.KeyLeftBracket,
+		4:	pixelgl.KeyQ,
+		5:	pixelgl.KeyW,
+		6:	pixelgl.KeyE,
+		7:	pixelgl.KeyA,
+		8:	pixelgl.KeyS,
+		9:	pixelgl.KeyD,
+		10:	pixelgl.KeyZ,
+		11:	pixelgl.KeyC,
+		12:	pixelgl.Key4,
+		13:	pixelgl.KeyR,
+		14:	pixelgl.KeyF,
+		15:	pixelgl.KeyV,
+		16:	pixelgl.KeyP,		// Pause
+		17:	pixelgl.KeyLeftBracket,	// CPU Cycle Forward
 	}
 
 	// Beep sound file
