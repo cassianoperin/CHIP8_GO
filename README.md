@@ -1,17 +1,12 @@
 # GOLANG CHIP-8 Emulator
 
-CHIP-8 Emulator writen in GO.
+CHIP-8 Emulator writen in GO with simple code to be easy to be studied and understood.
 
-## Base Documentation
-[Cowgod's Chip-8 Technical Reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#0.0)
-
-[How to write an emulator (CHIP-8 interpreter) — Multigesture.net](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
-
-[Wikipedia - CHIP-8](https://en.wikipedia.org/wiki/CHIP-8)
+<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/invaders.png">
 
 ## Features
-* Pause (Key: P)
-* CPU Debug Cycle Firward (Key: [ while paused)
+* Pause and resume emulation
+* Step Forward CPU Cycle for Debug
 
 ## Requirements
 * GO
@@ -22,13 +17,21 @@ CHIP-8 Emulator writen in GO.
 
 ## Usage
 
-	$ go run chip8
+	$ go run chip8 ROM_NAME
+
+## Documentation
+[Cowgod's Chip-8 Technical Reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#0.0)
+
+[How to write an emulator (CHIP-8 interpreter) — Multigesture.net](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
+
+[Wikipedia - CHIP-8](https://en.wikipedia.org/wiki/CHIP-8)
 
 ## TODO LIST
-1. TEST CLOCK PROGRAM
-2. WRITE A DESCENT README.md FILE
-3. SHOW SLOWNESS WHEN KEYPRESS
-4. REVIEW FPS
-5. REWRITE GRAPHICS TO JUST DRAW THE DIFFERENCES
-6. ADD PAUSE FUNCION
-7. TEST IN LINUX AND WINDOWS (JUST TESTED ON MAC)
+
+1. Equalize game speed (some games runs too fast, other slow)
+2. Key pressing cause slowness
+3. Improve draw method
+4. Implement a correct 60 FPS control
+5. Rewrite graphics mode to just draw the differences from each frame
+6. Test on Windows and Linux
+7. Test Clock Program (not working)
