@@ -124,15 +124,14 @@ func Keyboard() {
 			// Reset
 			if index == 18 {
 				CPU.PC			= 0x200
-				//CPU.Opcode		= 0
 				CPU.Stack		= [16]uint16{}
 				CPU.SP			= 0
 				CPU.V			= [16]byte{}
-				CPU.I 			= 0
+				CPU.I			= 0
 				CPU.Graphics		= [64 * 32]byte{}
 				CPU.DrawFlag		= false
-				CPU.DelayTimer	= 0
-				CPU.SoundTimer	= 0
+				CPU.DelayTimer		= 0
+				CPU.SoundTimer		= 0
 				CPU.Key			= [32]byte{}
 				CPU.Cycle		= 0
 			}
