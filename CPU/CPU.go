@@ -51,6 +51,7 @@ var (
 		15:	pixelgl.KeyV,
 		16:	pixelgl.KeyP,		// Pause
 		17:	pixelgl.KeyLeftBracket,	// CPU Cycle Forward
+		18:	pixelgl.Key9,		// Reset
 	}
 
 	// Beep sound file
@@ -63,7 +64,6 @@ func Initialize() {
 	// Initialization
 	Memory		= [4096]byte{}
 	PC			= 0x200
-	//CPU.PC		=	0x2FE
 	Opcode		= 0
 	Stack		= [16]uint16{}
 	SP			= 0
