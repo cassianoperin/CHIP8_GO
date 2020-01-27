@@ -17,7 +17,38 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 
 ## Usage
 
-	$ go run chip8 ROM_NAME
+1. Run:
+	`$ go run chip8 ROM_NAME`
+
+2. Keys
+- Original COSMAC Keyboard Layout:
+
+	`1` `2` `3` `C`
+
+	`4` `5` `6` `D`
+
+	`7` `8` `9` `E`
+
+	`A` `0` `B` `F`
+
+- **Keys used in this emulator:**
+
+	`1` `2` `3` `4`
+
+	`Q` `W` `E` `R`
+
+	`A` `S` `D` `F`
+
+	`Z` `X` `C` `V`
+
+	`P`: Pause and Resume emulation
+	
+	`[`: Step forward one CPU cycle with paused emulation (for debug and study purposes)
+
+	`9`: Reset
+
+	`ESC`: Exit emulator
+
 
 ## Documentation
 [Cowgod's Chip-8 Technical Reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#0.0)
