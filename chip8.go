@@ -88,14 +88,14 @@ func testFile(filename string) {
 ///////////////////////////////////////////////////////////////////
 func main() {
 
-	//checkArgs()
-	//testFile(os.Args[1])
+	checkArgs()
+	testFile(os.Args[1])
 
 	// Set initial variables values
 	CPU.Initialize()
 	Sound.Initialize("/Users/cassiano/go/src/Chip8/Sound/beep.mp3")
-	readROM("/Users/cassiano/go/src/Chip8/roms/INVADERS")
-	//readROM(os.Args[1])
+	//readROM("/Users/cassiano/go/src/Chip8/roms/INVADERS")
+	readROM(os.Args[1])
 
 	// Start Window System and draw Graphics
 	pixelgl.Run(Graphics.Run)
