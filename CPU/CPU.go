@@ -57,7 +57,8 @@ var (
 		16:	pixelgl.KeyP,			// Pause
 		17:	pixelgl.KeyLeftBracket,		// CPU Cycle Rewind
 		18:	pixelgl.KeyRightBracket,	// CPU Cycle Forward
-		19:	pixelgl.Key9,			// Reset
+		19:	pixelgl.Key9,			// Debug
+		20:	pixelgl.Key0,			// Reset
 	}
 
 	// Beep sound file

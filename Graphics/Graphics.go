@@ -179,8 +179,22 @@ func Keyboard() {
 				}
 			}
 
-			// Reset
+			// Debug
 			if index == 19 {
+				if CPU.Debug {
+					CPU.Debug = false
+					fmt.Printf("\t\tDEBUG mode Disabled\n")
+					time.Sleep(100 * keyboard_tmout * time.Millisecond)
+				} else {
+					CPU.Debug = true
+					fmt.Printf("\t\tDEBUG mode Enabled\n")
+					time.Sleep(100 * keyboard_tmout * time.Millisecond)
+				}
+			}
+
+
+			// Reset
+			if index == 20 {
 				CPU.PC			= 0x200
 				CPU.Stack		= [16]uint16{}
 				CPU.SP			= 0
