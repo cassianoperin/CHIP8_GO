@@ -12,16 +12,14 @@ import (
 
 var (
 	win		*pixelgl.Window
-	// Pause and Cycle Forward features
-	pause		bool
-	cycle_fwd	bool
 )
 
 const (
 	sizeX		= 64
 	sizeY		= 32
-	screenWidth		= float64(1024)
+	screenWidth	= float64(1024)
 	screenHeight	= float64(768)
+	keyboard_tmout	= 10	// Milliseconds
 )
 
 // Print Graphics on Console
@@ -100,29 +98,89 @@ func Keyboard() {
 		if win.Pressed(key) {
 			CPU.Key[index] = 1
 
-			// Pause Key
+			// CPU.Pause Key
 			if index == 16 {
-				if pause {
-					pause = false
-					time.Sleep(300 * time.Millisecond)
+				if CPU.Pause {
+					CPU.Pause = false
+					fmt.Printf("\t\tPAUSE mode Disabled\n")
+					time.Sleep(100 * keyboard_tmout * time.Millisecond)
 				} else {
-					pause = true
-					time.Sleep(300 * time.Millisecond)
+					CPU.Pause = true
+					fmt.Printf("\t\tPAUSE mode Enabled\n")
+					time.Sleep(100 * keyboard_tmout * time.Millisecond)
+				}
+			}
+
+			// Rewind CPU
+			if index == 17 {
+				if CPU.Pause {
+					// Search for track limit history
+					// Rewind_buffer size minus [0] used for current value
+					// (-2 because I use Rewind_buffer +1 to identify the last vector number)
+					if CPU.Rewind_index < CPU.Rewind_buffer -2 {
+						// Take care of the first loop
+						if (CPU.Cycle == 1) {
+							fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
+							drawGraphics(CPU.Graphics)
+							time.Sleep(100 * keyboard_tmout * time.Millisecond)
+						} else {
+							// Update values, reading the track records
+							CPU.PC		= CPU.PC_track[CPU.Rewind_index +1]
+							CPU.Stack	= CPU.Stack_track[CPU.Rewind_index +1]
+							CPU.SP		= CPU.SP_track[CPU.Rewind_index +1]
+							CPU.V		= CPU.V_track[CPU.Rewind_index +1]
+							CPU.I		= CPU.I_track[CPU.Rewind_index +1]
+							CPU.Graphics	= CPU.GFX_track[CPU.Rewind_index +1]
+							CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
+							CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index +1]
+							CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index +1]
+							// For now, reset the keys every rewind cycle
+							CPU.Key		= [32]byte{}
+							CPU.Cycle	= CPU.Cycle - 2
+							CPU.Rewind_index= CPU.Rewind_index +1
+							// Call a CPU Cycle
+							CPU.Interpreter()
+							time.Sleep(keyboard_tmout * time.Millisecond)
+							fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n\n", CPU.Rewind_index)
+						}
+					} else {
+						fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
+						time.Sleep(100 * keyboard_tmout * time.Millisecond)
+					}
 				}
 			}
 
 			// Cycle Step Forward Key
-			if index == 17 {
-				if pause {
-					cycle_fwd = true
-					CPU.Interpreter()
-					time.Sleep(300 * time.Millisecond)
-					cycle_fwd = false
+			if index == 18 {
+				if CPU.Pause {
+					// If inside the rewind loop, search for cycles inside it
+					// DO NOT update the track records in this stage
+					if CPU.Rewind_index > 0 {
+						CPU.PC		= CPU.PC_track[CPU.Rewind_index -1]
+						CPU.Stack	= CPU.Stack_track[CPU.Rewind_index -1]
+						CPU.SP		= CPU.SP_track[CPU.Rewind_index -1]
+						CPU.V		= CPU.V_track[CPU.Rewind_index -1]
+						CPU.I		= CPU.I_track[CPU.Rewind_index -1]
+						CPU.Graphics	= CPU.GFX_track[CPU.Rewind_index -1]
+						CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index -1]
+						CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index -1]
+						CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index -1]
+						CPU.Key		= [32]byte{}
+						CPU.Rewind_index	-= 1
+						CPU.Interpreter()
+						time.Sleep(keyboard_tmout * time.Millisecond)
+						fmt.Printf("\t\tForward mode - Rewind_index := %d\n\n", CPU.Rewind_index)
+					// Return to real time, forward CPU normally and UPDATE de tracks
+					} else {
+						CPU.Interpreter()
+						time.Sleep(keyboard_tmout * time.Millisecond)
+						fmt.Printf("\t\tForward mode\n\n")
+					}
 				}
 			}
 
 			// Reset
-			if index == 18 {
+			if index == 19 {
 				CPU.PC			= 0x200
 				CPU.Stack		= [16]uint16{}
 				CPU.SP			= 0
@@ -134,12 +192,17 @@ func Keyboard() {
 				CPU.SoundTimer		= 0
 				CPU.Key			= [32]byte{}
 				CPU.Cycle		= 0
+				CPU.Rewind_index	= 0
+				// If paused, remove the pause to continue CPU Loop
+				if CPU.Pause {
+					CPU.Pause = false
+				}
 			}
+
 		}else {
 			CPU.Key[index] = 0
 		}
 	}
-
 
 }
 
@@ -160,9 +223,18 @@ func Run() {
 		// Handle Keys pressed
 		Keyboard()
 
-		// Calls CPU Interpreter
-		if !pause {
-			CPU.Interpreter()
+		//// Calls CPU Interpreter ////
+		// Ignore if in Pause mode
+		if !CPU.Pause {
+			// If in Rewind Mode, every new cycle forward decrease the Rewind Index
+			if CPU.Rewind_index > 0 {
+				CPU.Interpreter()
+				CPU.Rewind_index -= 1
+				fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
+			} else {
+				// Continue run normally
+				CPU.Interpreter()
+			}
 		}
 
 		// If necessary, DRAW

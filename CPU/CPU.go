@@ -12,6 +12,11 @@ import (
 
 )
 
+const (
+	// Rewind Buffer Size
+	Rewind_buffer	uint16 = 15000
+)
+
 // Components
 var (
 	Memory		[4096]byte // Memory
@@ -49,18 +54,34 @@ var (
 		13:	pixelgl.KeyR,
 		14:	pixelgl.KeyF,
 		15:	pixelgl.KeyV,
-		16:	pixelgl.KeyP,		// Pause
-		17:	pixelgl.KeyLeftBracket,	// CPU Cycle Forward
-		18:	pixelgl.Key9,		// Reset
+		16:	pixelgl.KeyP,			// Pause
+		17:	pixelgl.KeyLeftBracket,		// CPU Cycle Rewind
+		18:	pixelgl.KeyRightBracket,	// CPU Cycle Forward
+		19:	pixelgl.Key9,			// Reset
 	}
 
 	// Beep sound file
 	sound_file string
 
+	// DEBUG modes
+	Debug		bool = false
+	Debug_v2	bool = false
 
-	// DEBUG mode
-	Debug	bool = true
+	// Pause (Used to Forward and Rewind CPU Cycles)
+	Pause		bool
 
+	// Rewind Variables
+	Rewind_index	uint16 = 0
+	PC_track	[Rewind_buffer]uint16
+	SP_track	[Rewind_buffer]uint16
+	I_track		[Rewind_buffer]uint16
+	DT_track	[Rewind_buffer]byte
+	ST_track	[Rewind_buffer]byte
+	DF_track	[Rewind_buffer]bool
+	V_track		[Rewind_buffer][16]byte
+	Stack_track	[Rewind_buffer][16]uint16
+	GFX_track	[Rewind_buffer][64 * 32]byte
+	// Key_track
 )
 
 
@@ -106,6 +127,71 @@ func Interpreter() {
 	if Debug {
 		Show()
 	}
+
+
+	// REWIND MODE - ARRAYS
+	// Just update when not inside a reward loop
+	// Otherwise navigate inside the track arrays
+	if Rewind_index == 0 {
+		// Every new value is recorded on the first array value or first line of the Matrix for vectors
+		// Each new cycle, Shift Right the values (for arrays) and Shift lines to the end for Matrix
+		for i := Rewind_buffer - 1 ; i > 0 ; i-- {
+			// PC
+			PC_track[i]=PC_track[i-1]
+			// SP
+			SP_track[i]=SP_track[i-1]
+			// I
+			I_track[i]=I_track[i-1]
+			// DelayTimer
+			DT_track[i]=DT_track[i-1]
+			// SoundTimer
+			ST_track[i]=ST_track[i-1]
+			// DrawFlag
+			DF_track[i]=DF_track[i-1]
+			// V Matrix
+			V_track[i]=V_track[i-1]
+			// Stack Matrix
+			Stack_track[i]=Stack_track[i-1]
+			// Graphics Matrix
+			GFX_track[i]=GFX_track[i-1]
+
+		}
+
+		// After store the current value in the first Array position or Matrix line
+		// PC - ADD new value
+		PC_track[0] = PC
+		// SP - ADD new value
+		SP_track[0] = SP
+		// I - ADD new value
+		I_track[0] = I
+		// DelayTimer - ADD new value
+		DT_track[0] = DelayTimer
+		// SoundTimer - ADD new value
+		ST_track[0] = SoundTimer
+		// DrawFlag - ADD new value
+		DF_track[0] = DrawFlag
+		// V Matrix - ADD new vector
+		V_track[0] = V
+		// Stack Matrix - ADD new vector
+		Stack_track[0] = Stack
+		// Graphics Matrix - ADD new vector
+		GFX_track[0] = Graphics
+
+		if Debug_v2 {
+			fmt.Printf("\tPC_track: %d\n", PC_track)
+			fmt.Printf("\tSP_Track: %d\n", SP_track)
+			fmt.Printf("\tI_Track: %d\n", I_track)
+			fmt.Printf("\tDT_Track: %d\n", DT_track)
+			fmt.Printf("\tST_Track: %d\n", ST_track)
+			fmt.Printf("\tDF_Track: %d\n", DF_track)
+			fmt.Printf("\tV_Track: %d\n", V_track)
+			fmt.Printf("\tStack_Track: %d\n", Stack_track)
+			//fmt.Printf("\tGFX_Track: %d\n", GFX_track)
+			fmt.Printf("\n")
+		}
+
+	}
+
 
 	// Map Opcode Family
 	switch Opcode & 0xF000 {
