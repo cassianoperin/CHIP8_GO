@@ -9,6 +9,7 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 * Reset emulation
 * Step Forward CPU Cycles for Debug
 * Step Back (Rewind) CPU Cycles for Debug
+* Online Debug mode
 
 ## Requirements
 * GO
@@ -49,7 +50,9 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 	
 	`]`: Step forward one CPU cycle in **Pause Mode** (for debug and study purposes)
 
-	`9`: Reset
+	`9`: Enable / Disable Debug Mode
+	
+	`0`: Reset
 
 	`ESC`: Exit emulator
 
