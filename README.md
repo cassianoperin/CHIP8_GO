@@ -6,7 +6,9 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 
 ## Features
 * Pause and resume emulation
-* Step Forward CPU Cycle for Debug
+* Reset emulation
+* Step Forward CPU Cycles for Debug
+* Step Back (Rewind) CPU Cycles for Debug
 
 ## Requirements
 * GO
@@ -18,7 +20,7 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 ## Usage
 
 1. Run:
-	`$ go run chip8 ROM_NAME`
+	`$ go run chip8.go ROM_NAME`
 
 2. Keys
 - Original COSMAC Keyboard Layout:
@@ -43,7 +45,9 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 
 	`P`: Pause and Resume emulation
 	
-	`[`: Step forward one CPU cycle with paused emulation (for debug and study purposes)
+	`[`: Step back (rewind) one CPU cycle **in Pause Mode** (for debug and study purposes)
+	
+	`]`: Step forward one CPU cycle in **Pause Mode** (for debug and study purposes)
 
 	`9`: Reset
 
