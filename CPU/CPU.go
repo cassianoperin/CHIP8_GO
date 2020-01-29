@@ -226,6 +226,28 @@ func Interpreter() {
 				}
 				break
 
+			// 02D8
+			// NON DOCUMENTED OPCODED, USED BY DEMO CLOCK Program
+			// LDA 02, I // Load from memory at address I into V[00] to V[02].
+			case 0x00D8:
+				x := (Opcode & 0x0F00) >> 8
+
+				if x != 2 {
+					//Map if this opcode can receive a different value here
+					os.Exit(2)
+				}
+
+				V[0] = byte(I)
+				V[1] = byte(I) + 1
+				V[2] = byte(I) + 2
+
+				PC += 2
+				if Debug {
+					fmt.Printf("\t\tOpcode 02EE executed (NON DOCUMENTED). - Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.\n\n", I, I , I+1, I+2)
+				}
+				break
+
+
 			default:
 				if Debug {
 					fmt.Printf("\t\tOpcode 0x0000 NOT IMPLEMENTED!!!!\n\n", Opcode)
