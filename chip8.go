@@ -12,8 +12,7 @@ import (
 )
 
 
-///////////////////////////////////////////////////////////////////
-/////// Function used by readROM to avoid 'bytesread' return //////
+// Function used by readROM to avoid 'bytesread' return
 func ReadContent(file *os.File, bytes_number int) []byte {
 
 	bytes := make([]byte, bytes_number)
@@ -85,7 +84,7 @@ func testFile(filename string) {
 
 
 
-///////////////////////////////////////////////////////////////////
+// Main function
 func main() {
 
 	checkArgs()
@@ -93,8 +92,7 @@ func main() {
 
 	// Set initial variables values
 	CPU.Initialize()
-	Sound.Initialize("/Users/cassiano/go/src/Chip8/Sound/beep.mp3")
-	//readROM("/Users/cassiano/go/src/Chip8/roms/INVADERS")
+	Sound.Initialize("Sound/beep.mp3")
 	readROM(os.Args[1])
 
 	// Start Window System and draw Graphics
