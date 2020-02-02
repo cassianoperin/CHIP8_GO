@@ -14,7 +14,10 @@ import (
 
 const (
 	// Rewind Buffer Size
-	Rewind_buffer	uint16 = 15000
+	// FIX IT, INCREASING IT TO 15000, emulation became slow due to vector and matrix processing
+	// Exponentially increased by size of graphics array!
+	// NEED TO FIND A WAY TO PROCESSES IT QUICKLY
+	Rewind_buffer	uint16 = 100
 )
 
 // Components
@@ -29,7 +32,8 @@ var (
 	DelayTimer	byte
 	SoundTimer	byte
 	TimerClock	*time.Ticker
-	Graphics	[64 * 32]byte
+	//Graphics	[64 * 32]byte
+	Graphics	[128 * 64]byte
 
 	// True if the screen must be drawn
 	DrawFlag	bool
@@ -65,7 +69,7 @@ var (
 	sound_file string
 
 	// DEBUG modes
-	Debug		bool = false
+	Debug		bool = true
 	Debug_v2	bool = false
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
@@ -81,8 +85,19 @@ var (
 	DF_track	[Rewind_buffer]bool
 	V_track		[Rewind_buffer][16]byte
 	Stack_track	[Rewind_buffer][16]uint16
-	GFX_track	[Rewind_buffer][64 * 32]byte
+	GFX_track	[Rewind_buffer][128 * 64]byte
+	//GFX_track	[Rewind_buffer][64 * 32]byte
 	// Key_track
+
+	// GRAPHICS
+	SizeX		float64 = 64
+	SizeY		float64 = 32
+
+
+	// SCHIP
+	SCHIP = true
+	//schip_draw_mode = false
+	//gfx_index 	uint16 = 0
 )
 
 
@@ -95,7 +110,8 @@ func Initialize() {
 	SP		= 0
 	V		= [16]byte{}
 	I		= 0
-	Graphics	= [64 * 32]byte{}
+	Graphics	= [128 * 64]byte{}
+	//Graphics	= [64 * 32]byte{}
 	DrawFlag	= false
 	DelayTimer	= 0
 	SoundTimer	= 0
@@ -200,36 +216,46 @@ func Interpreter() {
 		// ############################ 0x0000 instruction set ############################
 		case 0x0000: //0NNN
 
-			switch Opcode & 0x00FF {
+			x := Opcode & 0x000F
+			//fmt.Printf("\t\t%X", x)
+			//os.Exit(2)
 
-			// 00E0 - CLS
-			// Clear the display.
+
+			switch Opcode & 0x00F0 {
+
+
 			case 0x00E0:
-				// Clear display
-				Graphics = [64 * 32]byte{}
-				PC += 2
-				if Debug {
-					fmt.Println("\t\tOpcode 00E0 executed. - Clear the display\n\n")
+				// 00E0 - CLS
+				// Clear the display.
+				if x == 0x0000 {
+					// Clear display
+					//Graphics = [64 * 32]byte{}
+					Graphics = [128 * 64]byte{}
+					PC += 2
+					if Debug {
+						fmt.Println("\t\tOpcode 00E0 executed. - Clear the display\n\n")
+					}
+					break
 				}
-				break
 
-			// 00EE - RET
-			// Return from a subroutine
-			// The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
-			// MUST MOVE TO NEXT ADDRESS AFTER THIS (PC+=2)
-			case 0x00EE:
-				//fmt.Println("   RCA 1802 Opcode 0x00EE - Return")
-				PC = Stack[SP] + 2
-				SP --
-				if Debug {
-					fmt.Printf("\t\tOpcode 00EE executed. - Return from a subroutine (PC=%d)\n\n", PC)
+				// 00EE - RET
+				// Return from a subroutine
+				// The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
+				// MUST MOVE TO NEXT ADDRESS AFTER THIS (PC+=2)
+				if x == 0x000E {
+					//fmt.Println("   RCA 1802 Opcode 0x00EE - Return")
+					PC = Stack[SP] + 2
+					SP --
+					if Debug {
+						fmt.Printf("\t\tOpcode 00EE executed. - Return from a subroutine (PC=%d)\n\n", PC)
+					}
+					break
 				}
-				break
 
 			// 02D8
 			// NON DOCUMENTED OPCODED, USED BY DEMO CLOCK Program
 			// LDA 02, I // Load from memory at address I into V[00] to V[02]
-			case 0x00D8:
+		case 0x00D0:
 				x := (Opcode & 0x0F00) >> 8
 
 				if x != 2 {
@@ -246,6 +272,42 @@ func Interpreter() {
 					fmt.Printf("\t\tOpcode 02DB executed (NON DOCUMENTED). - Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.\n\n", I, I , I+1, I+2)
 				}
 				break
+
+				// SCHIP - 00FF
+				// Enable high res (128x64) mode.
+			case 0x00F0:
+				if x == 0x000F {
+					SCHIP = true
+
+					SizeX = 128
+					SizeY = 64
+
+					PC += 2
+					fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128x64) mode.\n\n")
+
+					break
+				}
+
+				// SCHIP - 00CN
+				// Scroll display N lines down
+				// FIX THE HARDCODED 03!!!!
+			case 0x00C0:
+					SCHIP = true
+
+					shift := int(x) * 128
+
+					for i:=len(Graphics) -1 ; i >= shift ; i-- {
+						Graphics[i] = Graphics[i - 384]
+					}
+
+
+					PC += 2
+					fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - XXXXX.\n\n")
+					//os.Exit(2)
+
+					break
+
+
 
 
 			default:
@@ -558,6 +620,8 @@ func Interpreter() {
 		// Jump to location nnn + V0.
 		// The program counter is set to nnn plus the value of V0.
 		case 0xB000:
+			os.Exit(2)
+
 			nnn := Opcode & 0x0FFF
 			PC = nnn + uint16(V[0])
 			if Debug {
@@ -582,8 +646,6 @@ func Interpreter() {
 
 
 		// ############################ 0xD000 instruction set ############################
-		// Dxyn - DRW Vx, Vy, nibble
-		// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 		case 0xD000: // DXYN
 
 			var (
@@ -597,72 +659,152 @@ func Interpreter() {
 			// Clean the colision flag
 			V[0xF] = 0
 
-			if Debug {
-				fmt.Printf("\t\tOpcode Dxyn(%X DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n\n" , Opcode, I, V[x], V[y], n)
-			}
 			// Check if y is out of range
-			if (V[y] > 31) {
-				V[y] = V[y] % 2
-				// fmt.Printf("\t\tV[y] > 31, modulus applied")
+			if (V[y] >= uint8(SizeY)) {
+				V[y] = V[y] % uint8(SizeY)
+				// fmt.Printf("\t\tV[y] >= 32 or 64, modulus applied")
 			}
 
 			// Check if x is out of range
-			if (V[x] > 63) {
-				V[x] = V[x] % 64
-				// fmt.Printf("\t\tV[x] > 63, modulus applied")
+			if (V[x] >= uint8(SizeX)) {
+				V[x] = V[x] % uint8(SizeX)
+				// fmt.Printf("\t\tV[x] >= 64 or 128, modulus applied")
 			}
 
 			// Translate the x and Y to the Graphics Vector
-			gpx_position = (uint16(V[x]) + (64 * uint16(V[y])))
-
+			gpx_position = (uint16(V[x]) + (uint16(SizeX) * uint16(V[y])))
 			// DEBUG
-			//fmt.Printf ("\tGraphic vector position: %d\tValue: %d\n", gpx_position, Graphics[x + (64 * y)] )
+			//fmt.Printf ("\tGraphic vector position: %d\tValue: %d\n", gpx_position, Graphics[x + (128 * y)] )
 
-			// Print N Bytes from address I in V[x]V[y] position of the screen
-			for byte = 0 ; byte < n ; byte++ {
-
-				var (
-					binary string = ""
-					sprite uint8 = 0
-				)
-
-				// Set the sprite
-				sprite = uint8(Memory[I + byte])
-
-				// Sprite in binary format
-				binary = fmt.Sprintf("%.8b", sprite)
-
-				// Always print 8 bits
-				for bit := 0; bit < 8 ; bit++ {
-
-					// Convert the binary[bit] variable into an INT using Atoi method
-					bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
-					if err == nil {
-						// fmt.Println(bit_binary)
-					}
-
-					// Set the index to write the 8 bits of each pixel
-					index := uint16(gpx_position) + uint16(bit) + (byte*64)
-
-					// If tryes to draw bits outside the vector size, ignore
-					if ( index > 2047) {
-					   continue
-					}
-
-					// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
-					if (bit_binary  == 1){
-						// Set colision case graphics[index] is already 1
-						if (Graphics[index] == 1){
-							V[0xF] = 1
-						}
-						// After, XOR the graphics[index] (DRAW)
-						Graphics[index] ^= 1
-					}
-
-				// DEBUG 2
-				//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
+			// SCHIP Dxy0
+			// When in high res mode show a 16x16 sprite at (VX, VY)
+			// If N=0, Draw in SCHIP High Resolution mode
+			if n == 0 {
+				// Turn n in 16 (pixel size in SCHIP Mode)
+				n = 16
+				if Debug {
+					fmt.Printf("\t\tSCHIP - Opcode Dxy0 (%X DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n\n" , Opcode, I, x, V[x], y, V[y])
 				}
+
+				// Print N Bytes from address I in V[x]V[y] position of the screen
+				for byte = 0 ; byte < n ; byte++ {
+
+					var (
+						binary string = ""
+						sprite uint8 = 0
+						sprite2 uint8 = 0
+					)
+
+					// Set the sprite
+					//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
+
+					// DOCUMENT SPRITES
+					sprite = Memory[I + (byte * 2)]
+					sprite2 = Memory[I + (byte * 2) + 1]
+
+					//Pause = true
+
+					// Sprite in binary format
+					//binary = fmt.Sprintf("%.8b", sprite)
+					binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
+					// fmt.Printf("BINARY = %b\n",sprite)
+					// fmt.Printf("TESTE: %.8b%.8b", sprite,sprite2)
+					// fmt.Printf("\n")
+
+					// Always print 8 bits
+					for bit := 0; bit < 16 ; bit++ {
+
+						// Convert the binary[bit] variable into an INT using Atoi method
+						bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
+						if err == nil {
+							// fmt.Println(bit_binary)
+						}
+
+
+						// Set the index to write the 8 bits of each pixel
+						gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
+
+						// If tryes to draw bits outside the vector size, ignore
+						if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
+							//fmt.Printf("Bigger than 2048 or 8192\n")
+							continue
+						}
+
+
+						// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
+						if (bit_binary  == 1){
+							// Set colision case graphics[index] is already 1
+							if (Graphics[gfx_index] == 1){
+								V[0xF] = 1
+							}
+							// After, XOR the graphics[index] (DRAW)
+							Graphics[gfx_index] ^= 1
+						}
+
+					// DEBUG 2
+					//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
+					}
+				}
+
+			// Dxyn - DRW Vx, Vy, nibble
+			// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+			} else {
+			// Else, Draw in Chip-8 Low Resolution mode
+				if Debug {
+					fmt.Printf("\t\tOpcode Dxyn(%X DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n\n" , Opcode, I, V[x], V[y], n)
+				}
+
+
+				// Print N Bytes from address I in V[x]V[y] position of the screen
+				for byte = 0 ; byte < n ; byte++ {
+
+					var (
+						binary string = ""
+						sprite uint8 = 0
+					)
+
+					// Set the sprite
+					//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
+					sprite = Memory[I + byte]
+
+					// Sprite in binary format
+					binary = fmt.Sprintf("%.8b", sprite)
+
+					// Always print 8 bits
+					for bit := 0; bit < 8 ; bit++ {
+
+						// Convert the binary[bit] variable into an INT using Atoi method
+						bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
+						if err == nil {
+							// fmt.Println(bit_binary)
+						}
+
+						// Set the index to write the 8 bits of each pixel
+						gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
+
+						// If tryes to draw bits outside the vector size, ignore
+						if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
+							//fmt.Printf("Bigger than 2048 or 8192\n")
+							continue
+						}
+
+						// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
+						if (bit_binary  == 1){
+							// Set colision case graphics[index] is already 1
+							if (Graphics[gfx_index] == 1){
+								V[0xF] = 1
+							}
+							// After, XOR the graphics[index] (DRAW)
+							Graphics[gfx_index] ^= 1
+						}
+
+					// DEBUG 2
+					//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
+					}
+				}
+
 			}
+
 
 			PC += 2
 			DrawFlag = true
@@ -849,6 +991,7 @@ func Interpreter() {
 			//// the I register. Certain S-CHIP-compatible emulators may implement this instruction in this manner.
 			//// MAYBE NEED TO IMPLEMENT NO S-CHIP8 ***
 			case 0x0065:
+
 				for i := uint16(0); i <= x; i++ {
 					V[i] = Memory[I+i]
 					//fmt.Printf("   New value of V[%d] = %d\n", i, V[i])

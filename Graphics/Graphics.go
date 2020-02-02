@@ -15,8 +15,6 @@ var (
 )
 
 const (
-	sizeX		= 64
-	sizeY		= 32
 	screenWidth	= float64(1024)
 	screenHeight	= float64(768)
 	keyboard_tmout	= 10	// Milliseconds
@@ -55,29 +53,29 @@ func renderGraphics() {
 }
 
 
-func drawGraphics(graphics [64 * 32]byte) {
+func drawGraphics(graphics [128 * 64]byte) {
 	// Background color
 	win.Clear(colornames.Black)
 	imd := imdraw.New(nil)
 	imd.Color = pixel.RGB(1, 1, 1)
 	screenWidth := win.Bounds().W()
-	width := screenWidth/sizeX
-	height := screenHeight/sizeY
+	width := screenWidth/CPU.SizeX
+	height := screenHeight/CPU.SizeY
 
 	for gfxindex := 0 ; gfxindex < len(CPU.Graphics) ; gfxindex++ {
 		if (CPU.Graphics[gfxindex] ==1 ){
-			if (gfxindex < 64) {
+			if (gfxindex < int(CPU.SizeX)) {
 				x := gfxindex
-				y := 31
+				y := CPU.SizeY - 1
 				imd.Push(pixel.V ( width*float64(x), height*float64(y) ) )
 				imd.Push(pixel.V ( width*float64(x)+width, height*float64(y)+height ) )
 				imd.Rectangle(0)
 			} else {
-				y := 31
+				y := CPU.SizeY - 1
 				x := 0
 				nro := gfxindex
-				for nro >= 64 {
-					nro -= 64
+				for nro >= int(CPU.SizeX) {
+					nro -= int(CPU.SizeX)
 					y = y - 1
 					x = nro
 				}
@@ -134,7 +132,6 @@ func Keyboard() {
 							CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
 							CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index +1]
 							CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index +1]
-							// For now, reset the keys every rewind cycle
 							CPU.Key		= [32]byte{}
 							CPU.Cycle	= CPU.Cycle - 2
 							CPU.Rewind_index= CPU.Rewind_index +1
@@ -200,7 +197,8 @@ func Keyboard() {
 				CPU.SP			= 0
 				CPU.V			= [16]byte{}
 				CPU.I			= 0
-				CPU.Graphics		= [64 * 32]byte{}
+				CPU.Graphics		= [128 * 64]byte{}
+				//CPU.Graphics		= [64 * 32]byte{}
 				CPU.DrawFlag		= false
 				CPU.DelayTimer		= 0
 				CPU.SoundTimer		= 0

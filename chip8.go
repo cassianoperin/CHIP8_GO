@@ -62,9 +62,10 @@ func readROM(filename string) {
 	}
 
 	// Print Memory
-	// for i := 512; i < len(Memory); i++ {4
-	// 	fmt.Printf("%X ", Memory[i])
+	// for i := 0; i < len(CPU.Memory); i++ {
+	// 	fmt.Printf("%X ", CPU.Memory[i])
 	// }
+	// os.Exit(2)
 }
 
 func checkArgs() {

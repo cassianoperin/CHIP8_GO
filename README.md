@@ -72,3 +72,5 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 4. Implement a correct 60 FPS control
 5. Rewrite graphics mode to just draw the differences from each frame
 6. Test on Windows and Linux
+7. Rewind mode make emulation slow due to arrays and graphics processing
+8. Initial support to SCHIP being implemented (RACE demo)
