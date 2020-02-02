@@ -286,6 +286,10 @@ func Interpreter() {
 					fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128x64) mode.\n\n")
 
 					break
+				} else {
+					fmt.Printf("\t\tSCHIP - Opcode 00F%X NOT IMPLEMENTED.\n\n", x)
+					os.Exit(2)
+
 				}
 
 				// SCHIP - 00CN
@@ -297,7 +301,7 @@ func Interpreter() {
 					shift := int(x) * 128
 
 					for i:=len(Graphics) -1 ; i >= shift ; i-- {
-						Graphics[i] = Graphics[i - 384]
+						Graphics[i] = Graphics[i - shift]
 					}
 
 
@@ -306,7 +310,6 @@ func Interpreter() {
 					//os.Exit(2)
 
 					break
-
 
 
 
