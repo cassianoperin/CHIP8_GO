@@ -17,7 +17,7 @@ var (
 const (
 	screenWidth	= float64(1024)
 	screenHeight	= float64(768)
-	keyboard_tmout	= 10	// Milliseconds
+	keyboard_tmout	= 30	// Milliseconds
 )
 
 // Print Graphics on Console

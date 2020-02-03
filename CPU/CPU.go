@@ -73,7 +73,7 @@ var (
 	Debug_v2	bool = false
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
-	Pause		bool
+	Pause		bool =  false
 
 	// Rewind Variables
 	Rewind_index	uint16 = 0
@@ -96,8 +96,7 @@ var (
 
 	// SCHIP
 	SCHIP = true
-	//schip_draw_mode = false
-	//gfx_index 	uint16 = 0
+
 )
 
 
@@ -294,23 +293,25 @@ func Interpreter() {
 
 				// SCHIP - 00CN
 				// Scroll display N lines down
-				// FIX THE HARDCODED 03!!!!
 			case 0x00C0:
 					SCHIP = true
 
 					shift := int(x) * 128
 
+					// Shift Right N lines on Graphics Array
 					for i:=len(Graphics) -1 ; i >= shift ; i-- {
 						Graphics[i] = Graphics[i - shift]
 					}
 
+					// Clean the shifted display bytes
+					for i:=0 ; i < shift ; i++ {
+						Graphics[i] = 0
+					}
 
 					PC += 2
 					fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - XXXXX.\n\n")
-					//os.Exit(2)
 
 					break
-
 
 
 			default:
@@ -705,7 +706,6 @@ func Interpreter() {
 					sprite = Memory[I + (byte * 2)]
 					sprite2 = Memory[I + (byte * 2) + 1]
 
-					//Pause = true
 
 					// Sprite in binary format
 					//binary = fmt.Sprintf("%.8b", sprite)
@@ -755,6 +755,7 @@ func Interpreter() {
 			// Else, Draw in Chip-8 Low Resolution mode
 				if Debug {
 					fmt.Printf("\t\tOpcode Dxyn(%X DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n\n" , Opcode, I, V[x], V[y], n)
+
 				}
 
 
