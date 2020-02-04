@@ -297,7 +297,6 @@ func Interpreter() {
 				// SCHIP - 00FE
 				// Enable Low-Res Mode (64 x 32 resolution)
 				} else if x == 0x000E {
-
 					SCHIP = false
 
 					SizeX = 64
@@ -305,6 +304,11 @@ func Interpreter() {
 
 					PC += 2
 					fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n\n")
+				// SCHIP - 00FD
+				// Exit Emulator
+				} else if x == 0x000D {
+					fmt.Printf("\t\tSCHIP - Opcode 00FD executed. - Exit emulator.\n\n")
+					os.Exit(0)
 				} else {
 					fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n\n", x)
 					os.Exit(2)
@@ -982,7 +986,7 @@ func Interpreter() {
 						pressed = 1
 						PC +=2
 						if Debug {
-							fmt.Printf("\tOpcode Fx0A executed: Wait for a key (Key[%d]) press -  (PRESSED)\n\n", i)
+							fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key (Key[%d]) press -  (PRESSED)\n\n", i)
 						}
 						// Stop after find the first key pressed
 						break
@@ -991,7 +995,7 @@ func Interpreter() {
 				}
 				if pressed == 0 {
 					if Debug {
-						fmt.Printf("\tOpcode Fx0A executed: Wait for a key press - (NOT PRESSED)\n\n")
+						fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key press - (NOT PRESSED)\n\n")
 					}
 				}
 				break
