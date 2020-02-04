@@ -273,7 +273,7 @@ func Interpreter() {
 				break
 
 				// SCHIP - 00FF
-				// Enable high res (128x64) mode.
+				// Enable High-Res Mode (128 x 64 resolution)
 			case 0x00F0:
 				if x == 0x000F {
 					SCHIP = true
@@ -282,11 +282,22 @@ func Interpreter() {
 					SizeY = 64
 
 					PC += 2
-					fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128x64) mode.\n\n")
+					fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n\n")
 
 					break
+				// SCHIP - 00FE
+				// Enable Low-Res Mode (64 x 32 resolution)
+				} else if x == 0x000E {
+
+					SCHIP = false
+
+					SizeX = 64
+					SizeY = 32
+
+					PC += 2
+					fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n\n")
 				} else {
-					fmt.Printf("\t\tSCHIP - Opcode 00F%X NOT IMPLEMENTED.\n\n", x)
+					fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n\n", x)
 					os.Exit(2)
 
 				}
