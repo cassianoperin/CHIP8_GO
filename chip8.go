@@ -61,7 +61,7 @@ func readROM(filename string) {
 		CPU.Memory[i+512] = data[i]
 	}
 
-	// Print Memory
+	// //Print Memory
 	// for i := 0; i < len(CPU.Memory); i++ {
 	// 	fmt.Printf("%X ", CPU.Memory[i])
 	// }

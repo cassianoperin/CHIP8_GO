@@ -114,12 +114,21 @@ func Initialize() {
 	DrawFlag	= false
 	DelayTimer	= 0
 	SoundTimer	= 0
+
 	// Create a ticker at 60Hz
 	TimerClock	= time.NewTicker(time.Second / 60)
-	// Load fontset
+
+	// Load CHIP-8 8x5 fontset
+	// Memory address 0-79
 	for i := 0; i < len(Fontset.Chip8Fontset); i++ {
 		Memory[i] = Fontset.Chip8Fontset[i]
 	}
+	// Load SCHIP 8x10 fontset
+	// Memory address 80-240
+	for i := 0; i < len(Fontset.SCHIPFontset); i++ {
+		Memory[i+80] = Fontset.SCHIPFontset[i]
+	}
+
 	Key		= [32]byte{}
 	Cycle		= 0
 
@@ -1025,6 +1034,7 @@ func Interpreter() {
 			// Set I = location of sprite for digit Vx.
 			// The value of I is set to the location for the hexadecimal sprite corresponding to the value of Vx.
 			case 0x0029:
+				// Load CHIP-8 font. Start from Memory[0]
 				I = uint16(V[x]) * 5
 				PC += 2
 				if Debug {
@@ -1032,6 +1042,17 @@ func Interpreter() {
 				}
 				break
 
+			// SCHIP Fx30 - LD F, Vx
+			// Set I = location of sprite for digit Vx.
+			// The value of I is set to the location for the hexadecimal sprite corresponding to the value of Vx.
+			case 0x0030:
+				// Load SCHIP font. Start from Memory[80]
+				I = 80 + uint16(V[x]) * 10
+				PC += 2
+				if Debug {
+					fmt.Printf("\t\tSCHIP Opcode Fx30 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*10)\n\n", I, x, V[x])
+				}
+				break
 			// Fx33 - LD B, Vx
 			// BCD - Binary Code hexadecimal
 			// Store BCD representation of Vx in memory locations I, I+1, and I+2.
