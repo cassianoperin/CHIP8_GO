@@ -45,13 +45,13 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 	`Z` `X` `C` `V`
 
 	`P`: Pause and Resume emulation
-	
+
 	`[`: Step back (rewind) one CPU cycle **in Pause Mode** (for debug and study purposes)
-	
+
 	`]`: Step forward one CPU cycle in **Pause Mode** (for debug and study purposes)
 
 	`9`: Enable / Disable Debug Mode
-	
+
 	`0`: Reset
 
 	`ESC`: Exit emulator
@@ -63,6 +63,11 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 [How to write an emulator (CHIP-8 interpreter) — Multigesture.net](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
 
 [Wikipedia - CHIP-8](https://en.wikipedia.org/wiki/CHIP-8)
+
+[HP48 Superchip](https://github.com/Chromatophore/HP48-Superchip)
+
+[SCHIP](http://devernay.free.fr/hacks/chip8/schip.txt)
+
 
 ## TODO LIST
 

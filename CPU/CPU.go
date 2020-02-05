@@ -304,11 +304,73 @@ func Interpreter() {
 
 					PC += 2
 					fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n\n")
+
 				// SCHIP - 00FD
 				// Exit Emulator
 				} else if x == 0x000D {
 					fmt.Printf("\t\tSCHIP - Opcode 00FD executed. - Exit emulator.\n\n")
 					os.Exit(0)
+
+				// SCHIP - 00FC
+				// Scroll display 4 pixels left
+				} else if x == 0x000C {
+					//SCHIP = true
+					shift := 4
+					rowsize := int(SizeX)
+
+					// Run all the array
+					for i := 0 ; i < len(Graphics) ; i++ {
+
+						// Shift values until the last shift(4) bytes for each line
+						if i < rowsize - shift{
+							Graphics[i] = Graphics[i+shift]
+						}
+
+						if i == rowsize -1 {
+							//Change the last 4 bytes of each line to zero
+							for i := rowsize - shift ; i < rowsize ; i++ {
+								Graphics[i] = 0
+							}
+							// Update index to next line
+							rowsize += int(SizeX)
+						}
+					}
+
+					PC += 2
+					fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n\n")
+
+					// SCHIP - 00FB
+					// Scroll display 4 pixels right
+					} else if x == 0x000B {
+
+						shift := 4
+						rowsize := int(SizeX)
+						index := len(Graphics) - rowsize
+
+						// Run all the array
+						for i := len(Graphics) -1  ; i >= 0  ; i-- {
+
+							// Shift values until the last shift(4) bytes for each line
+							if i >=  index + shift {
+								Graphics[i] = Graphics[i - shift]
+							}
+
+							// If find the index, change the last shift(4) bytes to zero and update the index
+							// To process the next line
+							if i == index {
+								//Change the first 4 bytes of each line to zero
+								for j := index + shift - 1; j >= index  ; j-- {
+									Graphics[j] = 0
+								}
+								// Update index to next line
+								index -= rowsize
+							}
+
+						}
+
+						PC += 2
+						fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n\n")
+
 				} else {
 					fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n\n", x)
 					os.Exit(2)
