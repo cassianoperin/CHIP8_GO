@@ -69,7 +69,7 @@ var (
 	sound_file string
 
 	// DEBUG modes
-	Debug		bool = true
+	Debug		bool = false
 	Debug_v2	bool = false
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
@@ -291,8 +291,9 @@ func Interpreter() {
 					SizeY = 64
 
 					PC += 2
-					fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n\n")
-
+					if Debug {
+						fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n\n")
+					}
 					break
 				// SCHIP - 00FE
 				// Enable Low-Res Mode (64 x 32 resolution)
@@ -303,7 +304,9 @@ func Interpreter() {
 					SizeY = 32
 
 					PC += 2
-					fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n\n")
+					if Debug {
+						fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n\n")
+					}
 
 				// SCHIP - 00FD
 				// Exit Emulator
@@ -318,8 +321,18 @@ func Interpreter() {
 					shift := 4
 					rowsize := int(SizeX)
 
+					//fmt.Printf(Graphics[])
+
+					gfx_len := 0
+					if SCHIP {
+						gfx_len = (128 * 64)
+					} else {
+						gfx_len = (64 * 32)
+					}
+
+
 					// Run all the array
-					for i := 0 ; i < len(Graphics) ; i++ {
+					for i := 0 ; i < gfx_len ; i++ {
 
 						// Shift values until the last shift(4) bytes for each line
 						if i < rowsize - shift{
@@ -336,21 +349,34 @@ func Interpreter() {
 						}
 					}
 
+					DrawFlag	= true
 					PC += 2
-					fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n\n")
+					if Debug {
+						fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n\n")
+					}
 
 					// SCHIP - 00FB
 					// Scroll display 4 pixels right
 					} else if x == 0x000B {
 
-						shift := 4
+						shift := 4	// Number of bytes to be shifted
 						rowsize := int(SizeX)
-						index := len(Graphics) - rowsize
+						index := 0
+						gfx_len := 0
+
+						// Calculate the values because I'm using the same array
+						if SCHIP {
+							gfx_len = 128 * 64
+							index = (128 * 64) - rowsize
+						} else {
+							gfx_len = 64 * 32
+							index = (64 * 32) - rowsize
+						}
 
 						// Run all the array
-						for i := len(Graphics) -1  ; i >= 0  ; i-- {
+						for i := gfx_len -1  ; i >= 0  ; i-- {
 
-							// Shift values until the last shift(4) bytes for each line
+							// Shift values until the last shift bytes for each line
 							if i >=  index + shift {
 								Graphics[i] = Graphics[i - shift]
 							}
@@ -363,13 +389,15 @@ func Interpreter() {
 									Graphics[j] = 0
 								}
 								// Update index to next line
-								index -= rowsize
+								index -= int(SizeX)
 							}
-
 						}
 
+						DrawFlag	= true
 						PC += 2
-						fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n\n")
+						if Debug {
+							fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n\n")
+						}
 
 				} else {
 					fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n\n", x)
@@ -394,8 +422,11 @@ func Interpreter() {
 						Graphics[i] = 0
 					}
 
+					DrawFlag	= true
 					PC += 2
-					fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - XXXXX.\n\n")
+					if Debug {
+						fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - Scroll display %d lines down.\n\n", int(x))
+					}
 
 					break
 
@@ -776,7 +807,7 @@ func Interpreter() {
 					// Turn n in 16 (pixel size in SCHIP Mode)
 					n = 16
 					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode Dxy0 HI-RES MODE (%X DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n\n" , Opcode, I, x, V[x], y, V[y])
+						fmt.Printf("\t\tSCHIP - Opcode Dxy0 HI-RES MODE (%X) DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n\n" , Opcode, I, x, V[x], y, V[y])
 					}
 
 					// Print N Bytes from address I in V[x]V[y] position of the screen
@@ -911,7 +942,7 @@ func Interpreter() {
 			} else {
 			// Else, Draw in Chip-8 Low Resolution mode
 				if Debug {
-					fmt.Printf("\t\tOpcode Dxyn(%X DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n\n" , Opcode, I, V[x], V[y], n)
+					fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n\n" , Opcode, I, V[x], V[y], n)
 
 				}
 
