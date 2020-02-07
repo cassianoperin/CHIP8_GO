@@ -68,6 +68,9 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 
 [SCHIP](http://devernay.free.fr/hacks/chip8/schip.txt)
 
+[trapexit chip-8 documentation](https://github.com/trapexit/chip-8_documentation)
+
+
 
 ## TODO LIST
 

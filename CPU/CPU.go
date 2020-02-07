@@ -69,7 +69,7 @@ var (
 	sound_file string
 
 	// DEBUG modes
-	Debug		bool = false
+	Debug		bool = true
 	Debug_v2	bool = false
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
@@ -96,6 +96,7 @@ var (
 
 	// SCHIP
 	SCHIP = true
+	RPL	[8]byte // HP-48 RPL user flags
 
 )
 
@@ -1214,6 +1215,47 @@ func Interpreter() {
 				}
 				break
 
+			// SCHIP FX75
+			// Store V0 through VX to HP-48 RPL user flags (X <= 7).
+			case 0x0075:
+
+				// Temporary, to check
+				if x >= 8 {
+					fmt.Printf("FX75 X VALUE CONTROL!!!")
+					os.Exit(2)
+				}
+
+				for i := 0; i <= int(x); i++ {
+					RPL[i] = V[i]
+				}
+
+				PC += 2
+				if Debug {
+					fmt.Printf("\t\tSCHIP - Opcode Fx75 executed: Read RPL user flags from 0 to %d and store in V[0] through V[x(%d)]\n\n",x,x)
+				}
+
+				break
+
+			// SCHIP FX85
+			// Read V0 through VX to HP-48 RPL user flags (X <= 7).
+			case 0x0085:
+
+				// Temporary, to check
+				if x >= 8 {
+					fmt.Printf("FX85 X VALUE CONTROL!!!")
+					os.Exit(2)
+				}
+
+				for i := 0; i <= int(x); i++ {
+					V[i] = RPL[i]
+				}
+
+				PC += 2
+				if Debug {
+					fmt.Printf("\t\tSCHIP - Opcode Fx85 executed: Read registers V[0] through V[x(%d)] and store in RPL user flags\n\n",x)
+				}
+
+				break
 			default:
 				fmt.Printf("\t\tOpcode Family F000 - Not mapped opcode: 0x%X\n\n", Opcode)
 				os.Exit(2)
