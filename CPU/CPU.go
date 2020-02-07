@@ -1120,11 +1120,24 @@ func Interpreter() {
 			// Fx1E - ADD I, Vx
 			// Set I = I + Vx.
 			// The values of I and Vx are added, and the results are stored in I.
+			// ***
+			// Check FX1E (I = I + VX) buffer overflow. If buffer overflow, register
+			// VF must be set to 1, otherwise 0. As a result, register VF not set to 1.
+			// This undocumented feature of the Chip-8 and used by Spacefight 2019!
 			case 0x001E:
 				if Debug {
 					fmt.Printf("\t\tOpcode Fx1E executed: Add the value of V[x(%d)]:%d to I(%d)\n\n",x, V[x], I)
 				}
+
+				// *** Implement the undocumented feature used by Spacefight 2019
+				if ( I + uint16(V[x]) > 255) {
+					V[0xF] = 1
+				} else {
+					V[0xF] = 0
+				}
+
 				I += uint16(V[x])
+
 				PC += 2
 				break
 

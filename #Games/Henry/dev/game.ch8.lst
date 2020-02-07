@@ -1,0 +1,73 @@
+Super/Mega/Chip-48 Assembler V2.5 by Christian Egeberg 20/8/91.
+MegaChip extensions by: Martijn Wenting 08/07/2007
+
+TargetFile: game.ch8
+SourceFile: game.chp
+ListFile: game.ch8.lst
+
+Reading: game.chp
+
+Done reading
+
+-----   *INSTRUCTIONS*   -----
+
+HIGH 
+game.chp(5).. 200: 00FF
+JP  INITIALIZE 
+game.chp(7).. 202: 1226
+DA  'Copyright (c) 00Laboratories 2011' 
+game.chp(8).. 204: 436F70797269676874202863292030304C61626F7261746F726965732032303131
+LD V0, #00 
+game.chp(11).. 226: 6000
+LD I, char_a 
+game.chp(12).. 228: A230
+DRW V0, V0, 9 
+game.chp(13).. 22A: D009
+JP ENDGAME 
+game.chp(16).. 22C: 122C
+EXIT 
+game.chp(17).. 22E: 00FD
+    DB $1.1. 
+game.chp(24).. 230: 0A
+    DB $1.1. 
+game.chp(25).. 232: 0A
+ DB $1.1. 
+game.chp(26).. 234: 0A
+ DB $1.1. 
+game.chp(27).. 236: 0A
+    DB $1.1. 
+game.chp(28).. 238: 0A
+ DB $1.1. 
+game.chp(29).. 23A: 0A
+ DB $1.1. 
+game.chp(30).. 23C: 0A
+    DB $1.1. 
+game.chp(31).. 23E: 0A
+ DB $1.1.
+game.chp(32).. 240: 0A
+
+-----   *SYMBOLS*   -----
+
+230 CHAR_A game.chp(23)
+  game.chp(12)
+22C ENDGAME game.chp(15)
+  game.chp(16)
+226 INITIALIZE game.chp(10)
+  game.chp(7)
+
+-----   *CONDITIONS*   -----
+
+DEF ALIGNON
+DEF CHIP48
+UND CHIP8
+UND HPASC
+UND HPHEAD
+DEF MEGACHIP10
+DEF SCHIP10
+DEF SCHIP11
+UND USEDON
+UND USEDYES
+DEF XREFON
+DEF XREFYES
+
+Total number of warnings: 0
