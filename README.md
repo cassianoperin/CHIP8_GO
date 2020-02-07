@@ -74,11 +74,13 @@ CHIP-8 Emulator writen in GO with simple code to be easy to be studied and under
 
 ## TODO LIST
 
-1. Equalize game speed (some games runs too fast, other slow)
-2. Key pressing cause slowness
-3. Improve draw method
-4. Implement a correct 60 FPS control
-5. Rewrite graphics mode to just draw the differences from each frame
-6. Test on Windows and Linux
-7. Rewind mode make emulation slow due to arrays and graphics processing
-8. Initial support to SCHIP being implemented (RACE demo)
+1. CHIP8 - Equalize game speed (some games runs too fast, other slow)
+2. CHIP8 - Key pressing cause slowness
+3. CHIP8 - Improve draw method (Rewrite graphics mode to just draw the differences from each frame)
+4. CHIP8 - Implement a correct 60 FPS control
+5. SCHIP - Document README with now supported SCHIP games
+6. ALL - Test on Windows and Linux
+7. ALL - Rewind mode make emulation slow due to arrays and graphics processing
+8. SCHIP - Emulation really slow at this moment
+9. SCHIP - IMPLEMENT different handling opcodes in schip mode (and chip modern games)
+10. Map and identify these modern chip8 games that uses schip opcodes 
