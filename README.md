@@ -1,6 +1,6 @@
-# GOLANG CHIP-8 Emulator
+# CHIP-8 / SCHIP Emulator
 
-CHIP-8 Emulator writen in GO with simple code to be easy to be studied and understood.
+CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied and understood.
 
 <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/invaders.png">
 
