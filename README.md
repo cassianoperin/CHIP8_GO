@@ -70,6 +70,9 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 [trapexit chip-8 documentation](https://github.com/trapexit/chip-8_documentation)
 
+[CHIP‐8-Extensions-Reference](https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Extensions-Reference)
+
+
 
 
 ## TODO LIST
