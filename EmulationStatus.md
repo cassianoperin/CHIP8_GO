@@ -1,4 +1,6 @@
-# CHIP-8 GAMES
+# GAME EMULATION STATUS
+
+## CHIP-8
 | Name  | Status | Description |
 | :------------ |:----------------:| :-----|
 | 15 Puzzle [Roger Ivie] | OK | $1600 |
@@ -77,9 +79,10 @@
 | Worm V4 [RB-Revival Studios, 2007] | OK | |
 | X-Mirror | OK | |
 | ZeroPong [zeroZshadow, 2007] | OK | |
-|  | OK | |
-|  | OK | |
-| #### CHIP-8 HIRES #### | OK | |
+
+## Chip-8 HiRes
+| Name  | Status | Description |
+| :------------ |:----------------:| :-----|
 | Astro Dodge Hires [Revival Studios, 2008] | OK | |
 | Hires Maze [David Winter, 199x] | OK | |
 | Hires Particle Demo [zeroZshadow, 2008] | OK | |
@@ -88,8 +91,10 @@
 | Hires Test [Tom Swan, 1979] | OK | |
 | Hires Worm V4 [RB-Revival Studios, 2007] | OK | |
 | Trip8 Hires Demo (2008) [Revival Studios] | OK | |
-|  | OK | |
-| #### SUPERCHIP #### | OK | |
+
+## SuperChip / SCHIP
+| Name  | Status | Description |
+| :------------ |:----------------:| :-----|
 | Alien [Jonas Lindstedt, 1993] | OK | |
 | Ant - In Search of Coke [Erin S. Catto] | OK | |
 | Blinky [Hans Christian Egeberg, 1991] | OK | |
