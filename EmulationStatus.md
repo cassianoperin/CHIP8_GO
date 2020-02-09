@@ -79,41 +79,29 @@
 | X-Mirror | OK | |
 | ZeroPong [zeroZshadow, 2007] | OK | |
 
-## Chip-8 HiRes
-| Name  | Status | Description |
-| :------------ |:----------------:| :-----|
-| Astro Dodge Hires [Revival Studios, 2008] | OK | |
-| Hires Maze [David Winter, 199x] | OK | |
-| Hires Particle Demo [zeroZshadow, 2008] | OK | |
-| Hires Sierpinski [Sergey Naydenov, 2010] | OK | |
-| Hires Stars [Sergey Naydenov, 2010] | OK | |
-| Hires Test [Tom Swan, 1979] | OK | |
-| Hires Worm V4 [RB-Revival Studios, 2007] | OK | |
-| Trip8 Hires Demo (2008) [Revival Studios] | OK | |
-
 ## SuperChip / SCHIP
 | Name  | Status | Description |
 | :------------ |:----------------:| :-----|
-| Alien [Jonas Lindstedt, 1993] | OK | |
-| Ant - In Search of Coke [Erin S. Catto] | OK | |
-| Blinky [Hans Christian Egeberg, 1991] | OK | |
-| Car [Klaus von Sengbusch, 1994] | OK | |
-| Field! [Al Roland, 1993] (alt) | OK | |
-| Field! [Al Roland, 1993] | OK | |
-| H. Piper [Paul Raines, 1991] | OK | |
-| Joust [Erin S. Catto, 1993] | OK | |
-| Laser | OK | |
-| Loopz (with difficulty select) [Hap, 2006] | OK | |
-| Loopz [Andreas Daumann] | OK | |
-| Magic Square [David Winter, 1997] | OK | |
-| Matches | OK | |
-| Mines! - The minehunter [David Winter, 1997] | OK | |
-| Single Dragon (Bomber Section) [David Nurser, 1993] | OK | |
-| Single Dragon (Stages 1-2) [David Nurser, 1993] | OK | |
-| Sokoban [Hap, 2006] (alt) | OK | |
-| Sokoban [Hap, 2006] | OK | |
-| Spacefight 2091 [Carsten Soerensen, 1992] | OK | |
-| Super Astro Dodge [Revival Studios, 2008] | OK | |
-| SuperWorm V3 [RB, 1992] | OK | |
-| SuperWorm V4 [RB-Revival Studios, 2007] | OK | |
-| U-Boat [Michael Kemper, 1994] | OK | |
+| Alien [Jonas Lindstedt, 1993] |  | |
+| Ant - In Search of Coke [Erin S. Catto] |  | |
+| Blinky [Hans Christian Egeberg, 1991] |  | |
+| Car [Klaus von Sengbusch, 1994] |  | |
+| Field! [Al Roland, 1993] (alt) |  | |
+| Field! [Al Roland, 1993] |  | |
+| H. Piper [Paul Raines, 1991] |  | |
+| Joust [Erin S. Catto, 1993] |  | |
+| Laser |  | |
+| Loopz (with difficulty select) [Hap, 2006] |  | |
+| Loopz [Andreas Daumann] |  | |
+| Magic Square [David Winter, 1997] |  | |
+| Matches |  | |
+| Mines! - The minehunter [David Winter, 1997] |  | |
+| Single Dragon (Bomber Section) [David Nurser, 1993] |  | |
+| Single Dragon (Stages 1-2) [David Nurser, 1993] |  | |
+| Sokoban [Hap, 2006] (alt) |  | |
+| Sokoban [Hap, 2006] |  | |
+| Spacefight 2091 [Carsten Soerensen, 1992] |  | |
+| Super Astro Dodge [Revival Studios, 2008] |  | |
+| SuperWorm V3 [RB, 1992] |  | |
+| SuperWorm V4 [RB-Revival Studios, 2007] |  | |
+| U-Boat [Michael Kemper, 1994] |  | |
