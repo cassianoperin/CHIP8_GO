@@ -23,7 +23,7 @@
 | Connect 4 [David Winter] | OK | |
 | Craps [Camerlo Cortez, 1978] | OK | |
 | Deflection [John Fort] | OK | |
-| Figures | OK | |
+| Figures | NOT WORKING | Graphic glitches|
 | Filter | OK | |
 | Guess [David Winter] (alt) | OK | |
 | Guess [David Winter] | OK | |
@@ -48,12 +48,12 @@
 | Rocket Launch [Jonas Lindstedt] | OK | |
 | Rocket Launcher | OK | |
 | Rocket [Joseph Weisbecker, 1978] | OK | |
-| Rush Hour [Hap, 2006] (alt) | OK | |
-| Rush Hour [Hap, 2006] | OK | |
+| Rush Hour [Hap, 2006] (alt) | NOT WORKING | Test V[F] Flag and Opcode: B573 |
+| Rush Hour [Hap, 2006] | NOT WORKING | Test V[F] Flag and Opcode: B573 |
 | Russian Roulette [Carmelo Cortez, 1978] | OK | |
-| Sequence Shoot [Joyce Weisbecker] | OK | |
+| Sequence Shoot [Joyce Weisbecker] | NOT WORKING | |
 | Shooting Stars [Philip Baltzer, 1978] | OK | |
-| Slide [Joyce Weisbecker] | OK | |
+| Slide [Joyce Weisbecker] | NOT WORKING | |
 | Soccer | OK | |
 | Space Flight | OK | |
 | Space Intercept [Joseph Weisbecker, 1978] | OK | |
