@@ -5,10 +5,9 @@
 | :------------ |:----------------:| :-----|
 | 15 Puzzle [Roger Ivie] | OK | $1600 |
 | 15 Puzzle [Roger Ivie] (alt) | OK        | |
-| zebra stripes | NOT WORKING        |    Graphics glitches |
 | Addition Problems [Paul C. Moews] | OK | |
 | Airplane | OK | |
-| Animal Race [Brian Astle] | OK | |
+| Animal Race [Brian Astle] | NOT WORKING | Graphic glitches|
 | Astro Dodge [Revival Studios, 2008] | OK | |
 | Biorhythm [Jef Winsor] | OK | |
 | Blinky [Hans Christian Egeberg, 1991] | OK | |
@@ -118,4 +117,3 @@
 | SuperWorm V3 [RB, 1992] | OK | |
 | SuperWorm V4 [RB-Revival Studios, 2007] | OK | |
 | U-Boat [Michael Kemper, 1994] | OK | |
-|  | OK | |
