@@ -69,7 +69,7 @@ var (
 	sound_file string
 
 	// DEBUG modes
-	Debug		bool = true
+	Debug		bool = false
 	Debug_v2	bool = false
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
@@ -434,7 +434,7 @@ func Interpreter() {
 
 			default:
 				if Debug {
-					fmt.Printf("\t\tOpcode 0x0000 NOT IMPLEMENTED!!!!\n\n")
+					fmt.Printf("\t\tOpcode 0x0000 NOT IMPLEMENTED!!!!\n\n", Opcode)
 				}
 				os.Exit(2)
 			}
