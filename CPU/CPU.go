@@ -434,7 +434,7 @@ func Interpreter() {
 
 			default:
 				if Debug {
-					fmt.Printf("\t\tOpcode 0x0000 NOT IMPLEMENTED!!!!\n\n", Opcode)
+					fmt.Printf("\t\tOpcode 0x0000 NOT IMPLEMENTED!!!!\n\n")
 				}
 				os.Exit(2)
 			}
