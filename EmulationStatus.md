@@ -1,3 +1,9 @@
+# CHIP-8 GAMES
+| Name  | Status | Description |
+| :------------ |:----------------:| :-----|
+| 15 Puzzle [Roger Ivie] | OK | $1600 |
+| 15 Puzzle [Roger Ivie] (alt) | OK        | |
+| zebra stripes | NOT WORKING        |    Graphics glitches |
 | Addition Problems [Paul C. Moews] | OK | |
 | Airplane | OK | |
 | Animal Race [Brian Astle] | OK | |
