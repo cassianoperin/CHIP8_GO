@@ -88,3 +88,6 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 9. SCHIP - IMPLEMENT different handling opcodes in schip mode (and chip modern games)
 10. Map and identify these modern chip8 games that uses schip opcodes 
 11. Implement a Key Timer
+12. Migrate from pixel to SDL2
+13. Improve overall performance
+14. Fix games listes as NOT WORKING
