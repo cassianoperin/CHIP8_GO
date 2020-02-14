@@ -72,6 +72,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 [CHIP‐8-Extensions-Reference](https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Extensions-Reference)
 
+[Thomas Daley Wiki (Game Compatibility)](https://github.com/tomdaley92/kiwi-8/issues/9)
 
 
 
@@ -86,7 +87,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 7. ALL - Rewind mode make emulation slow due to arrays and graphics processing
 8. SCHIP - Emulation really slow at this moment
 9. SCHIP - IMPLEMENT different handling opcodes in schip mode (and chip modern games)
-10. Map and identify these modern chip8 games that uses schip opcodes 
+10. Map and identify these modern chip8 games that uses schip opcodes
 11. Implement a Key Timer
 12. Migrate from pixel to SDL2
 13. Improve overall performance
