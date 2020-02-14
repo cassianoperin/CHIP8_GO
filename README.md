@@ -74,6 +74,8 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 [Thomas Daley Wiki (Game Compatibility)](https://github.com/tomdaley92/kiwi-8/issues/9)
 
+[David Winter Documentation](http://vanbeveren.byethost13.com/stuff/CHIP8.pdf?i=2)
+
 
 
 ## TODO LIST
@@ -92,3 +94,4 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 12. Migrate from pixel to SDL2
 13. Improve overall performance
 14. Fix games listes as NOT WORKING
+15. Games that uses low res AND schip draw functions should shift 2 bytes (instead od 4) and scroll N/2 lines
