@@ -364,6 +364,7 @@ func Interpreter() {
 					// SCHIP - 00FB
 					// Scroll display 4 pixels right
 					} else if x == 0x000B {
+						
 						shift := 4	// Number of bytes to be shifted
 						rowsize := int(SizeX)
 						index := 0
