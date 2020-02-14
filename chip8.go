@@ -8,7 +8,6 @@ import (
 	"Chip8/Graphics"
 	"Chip8/Sound"
 	"github.com/faiface/pixel/pixelgl"
-
 )
 
 
@@ -41,7 +40,7 @@ func readROM(filename string) {
 	}
 	fmt.Println("Loading ROM:", filename)
 	romsize := fileInfo.Size()
-	fmt.Printf("Size in bytes: %d\n\n", romsize)
+	fmt.Printf("Size in bytes: %d\n", romsize)
 
 	// Open ROM file, insert all bytes into memory
 	file, err := os.Open(filename)
@@ -76,6 +75,28 @@ func checkArgs() {
 
 }
 
+
+func get_game_signature() {
+
+	// Used to identify games that needs legacy opcodes
+	// Read the first 10 game instructions in memory
+	signature_size := 10
+	for i:=0 ; i < signature_size ; i++ {
+		CPU.Game_signature += fmt.Sprintf("%X", CPU.Memory[int(CPU.PC)+i])
+	}
+	fmt.Printf("Game signature: %s\n\n", CPU.Game_signature)
+}
+
+func handle_legacy_opcodes() {
+	// Game "Animal Race [Brian Astle].ch8"
+	// MD5: 46497c35ce549cd7617462fe7c9fc284
+	if (CPU.Game_signature == "6DA6E268E69BA5B5") {
+		CPU.Legacy_Fx55_Fx65 = true
+		fmt.Printf("Legacy mode Fx55/Fx65 enabled.\n")
+	}
+}
+
+
 func testFile(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		fmt.Printf("File '%s' not found.\n\n", os.Args[1])
@@ -95,6 +116,10 @@ func main() {
 	CPU.Initialize()
 	Sound.Initialize("Sound/beep.mp3")
 	readROM(os.Args[1])
+
+	// Identify special games that needs legacy opcodes
+	get_game_signature()
+	handle_legacy_opcodes()
 
 	// Start Window System and draw Graphics
 	pixelgl.Run(Graphics.Run)

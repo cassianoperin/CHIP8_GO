@@ -98,6 +98,12 @@ var (
 	SCHIP = true
 	RPL	[8]byte // HP-48 RPL user flags
 
+	// LEGACY OPCODES
+	// Game Signature (identify games that needs legacy opcodes)
+	Game_signature	string = ""
+	// Enable original Chip-8 Fx55 and Fx65 (increases I)
+	Legacy_Fx55_Fx65	bool	= false
+
 )
 
 
@@ -1196,6 +1202,12 @@ func Interpreter() {
 					Memory[I+i] = V[i]
 				}
 				PC += 2
+
+				// If needed, run the original Chip-8 opcode (not used in recent games)
+				if Legacy_Fx55_Fx65 {
+					I = I + x + 1
+				}
+
 				if Debug {
 					fmt.Printf("\t\tOpcode Fx55 executed: Registers V[0] through V[x(%d)] in memory starting at location I(%d)\n\n",x, I)
 				}
@@ -1223,6 +1235,12 @@ func Interpreter() {
 				//fmt.Println(x)
 				// Increment Program Counter
 				PC += 2
+
+				// If needed, run the original Chip-8 opcode (not used in recent games)
+				if Legacy_Fx55_Fx65 {
+					I = I + x + 1
+				}
+
 				if Debug {
 					fmt.Printf("\t\tOpcode Fx65 executed: Read registers V[0] through V[x(%d)] from memory starting at location I(%X)\n\n",x, I)
 				}
