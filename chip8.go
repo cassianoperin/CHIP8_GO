@@ -84,7 +84,7 @@ func get_game_signature() {
 	for i:=0 ; i < signature_size ; i++ {
 		CPU.Game_signature += fmt.Sprintf("%X", CPU.Memory[int(CPU.PC)+i])
 	}
-	fmt.Printf("Game signature: %s\n\n", CPU.Game_signature)
+	fmt.Printf("Game signature: %s\n", CPU.Game_signature)
 }
 
 func handle_legacy_opcodes() {
