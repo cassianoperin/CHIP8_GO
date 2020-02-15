@@ -23,7 +23,7 @@
 | Connect 4 [David Winter] | OK | |
 | Craps [Camerlo Cortez, 1978] | OK | |
 | Deflection [John Fort] | OK | |
-| Figures | PENDING | Check in other emulators |
+| Figures | OK |  |
 | Filter | OK | |
 | Guess [David Winter] (alt) | OK | |
 | Guess [David Winter] | OK | |
