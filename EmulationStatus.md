@@ -23,7 +23,7 @@
 | Connect 4 [David Winter] | OK | |
 | Craps [Camerlo Cortez, 1978] | OK | |
 | Deflection [John Fort] | OK | |
-| Figures | NOT WORKING | Graphic glitches|
+| Figures | NOT WORKING | Text unreadable|
 | Filter | OK | |
 | Guess [David Winter] (alt) | OK | |
 | Guess [David Winter] | OK | |
