@@ -71,6 +71,7 @@ func checkArgs() {
 
 	if len(os.Args) != 2 {
 		fmt.Printf("Usage: %s ROM_FILE\n\n", os.Args[0] )
+		os.Exit(2)
 	}
 
 }
