@@ -11,17 +11,46 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 * Step Back (Rewind) CPU Cycles for Debug
 * Online Debug mode
 
-## Requirements
-* GO
-* go get github.com/faiface/pixel/pixelgl
-* go get github.com/faiface/beep
-* go get github.com/faiface/beep/mp3
-* go get github.com/faiface/beep/speaker
+## Compile Instructions
+
+1) MAC
+* Install GO:
+ `brew install go`
+
+* Install library requisites:
+`go get github.com/faiface/pixel/pixelgl`
+`go get github.com/faiface/beep`
+`go get github.com/faiface/beep/mp3`
+`go get github.com/faiface/beep/speaker`
+
+* Compile:
+`go build chip8.go`
+
+2) Windows
+* Install GO (32 bits):
+https://golang.org/dl/
+
+* Install GCC / mingw-w64
+https://mingw-w64.org/doku.php/download/mingw-builds
+
+* Add GO and Mingw-64 bin folder in PATH variable
+
+* Install library requisites:
+`go get github.com/faiface/pixel/pixelgl`
+`go get github.com/faiface/beep`
+`go get github.com/faiface/beep/mp3`
+`go get github.com/faiface/beep/speaker`
+
+* If you receive some glfw missing file error, download the zip file from https://github.com/go-gl/glfw and extract the archive into the folder $GOPATH\vendor\github.com\go-gl\glfw\v3.2
+
+* Compile:
+`go build chip8.go`
+
 
 ## Usage
 
 1. Run:
-	`$ go run chip8.go ROM_NAME`
+	`$chip8 ROM_NAME`
 
 2. Keys
 - Original COSMAC Keyboard Layout:
