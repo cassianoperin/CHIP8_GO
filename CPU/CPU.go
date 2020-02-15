@@ -103,6 +103,7 @@ var (
 	Game_signature	string = ""
 	// Enable original Chip-8 Fx55 and Fx65 (increases I)
 	Legacy_Fx55_Fx65	bool	= false
+	Legacy_8xy6_8xyE	bool	= false
 
 )
 
@@ -364,7 +365,7 @@ func Interpreter() {
 					// SCHIP - 00FB
 					// Scroll display 4 pixels right
 					} else if x == 0x000B {
-						
+
 						shift := 4	// Number of bytes to be shifted
 						rowsize := int(SizeX)
 						index := 0
@@ -661,7 +662,13 @@ func Interpreter() {
 			// If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2 (SHR).
 			case 0x0006:
 				V[0xF] = V[x] & 0x01
-				V[x] = V[x] >> 1
+
+				if Legacy_8xy6_8xyE {
+					V[x] = V[y] >> 1
+				} else {
+					V[x] = V[x] >> 1
+				}
+
 				PC += 2
 				if Debug {
 					fmt.Printf("\t\tOpcode 8xy6 executed: Set V[x(%d)]:%d SHIFT RIGHT 1\n\n", x, V[x])
@@ -692,7 +699,13 @@ func Interpreter() {
 			// If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
 			case 0x000E:
 				V[0xF] = V[x] >> 7 // Set V[F] to the Most Important Bit
-				V[x] = V[x] << 1
+
+				if Legacy_8xy6_8xyE {
+					V[x] = V[y] << 1
+				} else {
+					V[x] = V[x] << 1
+				}
+
 				PC += 2
 				if Debug {
 					fmt.Printf("\t\tOpcode 8xyE executed: Set V[x(%d)]:%d SHIFT LEFT 1\n\n", x, V[x])
@@ -1128,14 +1141,14 @@ func Interpreter() {
 			// ***
 			// Check FX1E (I = I + VX) buffer overflow. If buffer overflow, register
 			// VF must be set to 1, otherwise 0. As a result, register VF not set to 1.
-			// This undocumented feature of the Chip-8 and used by Spacefight 2019!
+			// This undocumented feature of the Chip-8 and used by Spacefight 2091!
 			case 0x001E:
 				if Debug {
 					fmt.Printf("\t\tOpcode Fx1E executed: Add the value of V[x(%d)]:%d to I(%d)\n\n",x, V[x], I)
 				}
 
-				// *** Implement the undocumented feature used by Spacefight 2019
-				if ( I + uint16(V[x]) > 255) {
+				// *** Implement the undocumented feature used by Spacefight 2091
+				if ( I + uint16(V[x]) < I ) {
 					V[0xF] = 1
 				} else {
 					V[0xF] = 0

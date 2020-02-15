@@ -95,6 +95,11 @@ func handle_legacy_opcodes() {
 		CPU.Legacy_Fx55_Fx65 = true
 		fmt.Printf("Legacy mode Fx55/Fx65 enabled.\n")
 	}
+	// Enable 2nd legacy mode
+	//if (CPU.Game_signature == "xxxxxxxxxxxxx") {
+	//	CPU.Legacy_8xy6_8xyE = true
+	//	fmt.Printf("Legacy mode 8xy6/8xyE enabled.\n")
+	//}
 }
 
 
