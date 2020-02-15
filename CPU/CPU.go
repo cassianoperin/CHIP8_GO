@@ -104,6 +104,8 @@ var (
 	// Enable original Chip-8 Fx55 and Fx65 (increases I)
 	Legacy_Fx55_Fx65	bool	= false
 	Legacy_8xy6_8xyE	bool	= false
+	// FX1E undocumented feature needed by Spacefight 2091!
+	FX1E_spacefight2091	bool	= false
 
 )
 
@@ -1148,10 +1150,12 @@ func Interpreter() {
 				}
 
 				// *** Implement the undocumented feature used by Spacefight 2091
-				if ( I + uint16(V[x]) < I ) {
-					V[0xF] = 1
-				} else {
-					V[0xF] = 0
+				if FX1E_spacefight2091 {
+					if ( I + uint16(V[x]) < I ) {
+						V[0xF] = 1
+					} else {
+						V[0xF] = 0
+					}
 				}
 
 				I += uint16(V[x])

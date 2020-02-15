@@ -89,6 +89,7 @@ func get_game_signature() {
 }
 
 func handle_legacy_opcodes() {
+	// Enable Fx55 and Fx65 legacy mode
 	// Game "Animal Race [Brian Astle].ch8"
 	// MD5: 46497c35ce549cd7617462fe7c9fc284
 	if (CPU.Game_signature == "6DA6E268E69BA5B5") {
@@ -100,6 +101,14 @@ func handle_legacy_opcodes() {
 	//	CPU.Legacy_8xy6_8xyE = true
 	//	fmt.Printf("Legacy mode 8xy6/8xyE enabled.\n")
 	//}
+
+	// Enable undocumented FX1E feature needed by Spacefight 2091!
+	// Game "Spacefight 2091 [Carsten Soerensen, 1992].ch8"
+	// MD5: f99d0e82a489b8aff1c7203d90f740c3
+	if (CPU.Game_signature == "12245370616365466967") {
+		CPU.FX1E_spacefight2091 = true
+		fmt.Printf("FX1E undocumented feature enabled.\n")
+	}
 }
 
 
