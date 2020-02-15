@@ -762,7 +762,6 @@ func Interpreter() {
 		// Jump to location nnn + V0.
 		// The program counter is set to nnn plus the value of V0.
 		case 0xB000:
-			os.Exit(2)
 
 			nnn := Opcode & 0x0FFF
 			PC = nnn + uint16(V[0])
