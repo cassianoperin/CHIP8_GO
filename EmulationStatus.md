@@ -23,7 +23,7 @@
 | Connect 4 [David Winter] | OK | |
 | Craps [Camerlo Cortez, 1978] | OK | |
 | Deflection [John Fort] | OK | |
-| Figures | PENDING | Check in other emulators |
+| Figures | OK |  |
 | Filter | OK | |
 | Guess [David Winter] (alt) | OK | |
 | Guess [David Winter] | OK | |
@@ -48,10 +48,10 @@
 | Rocket Launch [Jonas Lindstedt] | OK | |
 | Rocket Launcher | OK | |
 | Rocket [Joseph Weisbecker, 1978] | OK | |
-| Rush Hour [Hap, 2006] (alt) | NOT WORKING | Opcode: B573 |
-| Rush Hour [Hap, 2006] | PENDING | Check in other emulators  |
+| Rush Hour [Hap, 2006] (alt) | OK |  |
+| Rush Hour [Hap, 2006] | OK |  |
 | Russian Roulette [Carmelo Cortez, 1978] | OK | |
-| Sequence Shoot [Joyce Weisbecker] | NOT WORKING | |
+| Sequence Shoot [Joyce Weisbecker] | OK | |
 | Shooting Stars [Philip Baltzer, 1978] | OK | |
 | Slide [Joyce Weisbecker] | OK | |
 | Soccer | OK | |
