@@ -48,8 +48,8 @@
 | Rocket Launch [Jonas Lindstedt] | OK | |
 | Rocket Launcher | OK | |
 | Rocket [Joseph Weisbecker, 1978] | OK | |
-| Rush Hour [Hap, 2006] (alt) | NOT WORKING | Opcode: B573 |
-| Rush Hour [Hap, 2006] | PENDING | Check in other emulators  |
+| Rush Hour [Hap, 2006] (alt) | OK |  |
+| Rush Hour [Hap, 2006] | OK |  |
 | Russian Roulette [Carmelo Cortez, 1978] | OK | |
 | Sequence Shoot [Joyce Weisbecker] | NOT WORKING | |
 | Shooting Stars [Philip Baltzer, 1978] | OK | |
