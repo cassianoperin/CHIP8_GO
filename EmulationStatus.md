@@ -23,7 +23,7 @@
 | Connect 4 [David Winter] | OK | |
 | Craps [Camerlo Cortez, 1978] | OK | |
 | Deflection [John Fort] | OK | |
-| Figures | NOT WORKING | Text unreadable|
+| Figures | PENDING | Check in other emulators |
 | Filter | OK | |
 | Guess [David Winter] (alt) | OK | |
 | Guess [David Winter] | OK | |
@@ -48,12 +48,12 @@
 | Rocket Launch [Jonas Lindstedt] | OK | |
 | Rocket Launcher | OK | |
 | Rocket [Joseph Weisbecker, 1978] | OK | |
-| Rush Hour [Hap, 2006] (alt) | NOT WORKING | Test V[F] Flag and Opcode: B573 |
-| Rush Hour [Hap, 2006] | NOT WORKING | Test V[F] Flag and Opcode: B573 |
+| Rush Hour [Hap, 2006] (alt) | NOT WORKING | Opcode: B573 |
+| Rush Hour [Hap, 2006] | PENDING | Check in other emulators  |
 | Russian Roulette [Carmelo Cortez, 1978] | OK | |
 | Sequence Shoot [Joyce Weisbecker] | NOT WORKING | |
 | Shooting Stars [Philip Baltzer, 1978] | OK | |
-| Slide [Joyce Weisbecker] | NOT WORKING | |
+| Slide [Joyce Weisbecker] | OK | |
 | Soccer | OK | |
 | Space Flight | OK | |
 | Space Intercept [Joseph Weisbecker, 1978] | OK | |
@@ -100,7 +100,7 @@
 | Single Dragon (Stages 1-2) [David Nurser, 1993] | OK | |
 | Sokoban [Hap, 2006] (alt) | OK | |
 | Sokoban [Hap, 2006] | OK | |
-| Spacefight 2091 [Carsten Soerensen, 1992] | NOT WORKING | Graphic glitches |
+| Spacefight 2091 [Carsten Soerensen, 1992] | OK | |
 | Super Astro Dodge [Revival Studios, 2008] | OK | |
 | SuperWorm V3 [RB, 1992] | OK | |
 | SuperWorm V4 [RB-Revival Studios, 2007] | OK | |
