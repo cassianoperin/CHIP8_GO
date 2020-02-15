@@ -51,7 +51,7 @@
 | Rush Hour [Hap, 2006] (alt) | OK |  |
 | Rush Hour [Hap, 2006] | OK |  |
 | Russian Roulette [Carmelo Cortez, 1978] | OK | |
-| Sequence Shoot [Joyce Weisbecker] | NOT WORKING | |
+| Sequence Shoot [Joyce Weisbecker] | OK | |
 | Shooting Stars [Philip Baltzer, 1978] | OK | |
 | Slide [Joyce Weisbecker] | OK | |
 | Soccer | OK | |
