@@ -7,7 +7,7 @@
 | 15 Puzzle [Roger Ivie] (alt) | OK        | |
 | Addition Problems [Paul C. Moews] | OK | |
 | Airplane | OK | |
-| Animal Race [Brian Astle] | NOT WORKING | Graphic glitches|
+| Animal Race [Brian Astle] | OK | |
 | Astro Dodge [Revival Studios, 2008] | OK | |
 | Biorhythm [Jef Winsor] | OK | |
 | Blinky [Hans Christian Egeberg, 1991] | OK | |
