@@ -128,16 +128,12 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 ## TODO LIST
 
-1. CHIP8 - Equalize game speed (some games runs too fast, other slow)
-2. CHIP8 - Key pressing cause slowness
-3. CHIP8 - Improve draw method (Rewrite graphics mode to just draw the differences from each frame)
-4. CHIP8 - Implement a correct 60 FPS control
-5. ALL - Rewind mode make emulation slow due to arrays and graphics processing
-6. SCHIP - IMPLEMENT different handling opcodes in schip mode (and chip modern games)
-7. Map and identify these modern chip8 games that uses schip opcodes
-8. Implement a Key Timer
-9. Migrate from pixel to SDL2
-10. Improve overall performance
-11. Games that uses low res AND schip draw functions should shift 2 bytes (instead od 4) and scroll N/2 lines
-12. Sound glitches in Windows
-13. Sound is not bad, causing slowness
+1. CHIP8 - Key pressing cause slowness
+2. CHIP8 - Improve draw method (Rewrite graphics mode to just draw the differences from each frame)
+3. CHIP8 - Implement a correct 60 FPS control
+4. ALL - Rewind mode make emulation slow due to arrays and graphics processing
+5. Implement a Key Timer
+6. Migrate from pixel to SDL2
+7. Games that uses low res AND schip draw functions should shift 2 bytes (instead od 4) and scroll N/2 lines
+8. Sound glitches in Windows
+9. Sound is not bad, causing slowness
