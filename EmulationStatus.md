@@ -90,7 +90,7 @@
 | Field! [Al Roland, 1993] | OK | |
 | H. Piper [Paul Raines, 1991] | OK | |
 | Joust [Erin S. Catto, 1993] | OK | |
-| Laser | NOT WORKING | No ball? |
+| Laser | OK | |
 | Loopz (with difficulty select) [Hap, 2006] | OK | |
 | Loopz [Andreas Daumann] | OK | |
 | Magic Square [David Winter, 1997] | OK | |
