@@ -94,13 +94,13 @@
 | Loopz (with difficulty select) [Hap, 2006] | OK | |
 | Loopz [Andreas Daumann] | OK | |
 | Magic Square [David Winter, 1997] | OK | |
-| Matches | NOT WORKING | Graphic glitches |
+| Matches | PARTIAL | Graphic glitches |
 | Mines! - The minehunter [David Winter, 1997] | OK | |
 | Single Dragon (Bomber Section) [David Nurser, 1993] | OK | |
 | Single Dragon (Stages 1-2) [David Nurser, 1993] | OK | |
 | Sokoban [Hap, 2006] (alt) | OK | |
 | Sokoban [Hap, 2006] | OK | |
-| Spacefight 2091 [Carsten Soerensen, 1992] | OK | |
+| Spacefight 2091 [Carsten Soerensen, 1992] | PARTIAL | Does not start level 2 |
 | Super Astro Dodge [Revival Studios, 2008] | OK | |
 | SuperWorm V3 [RB, 1992] | OK | |
 | SuperWorm V4 [RB-Revival Studios, 2007] | OK | |
