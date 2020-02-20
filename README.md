@@ -136,4 +136,3 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 6. Migrate from pixel to SDL2
 7. Games that uses low res AND schip draw functions should shift 2 bytes (instead od 4) and scroll N/2 lines
 8. Sound glitches in Windows
-9. Sound is not bad, causing slowness
