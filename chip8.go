@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"Chip8/CPU"
 	"Chip8/Graphics"
 	"Chip8/Sound"
@@ -76,6 +77,15 @@ func checkArgs() {
 
 }
 
+func MaxParallelism() int {
+	maxProcs := runtime.GOMAXPROCS(0)
+	numCPU := runtime.NumCPU()
+	if maxProcs < numCPU {
+		return maxProcs
+	}
+	return numCPU
+}
+
 
 func get_game_signature() {
 
@@ -124,8 +134,16 @@ func testFile(filename string) {
 // Main function
 func main() {
 
+	// Validate the Arguments
 	checkArgs()
+
+	// Check if file exist
 	testFile(os.Args[1])
+
+	// Check the number of CPUS to create threads
+	// fmt.Println("MaxParallelism: ", MaxParallelism())
+	runtime.GOMAXPROCS( MaxParallelism() )
+
 
 	// Set initial variables values
 	CPU.Initialize()
