@@ -69,7 +69,7 @@ var (
 	sound_file string
 
 	// DEBUG modes
-	Debug		bool = false
+	Debug		bool = true
 	Debug_v2	bool = false
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
@@ -1150,14 +1150,20 @@ func Interpreter() {
 
 				// *** Implement the undocumented feature used by Spacefight 2091
 				if FX1E_spacefight2091 {
-					if ( I + uint16(V[x]) < I ) {
+					if ( I + uint16(V[x]) > 0xFFF ) { //4095 - Buffer overflow
 						V[0xF] = 1
+						I = ( I + uint16(V[x]) ) - 4095
+						fmt.Printf("\n\n\t\tPAUSE mode ENABLED\n\n\t\tProposital Pause to map when FX1E fix is used in Spacefight 2091!\n")
+						fmt.Printf("\n\t\tPress \"P\" to continue.\n\n")
+						Pause = true	// Put here to try to identify usage in the game
 					} else {
 						V[0xF] = 0
+						I += uint16(V[x])
 					}
+				// Normal opcode pattern
+				} else {
+					I += uint16(V[x])
 				}
-
-				I += uint16(V[x])
 
 				PC += 2
 				break

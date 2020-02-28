@@ -119,6 +119,14 @@ func handle_legacy_opcodes() {
 		CPU.FX1E_spacefight2091 = true
 		fmt.Printf("FX1E undocumented feature enabled.\n")
 	}
+	// Enable undocumented FX1E feature needed by Spacefight 2091!
+	// SCHIP Test Program "sctest_12.ch8"
+	// MD5: 3ff053faaf994c051ed9b432f412b551
+	if (CPU.Game_signature == "12122054726F6E697820") {
+		CPU.FX1E_spacefight2091 = true
+		fmt.Printf("FX1E undocumented feature enabled.\n")
+	}
+
 }
 
 
