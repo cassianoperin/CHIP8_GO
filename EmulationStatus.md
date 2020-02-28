@@ -13,7 +13,7 @@
 | Blinky [Hans Christian Egeberg, 1991] | OK | |
 | Blinky [Hans Christian Egeberg] (alt) | OK | |
 | Blitz [David Winter] | OK | |
-| Bowling [Gooitzen van der Wal] | OK | |
+| Bowling [Gooitzen van der Wal] | NOT OK | Graphical glitches |
 | Breakout (Brix hack) [David Winter, 1997] | OK | |
 | Breakout [Carmelo Cortez, 1979] | OK | |
 | Brick (Brix hack, 1990) | OK | |
@@ -100,7 +100,7 @@
 | Single Dragon (Stages 1-2) [David Nurser, 1993] | OK | |
 | Sokoban [Hap, 2006] (alt) | OK | |
 | Sokoban [Hap, 2006] | OK | |
-| Spacefight 2091 [Carsten Soerensen, 1992] | PARTIAL | Does not start level 2 |
+| Spacefight 2091 [Carsten Soerensen, 1992] | NOT OK | Some shots cross the screen |
 | Super Astro Dodge [Revival Studios, 2008] | OK | |
 | SuperWorm V3 [RB, 1992] | OK | |
 | SuperWorm V4 [RB-Revival Studios, 2007] | OK | |
