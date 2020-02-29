@@ -62,30 +62,32 @@ func drawGraphics(graphics [128 * 64]byte) {
 	width := screenWidth/CPU.SizeX
 	height := screenHeight/CPU.SizeY
 
-	for gfxindex := 0 ; gfxindex < len(CPU.Graphics) ; gfxindex++ {
-		if (CPU.Graphics[gfxindex] ==1 ){
-			if (gfxindex < int(CPU.SizeX)) {
-				x := gfxindex
-				y := CPU.SizeY - 1
-				imd.Push(pixel.V ( width*float64(x), height*float64(y) ) )
-				imd.Push(pixel.V ( width*float64(x)+width, height*float64(y)+height ) )
-				imd.Rectangle(0)
-			} else {
-				y := CPU.SizeY - 1
-				x := 0
-				nro := gfxindex
-				for nro >= int(CPU.SizeX) {
-					nro -= int(CPU.SizeX)
-					y = y - 1
-					x = nro
-				}
-				imd.Push(pixel.V ( width*float64(x), height*float64(y) ) )
-				imd.Push(pixel.V ( width*float64(x)+width, height*float64(y)+height ) )
-				imd.Rectangle(0)
-			}
-		}
-	}
+	// If in SCHIP mode, read the entire vector. If in Chip8 mode, read from 0 to 2047 only
+	for gfxindex := 0 ; gfxindex < int(CPU.SizeX) * int(CPU.SizeY) ; gfxindex++ {
+		if (CPU.Graphics[gfxindex] == 1 ) {
 
+			// Column
+			x := gfxindex % int(CPU.SizeX)
+			// Line
+			y := gfxindex / int(CPU.SizeX)
+			// Needs to be inverted to IMD Draw functoion before
+			y = (int(CPU.SizeY) - 1) - y
+
+			if CPU.Debug_v3 {
+				fmt.Printf("\n\t Graphics.drawGraphics Debug: Column(X): %d, Line(Y): %d", x, y)
+			}
+
+			//draw_rectangle(10, 10, 50, 50, red)
+			imd.Push(pixel.V ( width * float64(x)         , height * float64(y)          ) )
+			imd.Push(pixel.V ( width * float64(x) + width , height * float64(y) + height ) )
+			imd.Rectangle(0)
+		}
+
+	}
+	if CPU.Debug_v3 {
+		fmt.Printf("\n")
+	}
+	
 	imd.Draw(win)
 	win.Update()
 }

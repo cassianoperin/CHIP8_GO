@@ -65,15 +65,18 @@ var (
 		20:	pixelgl.Key0,			// Reset
 	}
 
-	// Beep sound file
-	sound_file string
-
-	// DEBUG modes
-	Debug		bool = true
-	Debug_v2	bool = false
-
 	// Pause (Used to Forward and Rewind CPU Cycles)
 	Pause		bool =  false
+
+	// DEBUG modes
+	Debug		bool = false
+	// Debug Rewind Mode
+	Debug_v2	bool = false
+	// Debug Draw Graphics function
+	Debug_v3	bool = false
+
+	// Beep sound file
+	sound_file string
 
 	// Rewind Variables
 	Rewind_index	uint16 = 0
@@ -95,7 +98,7 @@ var (
 
 
 	// SCHIP
-	SCHIP = true
+	SCHIP = false
 	RPL	[8]byte // HP-48 RPL user flags
 
 	// LEGACY OPCODES
@@ -218,7 +221,7 @@ func Interpreter() {
 			fmt.Printf("\tI_Track: %d\n", I_track)
 			fmt.Printf("\tDT_Track: %d\n", DT_track)
 			fmt.Printf("\tST_Track: %d\n", ST_track)
-			fmt.Printf("\tDF_Track: %d\n", DF_track)
+			fmt.Printf("\tDF_Track: %t\n", DF_track)
 			fmt.Printf("\tV_Track: %d\n", V_track)
 			fmt.Printf("\tStack_Track: %d\n", Stack_track)
 			//fmt.Printf("\tGFX_Track: %d\n", GFX_track)
