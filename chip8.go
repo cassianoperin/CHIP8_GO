@@ -100,7 +100,7 @@ func get_game_signature() {
 
 func handle_legacy_opcodes() {
 	// Enable Fx55 and Fx65 legacy mode
-	// Game "Animal Race [Brian Astle].ch8"
+	// Game "Animal Race [Brian Astle]"
 	// MD5: 46497c35ce549cd7617462fe7c9fc284
 	if (CPU.Game_signature == "6DA6E268E69BA5B5") {
 		CPU.Legacy_Fx55_Fx65 = true
@@ -120,13 +120,20 @@ func handle_legacy_opcodes() {
 		fmt.Printf("FX1E undocumented feature enabled.\n")
 	}
 	// Enable undocumented FX1E feature needed by Spacefight 2091!
-	// SCHIP Test Program "sctest_12.ch8"
+	// SCHIP Test Program "sctest_12"
 	// MD5: 3ff053faaf994c051ed9b432f412b551
 	if (CPU.Game_signature == "12122054726F6E697820") {
 		CPU.FX1E_spacefight2091 = true
 		fmt.Printf("FX1E undocumented feature enabled.\n")
 	}
 
+	// Enable Pixel Wrap Fix for Bowling game
+	// Game: "Bowling [Gooitzen van der Wal]"
+	// MD5: b56e0e6e3930011049fcf6cf3384e964
+	if (CPU.Game_signature == "6314640255E60525B4") {
+		CPU.DXYN_bowling_wrap = true
+		fmt.Printf("DXYN Pixel ###PARTIAL### wrap fix enabled.\n")
+	}
 }
 
 

@@ -109,6 +109,8 @@ var (
 	Legacy_8xy6_8xyE	bool	= false
 	// FX1E undocumented feature needed by Spacefight 2091!
 	FX1E_spacefight2091	bool	= false
+	// DXYN sprite wrap in Bowling game
+	DXYN_bowling_wrap	bool	= false
 
 )
 
@@ -802,6 +804,14 @@ func Interpreter() {
 
 			// Clean the colision flag
 			V[0xF] = 0
+
+			// Fix for Bowling game where the pins wrap the screen
+			if DXYN_bowling_wrap {
+				if V[x] + uint8(n) > (uint8(SizeX) +1)  {
+					PC += 2
+					break
+				}
+			}
 
 			// Translate the x and Y to the Graphics Vector
 			gpx_position = (uint16(V[x]) + (uint16(SizeX) * uint16(V[y])))
