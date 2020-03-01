@@ -324,7 +324,7 @@ func Interpreter() {
 				// SCHIP - 00FD
 				// Exit Emulator
 				} else if x == 0x000D {
-					fmt.Printf("\t\tSCHIP - Opcode 00FD executed. - Exit emulator.\n\n")
+					fmt.Printf("SCHIP - Opcode 00FD executed. - Exit emulator.\n\n")
 					os.Exit(0)
 
 				// SCHIP - 00FC
@@ -802,18 +802,6 @@ func Interpreter() {
 
 			// Clean the colision flag
 			V[0xF] = 0
-
-			// Check if y is out of range
-			if (V[y] >= uint8(SizeY)) {
-				V[y] = V[y] % uint8(SizeY)
-				// fmt.Printf("\t\tV[y] >= 32 or 64, modulus applied")
-			}
-
-			// Check if x is out of range
-			if (V[x] >= uint8(SizeX)) {
-				V[x] = V[x] % uint8(SizeX)
-				// fmt.Printf("\t\tV[x] >= 64 or 128, modulus applied")
-			}
 
 			// Translate the x and Y to the Graphics Vector
 			gpx_position = (uint16(V[x]) + (uint16(SizeX) * uint16(V[y])))
