@@ -13,7 +13,7 @@
 | Blinky [Hans Christian Egeberg, 1991] | OK | |
 | Blinky [Hans Christian Egeberg] (alt) | OK | |
 | Blitz [David Winter] | OK | |
-| Bowling [Gooitzen van der Wal] | NOT OK | Graphical glitches! |
+| Bowling [Gooitzen van der Wal] | OK | |
 | Breakout (Brix hack) [David Winter, 1997] | OK | |
 | Breakout [Carmelo Cortez, 1979] | OK | |
 | Brick (Brix hack, 1990) | OK | |
