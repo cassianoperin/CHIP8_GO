@@ -1008,7 +1008,6 @@ func Interpreter() {
 
 			}
 
-
 			PC += 2
 			DrawFlag = true
 
