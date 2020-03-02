@@ -37,7 +37,7 @@ var (
 
 	// True if the screen must be drawn
 	DrawFlag	bool
-	Key		[32]byte
+	Key		[21]byte
 	Cycle		uint16
 
 	// Control the Keys Pressed
@@ -75,9 +75,6 @@ var (
 	// Debug Draw Graphics function
 	Debug_v3	bool = false
 
-	// Beep sound file
-	sound_file string
-
 	// Rewind Variables
 	Rewind_index	uint16 = 0
 	PC_track	[Rewind_buffer]uint16
@@ -89,13 +86,11 @@ var (
 	V_track		[Rewind_buffer][16]byte
 	Stack_track	[Rewind_buffer][16]uint16
 	GFX_track	[Rewind_buffer][128 * 64]byte
-	//GFX_track	[Rewind_buffer][64 * 32]byte
-	// Key_track
-
+	// Beep sound file
+	sound_file string
 	// GRAPHICS
 	SizeX		float64 = 64
 	SizeY		float64 = 32
-
 
 	// SCHIP
 	SCHIP = false
@@ -111,7 +106,6 @@ var (
 	FX1E_spacefight2091	bool	= false
 	// DXYN sprite wrap in Bowling game
 	DXYN_bowling_wrap	bool	= false
-
 )
 
 
@@ -144,7 +138,7 @@ func Initialize() {
 		Memory[i+80] = Fontset.SCHIPFontset[i]
 	}
 
-	Key		= [32]byte{}
+	Key		= [21]byte{}
 	Cycle		= 0
 
 }
@@ -304,6 +298,9 @@ func Interpreter() {
 
 					SizeX = 128
 					SizeY = 64
+
+					// Clean the screen when changing graphic mode
+					Graphics	= [128 * 64]byte{}
 
 					PC += 2
 					if Debug {

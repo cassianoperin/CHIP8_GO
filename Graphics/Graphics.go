@@ -87,7 +87,7 @@ func drawGraphics(graphics [128 * 64]byte) {
 	if CPU.Debug_v3 {
 		fmt.Printf("\n")
 	}
-	
+
 	imd.Draw(win)
 	win.Update()
 }
@@ -134,7 +134,7 @@ func Keyboard() {
 							CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
 							CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index +1]
 							CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index +1]
-							CPU.Key		= [32]byte{}
+							CPU.Key		= [21]byte{}
 							CPU.Cycle	= CPU.Cycle - 2
 							CPU.Rewind_index= CPU.Rewind_index +1
 							// Call a CPU Cycle
@@ -164,7 +164,7 @@ func Keyboard() {
 						CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index -1]
 						CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index -1]
 						CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index -1]
-						CPU.Key		= [32]byte{}
+						CPU.Key		= [21]byte{}
 						CPU.Rewind_index	-= 1
 						CPU.Interpreter()
 						time.Sleep(keyboard_tmout * time.Millisecond)
@@ -204,13 +204,16 @@ func Keyboard() {
 				CPU.DrawFlag		= false
 				CPU.DelayTimer		= 0
 				CPU.SoundTimer		= 0
-				CPU.Key			= [32]byte{}
+				CPU.Key			= [21]byte{}
 				CPU.Cycle		= 0
 				CPU.Rewind_index	= 0
 				// If paused, remove the pause to continue CPU Loop
 				if CPU.Pause {
 					CPU.Pause = false
 				}
+				CPU.SCHIP = false
+				CPU.SizeX	= 64
+				CPU.SizeY	= 32
 			}
 
 		}else {
