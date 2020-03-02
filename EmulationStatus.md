@@ -94,7 +94,7 @@
 | Loopz (with difficulty select) [Hap, 2006] | OK | |
 | Loopz [Andreas Daumann] | OK | |
 | Magic Square [David Winter, 1997] | OK | |
-| Matches | PARTIAL | Graphic glitches |
+| Matches | OK | |
 | Mines! - The minehunter [David Winter, 1997] | OK | |
 | Single Dragon (Bomber Section) [David Nurser, 1993] | OK | |
 | Single Dragon (Stages 1-2) [David Nurser, 1993] | OK | |
