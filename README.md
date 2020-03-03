@@ -16,6 +16,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 * Step Forward CPU Cycles for Debug
 * Step Back (Rewind) CPU Cycles for Debug
 * Online Debug mode
+* Increase and Decrease CPU Clock Speed
 
 ## Compile Instructions
 
@@ -97,6 +98,10 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 	`[`: Step back (rewind) one CPU cycle **in Pause Mode** (for debug and study purposes)
 
 	`]`: Step forward one CPU cycle in **Pause Mode** (for debug and study purposes)
+	
+	`7`: Decrease CPU Clock Speed
+
+	`8`: Increase CPU Clock Speed
 
 	`9`: Enable / Disable Debug Mode
 
