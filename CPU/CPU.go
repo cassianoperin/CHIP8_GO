@@ -1368,8 +1368,8 @@ func Interpreter() {
 			if SoundTimer > 0 {
 				if SoundTimer == 1 {
 					go Sound.PlaySound(Sound.Beep_buffer)
-			   }
-			   SoundTimer--
+				}
+				SoundTimer--
 			}
 
 		default:

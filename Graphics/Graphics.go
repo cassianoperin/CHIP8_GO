@@ -183,11 +183,11 @@ func Keyboard() {
 				if CPU.Debug {
 					CPU.Debug = false
 					fmt.Printf("\t\tDEBUG mode Disabled\n")
-					time.Sleep(100 * keyboard_tmout * time.Millisecond)
+					time.Sleep(50 * keyboard_tmout * time.Millisecond)
 				} else {
 					CPU.Debug = true
 					fmt.Printf("\t\tDEBUG mode Enabled\n")
-					time.Sleep(100 * keyboard_tmout * time.Millisecond)
+					time.Sleep(50 * keyboard_tmout * time.Millisecond)
 				}
 			}
 
@@ -220,7 +220,7 @@ func Keyboard() {
 
 			// Decrease CPU Clock Speed
 			if index == 21 {
-				decrease_rate := 10
+				decrease_rate := 50
 				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
 				if (CPU.CPU_Clock_Speed - time.Duration(decrease_rate)) > 0 {
 					CPU.CPU_Clock_Speed -= time.Duration(decrease_rate)
@@ -238,24 +238,27 @@ func Keyboard() {
 
 			// Increase CPU Clock Speed
 			if index == 22 {
-				increase_rate := 20
+				increase_rate := 50
 				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
-				if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= 1000 {
+				if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= 10000 {
 					// If Clock Speed = 1, return to multiples of 'increase_rate'
 					if CPU.CPU_Clock_Speed == 1 {
 						CPU.CPU_Clock_Speed += time.Duration(increase_rate - 1)
+						CPU.CPU_Clock.Stop()
 						CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
 						fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
 						time.Sleep(2 * keyboard_tmout * time.Millisecond)
 					} else {
 						CPU.CPU_Clock_Speed += time.Duration(increase_rate)
+						CPU.CPU_Clock.Stop()
 						CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
 						fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
 						time.Sleep(2 * keyboard_tmout * time.Millisecond)
 					}
 				} else {
-					// Reached Maximum CPU Clock Speed (1000 Hz)
-					CPU.CPU_Clock_Speed = 1000
+					// Reached Maximum CPU Clock Speed (10000 Hz)
+					CPU.CPU_Clock_Speed = 10000
+					CPU.CPU_Clock.Stop()
 					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
 					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
 					time.Sleep(2 * keyboard_tmout * time.Millisecond)
