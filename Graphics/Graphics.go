@@ -134,7 +134,7 @@ func Keyboard() {
 							CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
 							CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index +1]
 							CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index +1]
-							CPU.Key		= [21]byte{}
+							CPU.Key		= [CPU.KeyArraySize]byte{}
 							CPU.Cycle	= CPU.Cycle - 2
 							CPU.Rewind_index= CPU.Rewind_index +1
 							// Call a CPU Cycle
@@ -164,7 +164,7 @@ func Keyboard() {
 						CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index -1]
 						CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index -1]
 						CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index -1]
-						CPU.Key		= [21]byte{}
+						CPU.Key		= [CPU.KeyArraySize]byte{}
 						CPU.Rewind_index	-= 1
 						CPU.Interpreter()
 						time.Sleep(keyboard_tmout * time.Millisecond)
@@ -204,7 +204,7 @@ func Keyboard() {
 				CPU.DrawFlag		= false
 				CPU.DelayTimer		= 0
 				CPU.SoundTimer		= 0
-				CPU.Key			= [21]byte{}
+				CPU.Key			= [CPU.KeyArraySize]byte{}
 				CPU.Cycle		= 0
 				CPU.Rewind_index	= 0
 				// If paused, remove the pause to continue CPU Loop
@@ -214,6 +214,52 @@ func Keyboard() {
 				CPU.SCHIP = false
 				CPU.SizeX	= 64
 				CPU.SizeY	= 32
+				CPU.CPU_Clock_Speed = 800
+			}
+
+
+			// Decrease CPU Clock Speed
+			if index == 21 {
+				decrease_rate := 10
+				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
+				if (CPU.CPU_Clock_Speed - time.Duration(decrease_rate)) > 0 {
+					CPU.CPU_Clock_Speed -= time.Duration(decrease_rate)
+					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
+					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+					time.Sleep(2 * keyboard_tmout * time.Millisecond)
+				} else {
+					// Reached minimum CPU Clock Speed (1 Hz)
+					CPU.CPU_Clock_Speed = 1
+					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
+					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+					time.Sleep(2 * keyboard_tmout * time.Millisecond)
+				}
+			}
+
+			// Increase CPU Clock Speed
+			if index == 22 {
+				increase_rate := 20
+				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
+				if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= 1000 {
+					// If Clock Speed = 1, return to multiples of 'increase_rate'
+					if CPU.CPU_Clock_Speed == 1 {
+						CPU.CPU_Clock_Speed += time.Duration(increase_rate - 1)
+						CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
+						fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+						time.Sleep(2 * keyboard_tmout * time.Millisecond)
+					} else {
+						CPU.CPU_Clock_Speed += time.Duration(increase_rate)
+						CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
+						fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+						time.Sleep(2 * keyboard_tmout * time.Millisecond)
+					}
+				} else {
+					// Reached Maximum CPU Clock Speed (1000 Hz)
+					CPU.CPU_Clock_Speed = 1000
+					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
+					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+					time.Sleep(2 * keyboard_tmout * time.Millisecond)
+				}
 			}
 
 		}else {
@@ -266,14 +312,14 @@ func Run() {
 				// Draw Graphics on Console
 				//drawGraphicsConsole()
 
-				// Update Input Events
-				win.UpdateInput()
+
 
 			default:
 				// No timer to handle
 		}
 
-
+		// Update Input Events
+		win.UpdateInput()
 
 
 

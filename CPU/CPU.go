@@ -18,6 +18,8 @@ const (
 	// Exponentially increased by size of graphics array!
 	// NEED TO FIND A WAY TO PROCESSES IT QUICKLY
 	Rewind_buffer	uint16 = 2
+	// Control the number of Keys mapped in Key Array
+	KeyArraySize	byte	= 23
 )
 
 // Components
@@ -33,12 +35,13 @@ var (
 	SoundTimer	byte
 	TimerClock	*time.Ticker
 	CPU_Clock	*time.Ticker
+	CPU_Clock_Speed	time.Duration
 	//Graphics	[64 * 32]byte
 	Graphics	[128 * 64]byte
 
 	// True if the screen must be drawn
 	DrawFlag	bool
-	Key		[21]byte
+	Key		[KeyArraySize]byte
 	Cycle		uint16
 
 	// Control the Keys Pressed
@@ -64,13 +67,15 @@ var (
 		18:	pixelgl.KeyRightBracket,	// CPU Cycle Forward
 		19:	pixelgl.Key9,			// Debug
 		20:	pixelgl.Key0,			// Reset
+		21:	pixelgl.Key7,			// Decrease CPU Clock
+		22:	pixelgl.Key8,			// Increase CPU Clock
 	}
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
 	Pause		bool =  false
 
 	// DEBUG modes
-	Debug		bool = true
+	Debug		bool = false
 	// Debug Rewind Mode
 	Debug_v2	bool = false
 	// Debug Draw Graphics function
@@ -132,7 +137,11 @@ func Initialize() {
 
 	// Create a ticker at 60Hz
 	TimerClock	= time.NewTicker(time.Second / 60)
-	CPU_Clock	= time.NewTicker(time.Second / 800)
+
+	// CPU Clock Speed
+	CPU_Clock_Speed	= 800
+	CPU_Clock	= time.NewTicker(time.Second / CPU_Clock_Speed)
+
 
 	// Load CHIP-8 8x5 fontset
 	// Memory address 0-79
@@ -145,7 +154,7 @@ func Initialize() {
 		Memory[i+80] = Fontset.SCHIPFontset[i]
 	}
 
-	Key		= [21]byte{}
+	Key		= [KeyArraySize]byte{}
 	Cycle		= 0
 
 }
