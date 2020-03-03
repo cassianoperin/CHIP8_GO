@@ -302,7 +302,7 @@ func Interpreter() {
 					SizeX = 128
 					SizeY = 64
 
-					if ResizeQuirks {
+					if Resize_00FE_00FF {
 						// Clear the screen when changing graphic mode
 						Graphics	= [128 * 64]byte{}
 					}
@@ -320,7 +320,7 @@ func Interpreter() {
 					SizeX = 64
 					SizeY = 32
 
-					if ResizeQuirks {
+					if Resize_00FE_00FF {
 						// Clear the screen when changing graphic mode
 						Graphics	= [128 * 64]byte{}
 					}
