@@ -6,7 +6,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/invaders.png">
 
-**Superchip (SCHIP) Space Fight 2091:**
+**Superchip (SCHIP) Spacefight 2091!:**
 
 <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/spacefight2091.png">
 
@@ -16,6 +16,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 * Step Forward CPU Cycles for Debug
 * Step Back (Rewind) CPU Cycles for Debug
 * Online Debug mode
+* Increase and Decrease CPU Clock Speed
 
 ## Compile Instructions
 
@@ -97,6 +98,10 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 	`[`: Step back (rewind) one CPU cycle **in Pause Mode** (for debug and study purposes)
 
 	`]`: Step forward one CPU cycle in **Pause Mode** (for debug and study purposes)
+	
+	`7`: Decrease CPU Clock Speed
+
+	`8`: Increase CPU Clock Speed
 
 	`9`: Enable / Disable Debug Mode
 
