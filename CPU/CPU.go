@@ -17,7 +17,7 @@ const (
 	// FIX IT, INCREASING IT TO 15000, emulation became slow due to vector and matrix processing
 	// Exponentially increased by size of graphics array!
 	// NEED TO FIND A WAY TO PROCESSES IT QUICKLY
-	Rewind_buffer	uint16 = 100
+	Rewind_buffer	uint16 = 2
 )
 
 // Components
@@ -32,7 +32,7 @@ var (
 	DelayTimer	byte
 	SoundTimer	byte
 	TimerClock	*time.Ticker
-	FPS		*time.Ticker
+	CPU_Clock	*time.Ticker
 	//Graphics	[64 * 32]byte
 	Graphics	[128 * 64]byte
 
@@ -70,11 +70,13 @@ var (
 	Pause		bool =  false
 
 	// DEBUG modes
-	Debug		bool = false
+	Debug		bool = true
 	// Debug Rewind Mode
 	Debug_v2	bool = false
 	// Debug Draw Graphics function
 	Debug_v3	bool = false
+	// Time tracks
+	Debug_time	bool = true
 
 	// Rewind Variables
 	Rewind_index	uint16 = 0
@@ -130,7 +132,7 @@ func Initialize() {
 
 	// Create a ticker at 60Hz
 	TimerClock	= time.NewTicker(time.Second / 60)
-	FPS	= time.NewTicker(time.Second / 1000)
+	CPU_Clock	= time.NewTicker(time.Second / 800)
 
 	// Load CHIP-8 8x5 fontset
 	// Memory address 0-79
@@ -156,6 +158,9 @@ func Show() {
 // CPU Interpreter
 func Interpreter() {
 
+	// Start timer to measure procedures inside Interpreter
+	start := time.Now()
+
 	// Reset Flag every cycle
 	DrawFlag = false
 
@@ -166,7 +171,6 @@ func Interpreter() {
 	if Debug {
 		Show()
 	}
-
 
 	// REWIND MODE - ARRAYS
 	// Just update when not inside a reward loop
@@ -231,6 +235,17 @@ func Interpreter() {
 
 	}
 
+	// Debug time execution - Rewind Mode
+	if Debug {
+		elapsed := time.Since(start)
+		fmt.Printf("\t\tTime track - Rewind Mode took: %s\n", elapsed)
+	}
+
+	// Debug time execution - Opcode Handling
+	if Debug {
+		start = time.Now()
+	}
+
 
 	// Map Opcode Family
 	switch Opcode & 0xF000 {
@@ -255,7 +270,7 @@ func Interpreter() {
 					Graphics = [128 * 64]byte{}
 					PC += 2
 					if Debug {
-						fmt.Println("\t\tOpcode 00E0 executed. - Clear the display\n\n")
+						fmt.Println("\t\tOpcode 00E0 executed. - Clear the display\n")
 					}
 					break
 				}
@@ -269,7 +284,7 @@ func Interpreter() {
 					PC = Stack[SP] + 2
 					SP --
 					if Debug {
-						fmt.Printf("\t\tOpcode 00EE executed. - Return from a subroutine (PC=%d)\n\n", PC)
+						fmt.Printf("\t\tOpcode 00EE executed. - Return from a subroutine (PC=%d)\n", PC)
 					}
 					break
 				}
@@ -291,7 +306,7 @@ func Interpreter() {
 
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 02DB executed (NON DOCUMENTED). - Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.\n\n", I, I , I+1, I+2)
+					fmt.Printf("\t\tOpcode 02DB executed (NON DOCUMENTED). - Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.\n", I, I , I+1, I+2)
 				}
 				break
 
@@ -311,7 +326,7 @@ func Interpreter() {
 
 					PC += 2
 					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n\n")
+						fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n")
 					}
 					break
 				// SCHIP - 00FE
@@ -329,13 +344,13 @@ func Interpreter() {
 
 					PC += 2
 					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n\n")
+						fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n")
 					}
 
 				// SCHIP - 00FD
 				// Exit Emulator
 				} else if x == 0x000D {
-					fmt.Printf("SCHIP - Opcode 00FD executed. - Exit emulator.\n\n")
+					fmt.Printf("SCHIP - Opcode 00FD executed. - Exit emulator.\n")
 					os.Exit(0)
 
 				// SCHIP - 00FC
@@ -375,7 +390,7 @@ func Interpreter() {
 					DrawFlag	= true
 					PC += 2
 					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n\n")
+						fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n")
 					}
 
 					// SCHIP - 00FB
@@ -419,11 +434,11 @@ func Interpreter() {
 						DrawFlag	= true
 						PC += 2
 						if Debug {
-							fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n\n")
+							fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
 						}
 
 				} else {
-					fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n\n", x)
+					fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n", x)
 					os.Exit(2)
 
 				}
@@ -448,7 +463,7 @@ func Interpreter() {
 					DrawFlag	= true
 					PC += 2
 					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - Scroll display %d lines down.\n\n", int(x))
+						fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - Scroll display %d lines down.\n", int(x))
 					}
 
 					break
@@ -456,7 +471,7 @@ func Interpreter() {
 
 			default:
 				if Debug {
-					fmt.Printf("\t\tOpcode 0x0000 NOT IMPLEMENTED!!!!\n\n", Opcode)
+					fmt.Printf("\t\tOpcode 0x0000 NOT IMPLEMENTED!!!!\n", Opcode)
 				}
 				os.Exit(2)
 			}
@@ -469,7 +484,7 @@ func Interpreter() {
 		case 0x1000:
 			PC = Opcode & 0x0FFF
 			if Debug {
-				fmt.Printf("\t\tOpcode 1nnn executed: Jump to location 0x%d\n\n", Opcode & 0x0FFF)
+				fmt.Printf("\t\tOpcode 1nnn executed: Jump to location 0x%d\n", Opcode & 0x0FFF)
 			}
 			break
 
@@ -483,7 +498,7 @@ func Interpreter() {
 			Stack[SP] = PC
 			PC = Opcode & 0x0FFF
 			if Debug {
-				fmt.Printf("\t\tOpcode 2nnn executed: Call Subroutine at 0x%d\n\n", PC)
+				fmt.Printf("\t\tOpcode 2nnn executed: Call Subroutine at 0x%d\n", PC)
 			}
 			break
 
@@ -497,12 +512,12 @@ func Interpreter() {
 			if V[x] == kk {
 				PC += 4
 				if Debug {
-					fmt.Printf("\t\tOpcode 3xk executed: V[x(%d)]:(%d) = kk(%d), skip one instruction.\n\n", x, V[x], kk)
+					fmt.Printf("\t\tOpcode 3xk executed: V[x(%d)]:(%d) = kk(%d), skip one instruction.\n", x, V[x], kk)
 				}
 			} else {
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 3xk executed: V[x(%d)]:(%d) != kk(%d), do NOT skip one instruction.\n\n", x, V[x], kk)
+					fmt.Printf("\t\tOpcode 3xk executed: V[x(%d)]:(%d) != kk(%d), do NOT skip one instruction.\n", x, V[x], kk)
 				}
 			}
 			break
@@ -518,11 +533,11 @@ func Interpreter() {
 			if V[x] != kk {
 				PC += 4
 				if Debug {
-					fmt.Printf("\t\tOpcode 4xkk executed: V[x(%d)]:%d != kk(%d), skip one instruction\n\n", x, V[x], kk)
+					fmt.Printf("\t\tOpcode 4xkk executed: V[x(%d)]:%d != kk(%d), skip one instruction\n", x, V[x], kk)
 				}
 			} else {
 				if Debug {
-					fmt.Printf("\t\tOpcode 4xkk executed: V[x(%d)]:%d = kk(%d), NOT skip one instruction\n\n", x, V[x], kk)
+					fmt.Printf("\t\tOpcode 4xkk executed: V[x(%d)]:%d = kk(%d), NOT skip one instruction\n", x, V[x], kk)
 				}
 				PC += 2
 			}
@@ -540,12 +555,12 @@ func Interpreter() {
 			if (V[x] == V[y]){
 				PC += 4
 				if Debug {
-					fmt.Printf("\t\tOpcode 5xy0 executed: V[x(%d)]:%d EQUAL V[y(%d)]:%d, SKIP one instruction\n\n", x, V[x], y, V[y])
+					fmt.Printf("\t\tOpcode 5xy0 executed: V[x(%d)]:%d EQUAL V[y(%d)]:%d, SKIP one instruction\n", x, V[x], y, V[y])
 				}
 			} else {
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 5xy0 executed: V[x(%d)]:%d NOT EQUAL V[y(%d)]:%d, DO NOT SKIP one instruction\n\n", x, V[x], y, V[y])
+					fmt.Printf("\t\tOpcode 5xy0 executed: V[x(%d)]:%d NOT EQUAL V[y(%d)]:%d, DO NOT SKIP one instruction\n", x, V[x], y, V[y])
 				}
 			}
 			break
@@ -562,7 +577,7 @@ func Interpreter() {
 			V[x] = kk
 			PC += 2
 			if Debug {
-				fmt.Printf("\t\tOpcode 6xkk executed: Set V[x(%d)] = %d\n\n", x, kk)
+				fmt.Printf("\t\tOpcode 6xkk executed: Set V[x(%d)] = %d\n", x, kk)
 			}
 			break
 
@@ -579,7 +594,7 @@ func Interpreter() {
 
 			PC += 2
 			if Debug {
-				fmt.Printf("\t\tOpcode 7xkk executed: Add the value kk(%d) to V[x(%d)]\n\n", kk, x)
+				fmt.Printf("\t\tOpcode 7xkk executed: Add the value kk(%d) to V[x(%d)]\n", kk, x)
 			}
 			break
 
@@ -598,7 +613,7 @@ func Interpreter() {
 				V[x] = V[y]
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xy0 executed: Set V[x(%d)] = V[y(%d)]:%d\n\n", x, y, V[y])
+					fmt.Printf("\t\tOpcode 8xy0 executed: Set V[x(%d)] = V[y(%d)]:%d\n", x, y, V[y])
 				}
 				break
 
@@ -609,7 +624,7 @@ func Interpreter() {
 				V[x] |= V[y]
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xy1 executed: Set V[x(%d)]:%d OR V[y(%d)]:%d\n\n", x, V[x], y, V[y])
+					fmt.Printf("\t\tOpcode 8xy1 executed: Set V[x(%d)]:%d OR V[y(%d)]:%d\n", x, V[x], y, V[y])
 				}
 				break
 
@@ -620,7 +635,7 @@ func Interpreter() {
 				V[x] &= V[y]
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xy2 executed: Set V[x(%d)] = V[x(%d)] AND V[y(%d)]\n\n", x, x, y)
+					fmt.Printf("\t\tOpcode 8xy2 executed: Set V[x(%d)] = V[x(%d)] AND V[y(%d)]\n", x, x, y)
 				}
 				break
 
@@ -630,7 +645,7 @@ func Interpreter() {
 			// and if the bits are not both the same, then the corresponding bit in the result is set to 1. Otherwise, it is 0.
 			case 0x0003:
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xy3 executed:  V[x(%d)]:%d XOR V[y(%d)]:%d \n\n", x, V[x], y, V[y])
+					fmt.Printf("\t\tOpcode 8xy3 executed:  V[x(%d)]:%d XOR V[y(%d)]:%d \n", x, V[x], y, V[y])
 				}
 				V[x] ^= V[y]
 				PC += 2
@@ -647,7 +662,7 @@ func Interpreter() {
 					V[0xF] = 0
 				}
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xy4 executed: Set V[x(%d)] = V[x(%d)] + V[y(%d)]\n\n", x, x, y)
+					fmt.Printf("\t\tOpcode 8xy4 executed: Set V[x(%d)] = V[x(%d)] + V[y(%d)]\n", x, x, y)
 				}
 				// Old implementation, sum values, READ THE DOCS IN CASE OF PROBLEMS
 				V[x] += V[y]
@@ -669,7 +684,7 @@ func Interpreter() {
 				V[x] -= V[y]
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xy5 executed: Set V[x(%d)] = V[x(%d)]:%d - V[y(%d)]:%d\n\n", x, x, V[x], y, V[y])
+					fmt.Printf("\t\tOpcode 8xy5 executed: Set V[x(%d)] = V[x(%d)]:%d - V[y(%d)]:%d\n", x, x, V[x], y, V[y])
 				}
 				break
 
@@ -687,7 +702,7 @@ func Interpreter() {
 
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xy6 executed: Set V[x(%d)]:%d SHIFT RIGHT 1\n\n", x, V[x])
+					fmt.Printf("\t\tOpcode 8xy6 executed: Set V[x(%d)]:%d SHIFT RIGHT 1\n", x, V[x])
 				}
 				// Original Chip8 INCREMENT I in this instruction ###
 				break
@@ -703,7 +718,7 @@ func Interpreter() {
 					V[0xF] = 1
 				}
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xy7 executed: Set V[x(%d)]:%d = V[y(%d)]:%d - V[x(%d)]:%d\t\t = %d \n\n", x, V[x], y, V[y], x, V[x], V[y] - V[x])
+					fmt.Printf("\t\tOpcode 8xy7 executed: Set V[x(%d)]:%d = V[y(%d)]:%d - V[x(%d)]:%d\t\t = %d \n", x, V[x], y, V[y], x, V[x], V[y] - V[x])
 				}
 				V[x] = V[y] - V[x]
 
@@ -724,13 +739,13 @@ func Interpreter() {
 
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 8xyE executed: Set V[x(%d)]:%d SHIFT LEFT 1\n\n", x, V[x])
+					fmt.Printf("\t\tOpcode 8xyE executed: Set V[x(%d)]:%d SHIFT LEFT 1\n", x, V[x])
 				}
 				break
 
 			default:
 				if Debug {
-					fmt.Printf("\t\tOpcode 0x8000 NOT IMPLEMENTED!!!!\n\n")
+					fmt.Printf("\t\tOpcode 0x8000 NOT IMPLEMENTED!!!!\n")
 				}
 				os.Exit(2)
 			}
@@ -747,12 +762,12 @@ func Interpreter() {
 			if ( V[x] != V[y] ) {
 				PC += 4
 				if Debug {
-					fmt.Printf("\t\tOpcode 9xy0 executed: V[x(%d)]:%d != V[y(%d)]:%d, SKIP one instruction\n\n", x, V[x], y, V[y])
+					fmt.Printf("\t\tOpcode 9xy0 executed: V[x(%d)]:%d != V[y(%d)]:%d, SKIP one instruction\n", x, V[x], y, V[y])
 				}
 			} else {
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode 9xy0 executed: V[x(%d)]:%d = V[y(%d)]:%d, DO NOT SKIP one instruction\n\n", x, V[x], y, V[y])
+					fmt.Printf("\t\tOpcode 9xy0 executed: V[x(%d)]:%d = V[y(%d)]:%d, DO NOT SKIP one instruction\n", x, V[x], y, V[y])
 				}
 			}
 			break
@@ -766,7 +781,7 @@ func Interpreter() {
 			I = Opcode & 0x0FFF
 			PC += 2
 			if Debug {
-				fmt.Printf("\t\tOpcode Annn executed: Set I = %d\n\n", I)
+				fmt.Printf("\t\tOpcode Annn executed: Set I = %d\n", I)
 			}
 			break
 
@@ -780,7 +795,7 @@ func Interpreter() {
 			nnn := Opcode & 0x0FFF
 			PC = nnn + uint16(V[0])
 			if Debug {
-				print ("\t\tOpcode Bnnn executed: Jump to location nnn(%d) + V[0(%d)]\n\n", nnn, V[0])
+				print ("\t\tOpcode Bnnn executed: Jump to location nnn(%d) + V[0(%d)]\n", nnn, V[0])
 			}
 			break
 
@@ -795,7 +810,7 @@ func Interpreter() {
 			V[x] = byte(rand.Float32()*255) & byte(kk)
 			PC += 2
 			if Debug {
-				fmt.Printf("\t\tOpcode Cxkk executed: V[x(%d)] = %d (random byte AND kk(%d)) = %d\n\n", x, V[x], kk, V[x])
+				fmt.Printf("\t\tOpcode Cxkk executed: V[x(%d)] = %d (random byte AND kk(%d)) = %d\n", x, V[x], kk, V[x])
 			}
 			break
 
@@ -837,7 +852,7 @@ func Interpreter() {
 					// Turn n in 16 (pixel size in SCHIP Mode)
 					n = 16
 					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode Dxy0 HI-RES MODE (%X) DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n\n" , Opcode, I, x, V[x], y, V[y])
+						fmt.Printf("\t\tSCHIP - Opcode Dxy0 HI-RES MODE (%X) DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
 					}
 
 					// Print N Bytes from address I in V[x]V[y] position of the screen
@@ -903,7 +918,7 @@ func Interpreter() {
 				} else {
 					n = 16
 					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode Dxy0 LOW-RES MODE (%X DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n\n" , Opcode, I, x, V[x], y, V[y])
+						fmt.Printf("\t\tSCHIP - Opcode Dxy0 LOW-RES MODE (%X DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
 					}
 
 					// Print N Bytes from address I in V[x]V[y] position of the screen
@@ -972,7 +987,7 @@ func Interpreter() {
 			} else {
 			// Else, Draw in Chip-8 Low Resolution mode
 				if Debug {
-					fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n\n" , Opcode, I, V[x], V[y], n)
+					fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
 
 				}
 
@@ -1046,12 +1061,12 @@ func Interpreter() {
 				if Key[V[x]] == 1 {
 					PC += 4
 					if Debug {
-						fmt.Printf("\t\tOpcode Ex9E executed: Key[%d] pressed, skip one instruction\n\n",V[x])
+						fmt.Printf("\t\tOpcode Ex9E executed: Key[%d] pressed, skip one instruction\n",V[x])
 					}
 				} else {
 					PC += 2
 					if Debug {
-						fmt.Printf("\t\tOpcode Ex9E executed: Key[%d] NOT pressed, continue\n\n",V[x])
+						fmt.Printf("\t\tOpcode Ex9E executed: Key[%d] NOT pressed, continue\n",V[x])
 					}
 				}
 				break
@@ -1063,13 +1078,13 @@ func Interpreter() {
 				if Key[V[x]] == 0 {
 					PC += 4
 					if Debug {
-						fmt.Printf("\t\tOpcode ExA1 executed: Key[%d] NOT pressed, skip one instruction\n\n",V[x])
+						fmt.Printf("\t\tOpcode ExA1 executed: Key[%d] NOT pressed, skip one instruction\n",V[x])
 					}
 				} else {
 					Key[V[x]] = 0
 					PC += 2
 					if Debug {
-						fmt.Printf("\t\tOpcode ExA1 executed: Key[%d] pressed, continue\n\n",V[x])
+						fmt.Printf("\t\tOpcode ExA1 executed: Key[%d] pressed, continue\n",V[x])
 					}
 				}
 				break
@@ -1093,7 +1108,7 @@ func Interpreter() {
 				V[x] = DelayTimer
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode Fx07 executed: Set V[x(%d)] with value of DelayTimer(%d)\n\n", x, DelayTimer)
+					fmt.Printf("\t\tOpcode Fx07 executed: Set V[x(%d)] with value of DelayTimer(%d)\n", x, DelayTimer)
 				}
 				break
 
@@ -1108,7 +1123,7 @@ func Interpreter() {
 						pressed = 1
 						PC +=2
 						if Debug {
-							fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key (Key[%d]) press -  (PRESSED)\n\n", i)
+							fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key (Key[%d]) press -  (PRESSED)\n", i)
 						}
 						// Stop after find the first key pressed
 						break
@@ -1117,7 +1132,7 @@ func Interpreter() {
 				}
 				if pressed == 0 {
 					if Debug {
-						fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key press - (NOT PRESSED)\n\n")
+						fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key press - (NOT PRESSED)\n")
 					}
 				}
 				break
@@ -1130,7 +1145,7 @@ func Interpreter() {
 				DelayTimer = V[x]
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode Fx15 executed: Set delay timer = V[x(%d):%d]\n\n", x, V[x])
+					fmt.Printf("\t\tOpcode Fx15 executed: Set delay timer = V[x(%d):%d]\n", x, V[x])
 				}
 				break
 
@@ -1141,7 +1156,7 @@ func Interpreter() {
 				SoundTimer = V[x]
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode Fx18 executed: Set sound timer = V[x(%d)]:%d\n\n",x, V[x])
+					fmt.Printf("\t\tOpcode Fx18 executed: Set sound timer = V[x(%d)]:%d\n",x, V[x])
 				}
 				break
 
@@ -1154,7 +1169,7 @@ func Interpreter() {
 			// This undocumented feature of the Chip-8 and used by Spacefight 2091!
 			case 0x001E:
 				if Debug {
-					fmt.Printf("\t\tOpcode Fx1E executed: Add the value of V[x(%d)]:%d to I(%d)\n\n",x, V[x], I)
+					fmt.Printf("\t\tOpcode Fx1E executed: Add the value of V[x(%d)]:%d to I(%d)\n",x, V[x], I)
 				}
 
 				// *** Implement the undocumented feature used by Spacefight 2091
@@ -1162,8 +1177,8 @@ func Interpreter() {
 					if ( I + uint16(V[x]) > 0xFFF ) { //4095 - Buffer overflow
 						V[0xF] = 1
 						I = ( I + uint16(V[x]) ) - 4095
-						fmt.Printf("\n\n\t\tPAUSE mode ENABLED\n\n\t\tProposital Pause to map when FX1E fix is used in Spacefight 2091!\n")
-						fmt.Printf("\n\t\tPress \"P\" to continue.\n\n")
+						fmt.Printf("\n\t\tPAUSE mode ENABLED\n\t\tProposital Pause to map when FX1E fix is used in Spacefight 2091!\n")
+						fmt.Printf("\n\t\tPress \"P\" to continue.\n")
 						Pause = true	// Put here to try to identify usage in the game
 					} else {
 						V[0xF] = 0
@@ -1185,7 +1200,7 @@ func Interpreter() {
 				I = uint16(V[x]) * 5
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode Fx29 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*5)\n\n", I, x, V[x])
+					fmt.Printf("\t\tOpcode Fx29 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*5)\n", I, x, V[x])
 				}
 				break
 
@@ -1197,7 +1212,7 @@ func Interpreter() {
 				I = 80 + uint16(V[x]) * 10
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tSCHIP Opcode Fx30 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*10)\n\n", I, x, V[x])
+					fmt.Printf("\t\tSCHIP Opcode Fx30 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*10)\n", I, x, V[x])
 				}
 				break
 			// Fx33 - LD B, Vx
@@ -1217,7 +1232,7 @@ func Interpreter() {
 				Memory[I+2] = (V[x] % 100) % 10
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tOpcode Fx33 executed: Store BCD representation of V[x(%d)]:%d in memory locations I(%X):%d, I+1(%X):%d, and I+2(%X):%d\n\n", x, V[x], I, Memory[I], I+1, Memory[I+1], I+2, Memory[I+2])
+					fmt.Printf("\t\tOpcode Fx33 executed: Store BCD representation of V[x(%d)]:%d in memory locations I(%X):%d, I+1(%X):%d, and I+2(%X):%d\n", x, V[x], I, Memory[I], I+1, Memory[I+1], I+2, Memory[I+2])
 				}
 				break
 
@@ -1239,7 +1254,7 @@ func Interpreter() {
 				}
 
 				if Debug {
-					fmt.Printf("\t\tOpcode Fx55 executed: Registers V[0] through V[x(%d)] in memory starting at location I(%d)\n\n",x, I)
+					fmt.Printf("\t\tOpcode Fx55 executed: Registers V[0] through V[x(%d)] in memory starting at location I(%d)\n",x, I)
 				}
 				break
 
@@ -1272,7 +1287,7 @@ func Interpreter() {
 				}
 
 				if Debug {
-					fmt.Printf("\t\tOpcode Fx65 executed: Read registers V[0] through V[x(%d)] from memory starting at location I(%X)\n\n",x, I)
+					fmt.Printf("\t\tOpcode Fx65 executed: Read registers V[0] through V[x(%d)] from memory starting at location I(%X)\n",x, I)
 				}
 				break
 
@@ -1292,7 +1307,7 @@ func Interpreter() {
 
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tSCHIP - Opcode Fx75 executed: Read RPL user flags from 0 to %d and store in V[0] through V[x(%d)]\n\n",x,x)
+					fmt.Printf("\t\tSCHIP - Opcode Fx75 executed: Read RPL user flags from 0 to %d and store in V[0] through V[x(%d)]\n",x,x)
 				}
 
 				break
@@ -1313,12 +1328,12 @@ func Interpreter() {
 
 				PC += 2
 				if Debug {
-					fmt.Printf("\t\tSCHIP - Opcode Fx85 executed: Read registers V[0] through V[x(%d)] and store in RPL user flags\n\n",x)
+					fmt.Printf("\t\tSCHIP - Opcode Fx85 executed: Read registers V[0] through V[x(%d)] and store in RPL user flags\n",x)
 				}
 
 				break
 			default:
-				fmt.Printf("\t\tOpcode Family F000 - Not mapped opcode: 0x%X\n\n", Opcode)
+				fmt.Printf("\t\tOpcode Family F000 - Not mapped opcode: 0x%X\n", Opcode)
 				os.Exit(2)
 
 			}
@@ -1327,31 +1342,37 @@ func Interpreter() {
 
 
 		default:
-			fmt.Printf("\t\tOPCODE FAMILY %X NOT IMPLEMENTED!\n\n", Opcode & 0xF000)
+			fmt.Printf("\t\tOPCODE FAMILY %X NOT IMPLEMENTED!\n", Opcode & 0xF000)
 			os.Exit(3)
 	}
 
 
-	// Every Cycle Control the clock!!!
+	// Independent of CPU CLOCK, Sound and Delay Timers runs at 60Hz
 	select {
-	case <-TimerClock.C:
-	// When ticker run (60 times in a second, check de DelayTimer)
-		if DelayTimer > 0 {
-			//fmt.Printf("##############################DelayTimer= %d", DelayTimer)
-			DelayTimer--
-		}
+		case <-TimerClock.C:
+			// When ticker run (60 times in a second, check de DelayTimer)
+			if DelayTimer > 0 {
+				DelayTimer--
+			}
 
-		if SoundTimer > 0 {
-			if SoundTimer == 1 {
-				go Sound.PlaySound(Sound.Beep_buffer)
-		   }
-		   SoundTimer--
-		}
+			// When ticker run (60 times in a second, check de SoundTimer)
+			if SoundTimer > 0 {
+				if SoundTimer == 1 {
+					go Sound.PlaySound(Sound.Beep_buffer)
+			   }
+			   SoundTimer--
+			}
 
 		default:
 			// No timer to handle
-		}
+	}
 
 	Cycle ++
+
+	// Debug time execution - Opcode Handling
+	if Debug {
+		elapsed := time.Since(start)
+		fmt.Printf("\t\tTime track - Opcode took: %s\n\n", elapsed)
+	}
 
 }

@@ -240,30 +240,45 @@ func Run() {
 		// Handle Keys pressed
 		Keyboard()
 
-		//// Calls CPU Interpreter ////
-		// Ignore if in Pause mode
-		if !CPU.Pause {
-			// If in Rewind Mode, every new cycle forward decrease the Rewind Index
-			if CPU.Rewind_index > 0 {
-				CPU.Interpreter()
-				CPU.Rewind_index -= 1
-				fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
-			} else {
-				// Continue run normally
-				CPU.Interpreter()
-			}
+		// Every Cycle Control the clock!!!
+		select {
+			case <- CPU.CPU_Clock.C:
+
+				//// Calls CPU Interpreter ////
+				// Ignore if in Pause mode
+				if !CPU.Pause {
+					// If in Rewind Mode, every new cycle forward decrease the Rewind Index
+					if CPU.Rewind_index > 0 {
+						CPU.Interpreter()
+						CPU.Rewind_index -= 1
+						fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
+					} else {
+						// Continue run normally
+						CPU.Interpreter()
+					}
+				}
+
+				// If necessary, DRAW
+				if CPU.DrawFlag {
+					drawGraphics(CPU.Graphics)
+				}
+
+				// Draw Graphics on Console
+				//drawGraphicsConsole()
+
+				// Update Input Events
+				win.UpdateInput()
+
+			default:
+				// No timer to handle
 		}
 
-		// If necessary, DRAW
-		if CPU.DrawFlag {
-			drawGraphics(CPU.Graphics)
-		}
 
-		// Draw Graphics on Console
-		//drawGraphicsConsole()
 
-		// Update Input Events
-		win.UpdateInput()
+
+
+
+
 	}
 
 }
