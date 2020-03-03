@@ -99,6 +99,9 @@ func get_game_signature() {
 }
 
 func handle_legacy_opcodes() {
+
+	// Quirks needed by specific games
+
 	// Enable Fx55 and Fx65 legacy mode
 	// Game "Animal Race [Brian Astle]"
 	// MD5: 46497c35ce549cd7617462fe7c9fc284
@@ -132,9 +135,8 @@ func handle_legacy_opcodes() {
 	// MD5: b56e0e6e3930011049fcf6cf3384e964
 	if (CPU.Game_signature == "6314640255E60525B4") {
 		CPU.DXYN_bowling_wrap = true
-		fmt.Printf("DXYN Pixel ###PARTIAL### wrap fix enabled.\n")
+		fmt.Printf("DXYN pixel wrap fix enabled.\n")
 	}
-
 
 }
 

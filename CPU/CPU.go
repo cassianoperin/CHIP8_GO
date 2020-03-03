@@ -96,7 +96,7 @@ var (
 	SCHIP = false
 	RPL	[8]byte // HP-48 RPL user flags
 
-	// LEGACY OPCODES
+	// LEGACY OPCODES / Quirks
 	// Game Signature (identify games that needs legacy opcodes)
 	Game_signature	string = ""
 	// Enable original Chip-8 Fx55 and Fx65 (increases I)
@@ -106,6 +106,9 @@ var (
 	FX1E_spacefight2091	bool	= false
 	// DXYN sprite wrap in Bowling game
 	DXYN_bowling_wrap	bool	= false
+	// Resize_00FE_00FF - Clears the screen - Must be set to True always
+	Resize_Quirk_00FE_00FF	bool	= true
+
 )
 
 
@@ -299,8 +302,10 @@ func Interpreter() {
 					SizeX = 128
 					SizeY = 64
 
-					// Clean the screen when changing graphic mode
-					Graphics	= [128 * 64]byte{}
+					if ResizeQuirks {
+						// Clear the screen when changing graphic mode
+						Graphics	= [128 * 64]byte{}
+					}
 
 					PC += 2
 					if Debug {
@@ -314,6 +319,11 @@ func Interpreter() {
 
 					SizeX = 64
 					SizeY = 32
+
+					if ResizeQuirks {
+						// Clear the screen when changing graphic mode
+						Graphics	= [128 * 64]byte{}
+					}
 
 					PC += 2
 					if Debug {
