@@ -32,6 +32,7 @@ var (
 	DelayTimer	byte
 	SoundTimer	byte
 	TimerClock	*time.Ticker
+	FPS		*time.Ticker
 	//Graphics	[64 * 32]byte
 	Graphics	[128 * 64]byte
 
@@ -106,7 +107,7 @@ var (
 	FX1E_spacefight2091	bool	= false
 	// DXYN sprite wrap in Bowling game
 	DXYN_bowling_wrap	bool	= false
-	// Resize_00FE_00FF - Clears the screen - Must be set to True always
+	// Resize_Quirk_00FE_00FF - Clears the screen - Must be set to True always
 	Resize_Quirk_00FE_00FF	bool	= true
 
 )
@@ -129,6 +130,7 @@ func Initialize() {
 
 	// Create a ticker at 60Hz
 	TimerClock	= time.NewTicker(time.Second / 60)
+	FPS	= time.NewTicker(time.Second / 1000)
 
 	// Load CHIP-8 8x5 fontset
 	// Memory address 0-79
@@ -302,7 +304,7 @@ func Interpreter() {
 					SizeX = 128
 					SizeY = 64
 
-					if Resize_00FE_00FF {
+					if Resize_Quirk_00FE_00FF {
 						// Clear the screen when changing graphic mode
 						Graphics	= [128 * 64]byte{}
 					}
@@ -320,7 +322,7 @@ func Interpreter() {
 					SizeX = 64
 					SizeY = 32
 
-					if Resize_00FE_00FF {
+					if Resize_Quirk_00FE_00FF {
 						// Clear the screen when changing graphic mode
 						Graphics	= [128 * 64]byte{}
 					}
