@@ -139,7 +139,8 @@ func Initialize() {
 	TimerClock	= time.NewTicker(time.Second / 60)
 
 	// CPU Clock Speed
-	CPU_Clock_Speed	= 800
+	// CHIP-8=500, SCHIP=1000
+	CPU_Clock_Speed	= 500
 	CPU_Clock	= time.NewTicker(time.Second / CPU_Clock_Speed)
 
 
@@ -241,7 +242,7 @@ func Interpreter() {
 			//fmt.Printf("\tGFX_Track: %d\n", GFX_track)
 			fmt.Printf("\n")
 		}
-
+	
 	}
 
 	// Debug time execution - Rewind Mode
@@ -323,8 +324,15 @@ func Interpreter() {
 				// Enable High-Res Mode (128 x 64 resolution)
 			case 0x00F0:
 				if x == 0x000F {
+					// Enable SCHIP Mode
 					SCHIP = true
 
+					// Set the clock to SCHIP
+					CPU_Clock_Speed = 1000
+					CPU_Clock.Stop()
+					CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
+
+					// Set SCHIP Resolution
 					SizeX = 128
 					SizeY = 64
 
@@ -341,8 +349,15 @@ func Interpreter() {
 				// SCHIP - 00FE
 				// Enable Low-Res Mode (64 x 32 resolution)
 				} else if x == 0x000E {
+					// Disable SCHIP Mode
 					SCHIP = false
 
+					// Set the clock to CHIP-8 Speed
+					CPU_Clock_Speed = 500
+					CPU_Clock.Stop()
+					CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
+
+					// Set CHIP-8 Resolution
 					SizeX = 64
 					SizeY = 32
 
@@ -365,7 +380,7 @@ func Interpreter() {
 				// SCHIP - 00FC
 				// Scroll display 4 pixels left
 				} else if x == 0x000C {
-					//SCHIP = true
+
 					shift := 4
 					rowsize := int(SizeX)
 					//fmt.Printf(Graphics[])
@@ -480,7 +495,7 @@ func Interpreter() {
 
 			default:
 				if Debug {
-					fmt.Printf("\t\tOpcode 0x0000 NOT IMPLEMENTED!!!!\n", Opcode)
+					fmt.Printf("\t\tOpcode 0x%X NOT IMPLEMENTED!!!!\n", Opcode)
 				}
 				os.Exit(2)
 			}
