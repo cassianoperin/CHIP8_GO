@@ -240,7 +240,7 @@ func Keyboard() {
 			if index == 22 {
 				increase_rate := 50
 				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
-				if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= 2000 {
+				if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= 3000 {
 					// If Clock Speed = 1, return to multiples of 'increase_rate'
 					if CPU.CPU_Clock_Speed == 1 {
 						CPU.CPU_Clock_Speed += time.Duration(increase_rate - 1)
@@ -256,8 +256,8 @@ func Keyboard() {
 						time.Sleep(5 * keyboard_tmout * time.Millisecond)
 					}
 				} else {
-					// Reached Maximum CPU Clock Speed (2000 Hz)
-					CPU.CPU_Clock_Speed = 2000
+					// Reached Maximum CPU Clock Speed (3000 Hz)
+					CPU.CPU_Clock_Speed = 3000
 					CPU.CPU_Clock.Stop()
 					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
 					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
@@ -320,6 +320,21 @@ func Run() {
 			default:
 				// No timer to handle
 		}
+
+		//SCHIP Speed hack, decrease DT faster
+		if CPU.SCHIP {
+			select {
+			case <-CPU.SCHIP_TimerClockHack.C:
+					// Decrease faster than usual 60Hz
+					if CPU.DelayTimer > 0 {
+						CPU.DelayTimer--
+					}
+
+
+				default:
+					// No timer to handle
+			}
+	}
 
 		// Update Input Events
 		win.UpdateInput()

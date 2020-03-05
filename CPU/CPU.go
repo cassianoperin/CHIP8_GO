@@ -17,7 +17,7 @@ const (
 	// FIX IT, INCREASING IT TO 15000, emulation became slow due to vector and matrix processing
 	// Exponentially increased by size of graphics array!
 	// NEED TO FIND A WAY TO PROCESSES IT QUICKLY
-	Rewind_buffer	uint16 = 2
+	Rewind_buffer	uint16 = 100
 	// Control the number of Keys mapped in Key Array
 	KeyArraySize	byte	= 23
 )
@@ -35,6 +35,8 @@ var (
 	SoundTimer	byte
 	TimerClock	*time.Ticker
 	CPU_Clock	*time.Ticker
+	// SCHIP used to decrease DT faster than 60HZ to gain speed
+	SCHIP_TimerClockHack	*time.Ticker
 	CPU_Clock_Speed	time.Duration
 	//Graphics	[64 * 32]byte
 	Graphics	[128 * 64]byte
@@ -80,20 +82,19 @@ var (
 	Debug_v2	bool = false
 	// Debug Draw Graphics function
 	Debug_v3	bool = false
-	// Time tracks
-	Debug_time	bool = true
 
 	// Rewind Variables
 	Rewind_index	uint16 = 0
-	PC_track	[Rewind_buffer]uint16
-	SP_track	[Rewind_buffer]uint16
-	I_track		[Rewind_buffer]uint16
-	DT_track	[Rewind_buffer]byte
-	ST_track	[Rewind_buffer]byte
-	DF_track	[Rewind_buffer]bool
-	V_track		[Rewind_buffer][16]byte
-	Stack_track	[Rewind_buffer][16]uint16
-	GFX_track	[Rewind_buffer][128 * 64]byte
+	PC_track	= new([Rewind_buffer]uint16)
+	SP_track	= new([Rewind_buffer]uint16)
+	I_track	= new([Rewind_buffer]uint16)
+	DT_track	= new([Rewind_buffer]byte)
+	ST_track	= new([Rewind_buffer]byte)
+	DF_track	= new([Rewind_buffer]bool)
+	V_track	= new([Rewind_buffer][16]byte)
+	Stack_track	= new([Rewind_buffer][16]uint16)
+	GFX_track	= new([Rewind_buffer][128 * 64]byte)
+
 	// Beep sound file
 	sound_file string
 	// GRAPHICS
@@ -142,7 +143,8 @@ func Initialize() {
 	// CHIP-8=500, SCHIP=1000
 	CPU_Clock_Speed	= 500
 	CPU_Clock	= time.NewTicker(time.Second / CPU_Clock_Speed)
-
+	// SCHIP Timer Speed Hack
+	SCHIP_TimerClockHack = time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 
 	// Load CHIP-8 8x5 fontset
 	// Memory address 0-79
@@ -164,12 +166,69 @@ func Show() {
 	fmt.Printf("Cycle: %d\tOpcode: %04X(%04X)\tPC: %d(0x%X)\tSP: %d\tStack: %d\tV: %d\tI: %d\tDT: %d\tST: %d\tKey: %d\n", Cycle, Opcode, Opcode & 0xF000, PC, PC,  SP, Stack, V, I, DelayTimer, SoundTimer, Key)
 }
 
-
-// CPU Interpreter
-func Interpreter() {
+func rewind() {
 
 	// Start timer to measure procedures inside Interpreter
 	start := time.Now()
+
+	// REWIND MODE - SLICES
+	// Just update when not inside a Rewind loop
+	if Rewind_index == 0 {
+		// PC
+		copy(PC_track[1:], PC_track[0:])
+		PC_track[0]		= PC
+		// SP
+		copy(SP_track[1:], SP_track[0:])
+		SP_track[0]		= SP
+		// I
+		copy(I_track[1:], I_track[0:])
+		I_track[0]		= I
+		// DelayTimer
+		copy(DT_track[1:], DT_track[0:])
+		DT_track[0]		= DelayTimer
+		// SoundTimer
+		copy(ST_track[1:], ST_track[0:])
+		ST_track[0]		= SoundTimer
+		// DrawFlag
+		copy(DF_track[1:], DF_track[0:])
+		DF_track[0]		= DrawFlag
+		// V
+		copy(V_track[1:], V_track[0:])
+		V_track[0]		= V
+		// Stack
+		copy(Stack_track[1:], Stack_track[0:])
+		Stack_track[0]	= Stack
+		// GFX_track
+		copy(GFX_track[1:], GFX_track[0:])
+		GFX_track[0]	= Graphics
+	}
+
+
+	if Debug_v2 {
+		fmt.Printf("\tPC_track: %d\n", PC_track)
+		fmt.Printf("\tSP_Track: %d\n", SP_track)
+		fmt.Printf("\tI_Track: %d\n", I_track)
+		fmt.Printf("\tDT_Track: %d\n", DT_track)
+		fmt.Printf("\tST_Track: %d\n", ST_track)
+		fmt.Printf("\tDF_Track: %t\n", DF_track)
+		fmt.Printf("\tV_Track: %d\n", V_track)
+		fmt.Printf("\tStack_Track: %d\n", Stack_track)
+		//fmt.Printf("\tGFX_Track: %d\n", GFX_track)
+		fmt.Printf("\n")
+	}
+
+
+	// Debug time execution - Rewind Mode
+	if Debug {
+		elapsed := time.Since(start)
+		fmt.Printf("\t\tTime track - Rewind Mode took: %s\n", elapsed)
+	}
+
+}
+
+
+// CPU Interpreter
+func Interpreter() {
 
 	// Reset Flag every cycle
 	DrawFlag = false
@@ -182,80 +241,11 @@ func Interpreter() {
 		Show()
 	}
 
-	// REWIND MODE - ARRAYS
-	// Just update when not inside a reward loop
-	// Otherwise navigate inside the track arrays
-	if Rewind_index == 0 {
-		// Every new value is recorded on the first array value or first line of the Matrix for vectors
-		// Each new cycle, Shift Right the values (for arrays) and Shift lines to the end for Matrix
-		for i := Rewind_buffer - 1 ; i > 0 ; i-- {
-			// PC
-			PC_track[i]=PC_track[i-1]
-			// SP
-			SP_track[i]=SP_track[i-1]
-			// I
-			I_track[i]=I_track[i-1]
-			// DelayTimer
-			DT_track[i]=DT_track[i-1]
-			// SoundTimer
-			ST_track[i]=ST_track[i-1]
-			// DrawFlag
-			DF_track[i]=DF_track[i-1]
-			// V Matrix
-			V_track[i]=V_track[i-1]
-			// Stack Matrix
-			Stack_track[i]=Stack_track[i-1]
-			// Graphics Matrix
-			GFX_track[i]=GFX_track[i-1]
+	// Enable tracking to Rewind function
+	rewind()
 
-		}
-
-		// After store the current value in the first Array position or Matrix line
-		// PC - ADD new value
-		PC_track[0] = PC
-		// SP - ADD new value
-		SP_track[0] = SP
-		// I - ADD new value
-		I_track[0] = I
-		// DelayTimer - ADD new value
-		DT_track[0] = DelayTimer
-		// SoundTimer - ADD new value
-		ST_track[0] = SoundTimer
-		// DrawFlag - ADD new value
-		DF_track[0] = DrawFlag
-		// V Matrix - ADD new vector
-		V_track[0] = V
-		// Stack Matrix - ADD new vector
-		Stack_track[0] = Stack
-		// Graphics Matrix - ADD new vector
-		GFX_track[0] = Graphics
-
-		if Debug_v2 {
-			fmt.Printf("\tPC_track: %d\n", PC_track)
-			fmt.Printf("\tSP_Track: %d\n", SP_track)
-			fmt.Printf("\tI_Track: %d\n", I_track)
-			fmt.Printf("\tDT_Track: %d\n", DT_track)
-			fmt.Printf("\tST_Track: %d\n", ST_track)
-			fmt.Printf("\tDF_Track: %t\n", DF_track)
-			fmt.Printf("\tV_Track: %d\n", V_track)
-			fmt.Printf("\tStack_Track: %d\n", Stack_track)
-			//fmt.Printf("\tGFX_Track: %d\n", GFX_track)
-			fmt.Printf("\n")
-		}
-	
-	}
-
-	// Debug time execution - Rewind Mode
-	if Debug {
-		elapsed := time.Since(start)
-		fmt.Printf("\t\tTime track - Rewind Mode took: %s\n", elapsed)
-	}
-
-	// Debug time execution - Opcode Handling
-	if Debug {
-		start = time.Now()
-	}
-
+	// Start timer to measure procedures inside Interpreter
+	start := time.Now()
 
 	// Map Opcode Family
 	switch Opcode & 0xF000 {
@@ -328,7 +318,7 @@ func Interpreter() {
 					SCHIP = true
 
 					// Set the clock to SCHIP
-					CPU_Clock_Speed = 1000
+					CPU_Clock_Speed = 1500
 					CPU_Clock.Stop()
 					CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
 
@@ -900,8 +890,6 @@ func Interpreter() {
 						//binary = fmt.Sprintf("%.8b", sprite)
 						binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
 						// fmt.Printf("BINARY = %b\n",sprite)
-						// fmt.Printf("TESTE: %.8b%.8b", sprite,sprite2)
-						// fmt.Printf("\n")
 
 						// Always print 8 bits
 						for bit := 0; bit < 16 ; bit++ {
@@ -966,7 +954,6 @@ func Interpreter() {
 						binary = fmt.Sprintf("%.8b", sprite)
 						//binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
 						// fmt.Printf("BINARY = %b\n",sprite)
-						// fmt.Printf("TESTE: %.8b%.8b", sprite,sprite2)
 						// fmt.Printf("\n")
 
 						// Always print 8 bits
@@ -978,7 +965,6 @@ func Interpreter() {
 								// fmt.Println(bit_binary)
 							}
 
-
 							// Set the index to write the 8 bits of each pixel
 							gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
 
@@ -987,7 +973,6 @@ func Interpreter() {
 								//fmt.Printf("Bigger than 2048 or 8192\n")
 								continue
 							}
-
 
 							// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
 							if (bit_binary  == 1){
@@ -1375,8 +1360,11 @@ func Interpreter() {
 	select {
 		case <-TimerClock.C:
 			// When ticker run (60 times in a second, check de DelayTimer)
-			if DelayTimer > 0 {
-				DelayTimer--
+			// SCHIP Uses a hack to decrease DT faster to gain speed
+			if !SCHIP {
+				if DelayTimer > 0 {
+					DelayTimer--
+				}
 			}
 
 			// When ticker run (60 times in a second, check de SoundTimer)
