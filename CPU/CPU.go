@@ -104,6 +104,10 @@ var (
 	SizeX		float64 = 64
 	SizeY		float64 = 32
 
+	// Map changes in draw resolution to clean the screen
+	chip8_draw	bool = false
+	schip_draw	bool = false
+
 	// SCHIP
 	SCHIP = false
 	RPL	[8]byte // HP-48 RPL user flags
@@ -238,6 +242,11 @@ func rewind() {
 // If in SCHIP mode will draw 16x16 sprites
 func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 
+	// Detect transition of draw resolution and clear the screen
+	if chip8_draw {
+		Graphics = [128 * 64]uint8{}
+	}
+
 	// Turn n in 16 (pixel size in SCHIP Mode)
 	n = 16
 	if Debug {
@@ -296,6 +305,9 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 				Graphics[gfx_index] ^= 1
 			}
 
+		// Flag last draw mode
+		chip8_draw	= false
+		schip_draw	= true
 		// DEBUG 2
 		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
 		}
@@ -306,6 +318,12 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 // SCHIP LOW-RES MODE
 // If NOT in SCHIP mode will draw 16x8 sprites
 func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
+
+	// Detect transition of draw resolution and clear the screen
+	if chip8_draw {
+		Graphics = [128 * 64]uint8{}
+	}
+
 	n = 16
 	if Debug {
 		fmt.Printf("\t\tSCHIP - Opcode Dxy0 LOW-RES MODE (%X DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
@@ -362,6 +380,10 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 				Graphics[gfx_index] ^= 1
 			}
 
+			// Flag last draw mode
+			chip8_draw	= false
+			schip_draw	= true
+
 		// DEBUG 2
 		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
 		}
@@ -373,6 +395,12 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 	// Draw in Chip-8 Low Resolution mode
+
+	// Detect transition of draw resolution and clear the screen
+	if schip_draw {
+		Graphics = [128 * 64]uint8{}
+	}
+
 	if Debug {
 		fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
 	}
@@ -421,6 +449,9 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 				Graphics[gfx_index] ^= 1
 			}
 
+			// Flag last draw mode
+			chip8_draw	= true
+			schip_draw	= false
 		// DEBUG 2
 		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
 		}
@@ -1079,6 +1110,7 @@ func Interpreter() {
 						DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position)
 					} else {
 						DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position)
+						//os.Exit(2)
 					}
 				}
 			// Dxyn - DRW Vx, Vy, nibble

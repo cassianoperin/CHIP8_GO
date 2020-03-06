@@ -54,8 +54,6 @@ func renderGraphics() {
 
 
 func drawGraphics(graphics [128 * 64]byte) {
-	// Start timer to measure procedures inside Interpreter
-	start := time.Now()
 
 	// Background color
 	win.Clear(colornames.Black)
@@ -91,26 +89,8 @@ func drawGraphics(graphics [128 * 64]byte) {
 		fmt.Printf("\n")
 	}
 
-	// Debug time execution - Draw Function
-	if CPU.Debug {
-		elapsed := time.Since(start)
-		fmt.Printf("\t\tTime track - Draw function: %s\n", elapsed)
-	}
-
-	if CPU.Debug {
-		elapsed := time.Since(start)
-		fmt.Printf("\t\tTime track - Draw function: %s\n", elapsed)
-		start = time.Now()
-	}
-
 	imd.Draw(win)
 	//win.Update()
-
-	// Debug time execution - Draw Win
-	if CPU.Debug {
-		elapsed := time.Since(start)
-		fmt.Printf("\t\tTime track - Draw win : %s\n", elapsed)
-	}
 
 }
 
@@ -359,18 +339,19 @@ func Run() {
 
 		// Update Input Events
 		win.UpdateInput()
+		//win.Update()
 
 		// 60 FPS Control - Update the screen
 		select {
 		case <-CPU.FPS .C:
-			start := time.Now()
+			//start := time.Now()
 
 			win.Update()
 
-			if CPU.Debug {
-				elapsed := time.Since(start)
-				fmt.Printf("\t\tTime track - Screen update: %s\n\n", elapsed)
-			}
+			//if CPU.Debug {
+			//	elapsed := time.Since(start)
+				//fmt.Printf("\t\tTime track - Screen update: %s\n\n", elapsed)
+			//}
 
 			default:
 				// No timer to handle
