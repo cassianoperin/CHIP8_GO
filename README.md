@@ -8,7 +8,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 **Superchip (SCHIP) Spacefight 2091!:**
 
-<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/spacefight2091.png">
+<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/spacefight2091.gif">
 
 ## Features
 * Pause and resume emulation
