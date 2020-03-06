@@ -73,7 +73,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 	`$chip8 ROM_NAME`
 
 2. Keys
-- Original COSMAC Keyboard Layout:
+- Original COSMAC Keyboard Layout (CHIP-8):
 
 	`1` `2` `3` `C`
 
@@ -82,6 +82,16 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 	`7` `8` `9` `E`
 
 	`A` `0` `B` `F`
+	
+- Original HP48SX Keyboard Layout (SuperChip):
+
+	`7` `8` `9` `/`
+
+	`4` `5` `6` `*`
+
+	`1` `2` `3` `-`
+
+	`0` `.` `_` `+`
 
 - **Keys used in this emulator:**
 
