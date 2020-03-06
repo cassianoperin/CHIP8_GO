@@ -4,7 +4,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 **CHIP-8 Space Invaders Game:**
 
-<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/invaders.png">
+<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/invaders.gif">
 
 **Superchip (SCHIP) Spacefight 2091!:**
 
