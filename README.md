@@ -82,7 +82,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 	`7` `8` `9` `E`
 
 	`A` `0` `B` `F`
-	
+
 - Original HP48SX Keyboard Layout (SuperChip):
 
 	`7` `8` `9` `/`
@@ -153,3 +153,5 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 2. Games that uses low res AND schip draw functions should shift 2 bytes (instead od 4) and scroll N/2 lines
 3. Sound glitches in Windows
 4. Implement Save States
+5. Add color schemas
+6. Create menus
