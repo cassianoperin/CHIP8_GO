@@ -117,6 +117,8 @@ var (
 	DXYN_bowling_wrap	bool	= false
 	// Resize_Quirk_00FE_00FF - Clears the screen - Must be set to True always
 	Resize_Quirk_00FE_00FF	bool	= true
+	// DXY0_loresWideSpriteQuirks - Draws a 16x16 sprite even in low-resolution (64x32) mode, row-major
+	DXY0_loresWideSpriteQuirks	bool	= false
 
 )
 
@@ -225,6 +227,202 @@ func rewind() {
 	}
 
 }
+
+// SCHIP HI-RES MODE
+// If in SCHIP mode will draw 16x16 sprites
+func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
+
+	// Turn n in 16 (pixel size in SCHIP Mode)
+	n = 16
+	if Debug {
+		fmt.Printf("\t\tSCHIP - Opcode Dxy0 HI-RES MODE (%X) DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
+	}
+
+	// Print N Bytes from address I in V[x]V[y] position of the screen
+	for byte = 0 ; byte < n ; byte++ {
+
+		var (
+			binary string = ""
+			sprite uint8 = 0
+			sprite2 uint8 = 0
+		)
+
+		// Set the sprite
+		//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
+
+		// DOCUMENT SPRITES
+		sprite = Memory[I + (byte * 2)]
+		sprite2 = Memory[I + (byte * 2) + 1]
+
+
+		// Sprite in binary format
+		//binary = fmt.Sprintf("%.8b", sprite)
+		binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
+		// fmt.Printf("BINARY = %b\n",sprite)
+
+		// Always print 8 bits
+		for bit := 0; bit < 16 ; bit++ {
+
+			// Convert the binary[bit] variable into an INT using Atoi method
+			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
+			if err == nil {
+				// fmt.Println(bit_binary)
+			}
+
+
+			// Set the index to write the 8 bits of each pixel
+			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
+
+			// If tryes to draw bits outside the vector size, ignore
+			if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
+				//fmt.Printf("Bigger than 2048 or 8192\n")
+				continue
+			}
+
+
+			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
+			if (bit_binary  == 1){
+				// Set colision case graphics[index] is already 1
+				if (Graphics[gfx_index] == 1){
+					V[0xF] = 1
+				}
+				// After, XOR the graphics[index] (DRAW)
+				Graphics[gfx_index] ^= 1
+			}
+
+		// DEBUG 2
+		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
+		}
+	}
+}
+
+
+// SCHIP LOW-RES MODE
+// If NOT in SCHIP mode will draw 16x8 sprites
+func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
+	n = 16
+	if Debug {
+		fmt.Printf("\t\tSCHIP - Opcode Dxy0 LOW-RES MODE (%X DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
+	}
+
+	// Print N Bytes from address I in V[x]V[y] position of the screen
+	for byte = 0 ; byte < n ; byte++ {
+
+		var (
+			binary string = ""
+			sprite uint8 = 0
+			//sprite2 uint8 = 0
+		)
+
+		// Set the sprite
+		//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
+
+		// DOCUMENT SPRITES
+		sprite = Memory[I + byte]
+		//sprite2 = Memory[I + (byte * 2) + 1]
+
+
+		// Sprite in binary format
+		binary = fmt.Sprintf("%.8b", sprite)
+		//binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
+		// fmt.Printf("BINARY = %b\n",sprite)
+		// fmt.Printf("\n")
+
+		// Always print 8 bits
+		for bit := 0; bit < 8 ; bit++ {
+
+			// Convert the binary[bit] variable into an INT using Atoi method
+			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
+			if err == nil {
+				// fmt.Println(bit_binary)
+			}
+
+			// Set the index to write the 8 bits of each pixel
+			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
+
+			// If tryes to draw bits outside the vector size, ignore
+			if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
+				//fmt.Printf("Bigger than 2048 or 8192\n")
+				continue
+			}
+
+			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
+			if (bit_binary  == 1){
+				// Set colision case graphics[index] is already 1
+				if (Graphics[gfx_index] == 1){
+					V[0xF] = 1
+				}
+				// After, XOR the graphics[index] (DRAW)
+				Graphics[gfx_index] ^= 1
+			}
+
+		// DEBUG 2
+		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
+		}
+	}
+}
+
+
+// Dxyn - DRW Vx, Vy, nibble
+// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
+	// Draw in Chip-8 Low Resolution mode
+	if Debug {
+		fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
+	}
+
+
+	// Print N Bytes from address I in V[x]V[y] position of the screen
+	for byte = 0 ; byte < n ; byte++ {
+
+		var (
+			binary string = ""
+			sprite uint8 = 0
+		)
+
+		// Set the sprite
+		//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
+		sprite = Memory[I + byte]
+
+		// Sprite in binary format
+		binary = fmt.Sprintf("%.8b", sprite)
+
+		// Always print 8 bits
+		for bit := 0; bit < 8 ; bit++ {
+
+			// Convert the binary[bit] variable into an INT using Atoi method
+			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
+			if err == nil {
+				// fmt.Println(bit_binary)
+			}
+
+			// Set the index to write the 8 bits of each pixel
+			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
+
+			// If tryes to draw bits outside the vector size, ignore
+			if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
+				//fmt.Printf("Bigger than 2048 or 8192\n")
+				continue
+			}
+
+			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
+			if (bit_binary  == 1){
+				// Set colision case graphics[index] is already 1
+				if (Graphics[gfx_index] == 1){
+					V[0xF] = 1
+				}
+				// After, XOR the graphics[index] (DRAW)
+				Graphics[gfx_index] ^= 1
+			}
+
+		// DEBUG 2
+		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
+		}
+	}
+
+}
+
+
 
 
 // CPU Interpreter
@@ -863,192 +1061,22 @@ func Interpreter() {
 				// SCHIP HI-RES MODE
 				// If in SCHIP mode will draw 16x16 sprites
 				if SCHIP {
-					// Turn n in 16 (pixel size in SCHIP Mode)
-					n = 16
-					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode Dxy0 HI-RES MODE (%X) DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
-					}
-
-					// Print N Bytes from address I in V[x]V[y] position of the screen
-					for byte = 0 ; byte < n ; byte++ {
-
-						var (
-							binary string = ""
-							sprite uint8 = 0
-							sprite2 uint8 = 0
-						)
-
-						// Set the sprite
-						//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
-
-						// DOCUMENT SPRITES
-						sprite = Memory[I + (byte * 2)]
-						sprite2 = Memory[I + (byte * 2) + 1]
-
-
-						// Sprite in binary format
-						//binary = fmt.Sprintf("%.8b", sprite)
-						binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
-						// fmt.Printf("BINARY = %b\n",sprite)
-
-						// Always print 8 bits
-						for bit := 0; bit < 16 ; bit++ {
-
-							// Convert the binary[bit] variable into an INT using Atoi method
-							bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
-							if err == nil {
-								// fmt.Println(bit_binary)
-							}
-
-
-							// Set the index to write the 8 bits of each pixel
-							gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
-
-							// If tryes to draw bits outside the vector size, ignore
-							if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
-								//fmt.Printf("Bigger than 2048 or 8192\n")
-								continue
-							}
-
-
-							// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
-							if (bit_binary  == 1){
-								// Set colision case graphics[index] is already 1
-								if (Graphics[gfx_index] == 1){
-									V[0xF] = 1
-								}
-								// After, XOR the graphics[index] (DRAW)
-								Graphics[gfx_index] ^= 1
-							}
-
-						// DEBUG 2
-						//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
-						}
-					}
+					DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position)
 				// SCHIP LOW-RES MODE
 				// If NOT in SCHIP mode will draw 16x8 sprites
 				} else {
-					n = 16
-					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode Dxy0 LOW-RES MODE (%X DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
+					// Quirk to SCHIP Robot DEM)
+					// Even in SCHIP Mode this game needs to draw 16x16 Pixels
+					if DXY0_loresWideSpriteQuirks {
+						DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position)
+					} else {
+						DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position)
 					}
-
-					// Print N Bytes from address I in V[x]V[y] position of the screen
-					for byte = 0 ; byte < n ; byte++ {
-
-						var (
-							binary string = ""
-							sprite uint8 = 0
-							//sprite2 uint8 = 0
-						)
-
-						// Set the sprite
-						//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
-
-						// DOCUMENT SPRITES
-						sprite = Memory[I + byte]
-						//sprite2 = Memory[I + (byte * 2) + 1]
-
-
-						// Sprite in binary format
-						binary = fmt.Sprintf("%.8b", sprite)
-						//binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
-						// fmt.Printf("BINARY = %b\n",sprite)
-						// fmt.Printf("\n")
-
-						// Always print 8 bits
-						for bit := 0; bit < 8 ; bit++ {
-
-							// Convert the binary[bit] variable into an INT using Atoi method
-							bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
-							if err == nil {
-								// fmt.Println(bit_binary)
-							}
-
-							// Set the index to write the 8 bits of each pixel
-							gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
-
-							// If tryes to draw bits outside the vector size, ignore
-							if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
-								//fmt.Printf("Bigger than 2048 or 8192\n")
-								continue
-							}
-
-							// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
-							if (bit_binary  == 1){
-								// Set colision case graphics[index] is already 1
-								if (Graphics[gfx_index] == 1){
-									V[0xF] = 1
-								}
-								// After, XOR the graphics[index] (DRAW)
-								Graphics[gfx_index] ^= 1
-							}
-
-						// DEBUG 2
-						//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
-						}
-					}
-
 				}
-
 			// Dxyn - DRW Vx, Vy, nibble
 			// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 			} else {
-			// Else, Draw in Chip-8 Low Resolution mode
-				if Debug {
-					fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
-
-				}
-
-
-				// Print N Bytes from address I in V[x]V[y] position of the screen
-				for byte = 0 ; byte < n ; byte++ {
-
-					var (
-						binary string = ""
-						sprite uint8 = 0
-					)
-
-					// Set the sprite
-					//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
-					sprite = Memory[I + byte]
-
-					// Sprite in binary format
-					binary = fmt.Sprintf("%.8b", sprite)
-
-					// Always print 8 bits
-					for bit := 0; bit < 8 ; bit++ {
-
-						// Convert the binary[bit] variable into an INT using Atoi method
-						bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
-						if err == nil {
-							// fmt.Println(bit_binary)
-						}
-
-						// Set the index to write the 8 bits of each pixel
-						gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
-
-						// If tryes to draw bits outside the vector size, ignore
-						if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
-							//fmt.Printf("Bigger than 2048 or 8192\n")
-							continue
-						}
-
-						// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
-						if (bit_binary  == 1){
-							// Set colision case graphics[index] is already 1
-							if (Graphics[gfx_index] == 1){
-								V[0xF] = 1
-							}
-							// After, XOR the graphics[index] (DRAW)
-							Graphics[gfx_index] ^= 1
-						}
-
-					// DEBUG 2
-					//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
-					}
-				}
-
+				DXYN_CHIP8(x, y, n, byte, gpx_position)
 			}
 
 			PC += 2

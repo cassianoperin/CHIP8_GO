@@ -98,7 +98,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 	`[`: Step back (rewind) one CPU cycle **in Pause Mode** (for debug and study purposes)
 
 	`]`: Step forward one CPU cycle in **Pause Mode** (for debug and study purposes)
-	
+
 	`7`: Decrease CPU Clock Speed
 
 	`8`: Increase CPU Clock Speed
@@ -129,15 +129,18 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 [David Winter Documentation](http://vanbeveren.byethost13.com/stuff/CHIP8.pdf?i=2)
 
+[Chip-8 Database](https://chip-8.github.io/database/)
+
+[Chip-8 Reference Manual](http://chip8.sourceforge.net/chip8-1.1.pdf)
+
+[Archive chip8.com page](https://web.archive.org/web/20160401091945/http://www.chip8.com/)
+
 
 
 ## TODO LIST
 
 1. CHIP8 - Key pressing cause slowness
-2. CHIP8 - Improve draw method (Rewrite graphics mode to just draw the differences from each frame)
-3. ALL - Rewind mode make emulation slow due to arrays and graphics processing
-4. Migrate from pixel to SDL2
-5. Games that uses low res AND schip draw functions should shift 2 bytes (instead od 4) and scroll N/2 lines
-6. Sound glitches in Windows
-7. Implement Save States
-8. Clean the code
+2. Migrate from pixel to SDL2
+3. Games that uses low res AND schip draw functions should shift 2 bytes (instead od 4) and scroll N/2 lines
+4. Sound glitches in Windows
+5. Implement Save States

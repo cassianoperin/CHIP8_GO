@@ -138,6 +138,14 @@ func handle_legacy_opcodes() {
 		fmt.Printf("DXYN pixel wrap fix enabled.\n")
 	}
 
+	// Enable Low Res 16x16 Pixel Draw in Robot.ch8 DEMO
+	// SCHIP Demo: "Robot"
+	// MD5: e2cd0812b43fb46e4b8abbb3a8d30f4b
+	if (CPU.Game_signature == "0FEA23A60061062F") {
+		CPU.DXY0_loresWideSpriteQuirks = true
+		fmt.Printf("DXY0 SCHIP Low Res 16x16 Pixel fix enabled.\n")
+	}
+
 }
 
 
