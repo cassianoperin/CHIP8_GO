@@ -34,6 +34,7 @@ var (
 	DelayTimer	byte
 	SoundTimer	byte
 	TimerClock	*time.Ticker
+	FPS	*time.Ticker
 	CPU_Clock	*time.Ticker
 	// SCHIP used to decrease DT faster than 60HZ to gain speed
 	SCHIP_TimerClockHack	*time.Ticker
@@ -82,6 +83,8 @@ var (
 	Debug_v2	bool = false
 	// Debug Draw Graphics function
 	Debug_v3	bool = false
+	// Enable and Disable Rewind Mode
+	rewind_mode	bool	= true
 
 	// Rewind Variables
 	Rewind_index	uint16 = 0
@@ -140,6 +143,9 @@ func Initialize() {
 
 	// Create a ticker at 60Hz
 	TimerClock	= time.NewTicker(time.Second / 60)
+
+	// Create a ticker at 60Hz to update the screen
+	FPS	= time.NewTicker(time.Second / 30)
 
 	// CPU Clock Speed
 	// CHIP-8=500, SCHIP=1000
@@ -440,7 +446,9 @@ func Interpreter() {
 	}
 
 	// Enable tracking to Rewind function
-	rewind()
+	if rewind_mode {
+		rewind()
+	}
 
 	// Start timer to measure procedures inside Interpreter
 	start := time.Now()
