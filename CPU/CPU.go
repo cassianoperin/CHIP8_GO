@@ -132,6 +132,7 @@ var (
 	Cycle_savestate			uint16
 	Rewind_index_savestate		uint16
 	SCHIP_savestate			bool
+	SCHIP_LORES_savestate		bool
 	SizeX_savestate			float64
 	SizeY_savestate			float64
 	CPU_Clock_Speed_savestate	time.Duration

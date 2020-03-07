@@ -161,5 +161,5 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 ## TODO LIST
 
 1. Migrate from pixel to SDL2
-2. Sound glitches in Windows
-3. Create menus
+2. Create menus
+3. Map better buttons for main games
