@@ -171,7 +171,6 @@ func main() {
 	// fmt.Println("MaxParallelism: ", MaxParallelism())
 	runtime.GOMAXPROCS( MaxParallelism() )
 
-
 	// Set initial variables values
 	CPU.Initialize()
 	Sound.Initialize("Sound/beep.mp3")
@@ -180,6 +179,7 @@ func main() {
 	// Identify special games that needs legacy opcodes
 	get_game_signature()
 	handle_legacy_opcodes()
+	CPU.MemoryCleanSnapshot = CPU.Memory
 
 	// Start Window System and draw Graphics
 	pixelgl.Run(Graphics.Run)

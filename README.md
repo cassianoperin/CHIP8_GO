@@ -17,6 +17,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 * Step Back (Rewind) CPU Cycles for Debug
 * Online Debug mode
 * Increase and Decrease CPU Clock Speed
+* Color Themes
 
 ## Compile Instructions
 
@@ -109,6 +110,8 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 	`]`: Step forward one CPU cycle in **Pause Mode** (for debug and study purposes)
 
+	`6`: Change Color Themes
+
 	`7`: Decrease CPU Clock Speed
 
 	`8`: Increase CPU Clock Speed
@@ -152,5 +155,4 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 1. Migrate from pixel to SDL2
 2. Sound glitches in Windows
 3. Implement Save States
-4. Add color schemas
-5. Create menus
+4. Create menus

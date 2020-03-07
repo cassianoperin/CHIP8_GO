@@ -12,6 +12,8 @@ import (
 
 var (
 	win		*pixelgl.Window
+	WindowTitle	string = "Chip-8"
+	color_theme = 0
 )
 
 const (
@@ -41,9 +43,9 @@ func drawGraphicsConsole() {
 
 func renderGraphics() {
 	cfg := pixelgl.WindowConfig{
-		Title:  "Chip8",
+		Title:  WindowTitle,
 		Bounds: pixel.R(0, 0, screenWidth, screenHeight),
-		VSync:  true,
+		VSync:  false,
 	}
 	var err error
 	win, err = pixelgl.NewWindow(cfg)
@@ -59,6 +61,43 @@ func drawGraphics(graphics [128 * 64]byte) {
 	win.Clear(colornames.Black)
 	imd := imdraw.New(nil)
 	imd.Color = pixel.RGB(1, 1, 1)
+
+	//Select Color Schema
+	if color_theme != 0 {
+
+		switch color_theme := color_theme ; {
+
+		case color_theme == 1:
+			win.Clear(colornames.White)
+			imd.Color = colornames.Black
+
+		case color_theme == 2:
+			imd.Color = colornames.Lightgreen
+
+		case color_theme == 3:
+			win.Clear(colornames.Dimgray)
+			imd.Color = colornames.Lightgreen
+
+		case color_theme == 4:
+			imd.Color = colornames.Steelblue
+
+		case color_theme == 5:
+			win.Clear(colornames.Darkgray)
+			imd.Color = colornames.Steelblue
+
+		case color_theme == 6:
+			imd.Color = colornames.Indianred
+
+		case color_theme == 7:
+			win.Clear(colornames.Darkgray)
+			imd.Color = colornames.Indianred
+		}
+
+	}
+
+
+
+
 	screenWidth := win.Bounds().W()
 	width := screenWidth/CPU.SizeX
 	height := screenHeight/CPU.SizeY
@@ -202,7 +241,6 @@ func Keyboard() {
 				CPU.V			= [16]byte{}
 				CPU.I			= 0
 				CPU.Graphics		= [128 * 64]byte{}
-				//CPU.Graphics		= [64 * 32]byte{}
 				CPU.DrawFlag		= false
 				CPU.DelayTimer		= 0
 				CPU.SoundTimer		= 0
@@ -217,6 +255,7 @@ func Keyboard() {
 				CPU.SizeX	= 64
 				CPU.SizeY	= 32
 				CPU.CPU_Clock_Speed = 500
+				CPU.Memory = CPU.MemoryCleanSnapshot
 			}
 
 
@@ -265,6 +304,16 @@ func Keyboard() {
 					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
 					time.Sleep(5 * keyboard_tmout * time.Millisecond)
 				}
+			}
+
+			// Color Theme
+			if index == 23 {
+				color_theme += 1
+
+				if color_theme > 7 {
+					color_theme = 0
+				}
+				time.Sleep(5 * keyboard_tmout * time.Millisecond)
 			}
 
 		}else {

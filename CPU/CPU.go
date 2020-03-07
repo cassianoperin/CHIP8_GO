@@ -19,7 +19,7 @@ const (
 	// NEED TO FIND A WAY TO PROCESSES IT QUICKLY
 	Rewind_buffer	uint16 = 100
 	// Control the number of Keys mapped in Key Array
-	KeyArraySize	byte	= 23
+	KeyArraySize	byte	= 24
 )
 
 // Components
@@ -41,6 +41,9 @@ var (
 	CPU_Clock_Speed	time.Duration
 	//Graphics	[64 * 32]byte
 	Graphics	[128 * 64]byte
+
+	// Some games like Single Dragon changes memory, so to reset its necessary to reload game
+	MemoryCleanSnapshot	[4096]byte // Memory
 
 	// True if the screen must be drawn
 	DrawFlag	bool
@@ -72,6 +75,7 @@ var (
 		20:	pixelgl.Key0,			// Reset
 		21:	pixelgl.Key7,			// Decrease CPU Clock
 		22:	pixelgl.Key8,			// Increase CPU Clock
+		23:	pixelgl.Key6,			// Change Color Theme
 	}
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
