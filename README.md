@@ -2,13 +2,16 @@
 
 CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied and understood.
 
-**CHIP-8 Space Invaders Game:**
 
-<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/invaders.gif">
+**CHIP-8 Space Invaders Game** | **Superchip (SCHIP) Spacefight 2091!**
+:-------------------------:|:-------------------------:
+<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/invaders.gif">  |  <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/spacefight2091.gif">
 
-**Superchip (SCHIP) Spacefight 2091!:**
 
-<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/spacefight2091.gif">
+**Blinky (Color theme)** | **Single Dragon (Color Theme)**
+:-------------------------:|:-------------------------:
+<img width="430" alt="blinky" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/blinky.png"> | <img width="430" alt="singledragon" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/singledragon.png">
+
 
 ## Features
 * Pause and resume emulation
