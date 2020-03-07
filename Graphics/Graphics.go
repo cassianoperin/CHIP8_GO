@@ -259,8 +259,10 @@ func Keyboard() {
 			}
 
 
-			// Create Savestate
+			// Create Save State
 			if index == 24 {
+				CPU.Show()
+				//CPU.Opcode_savestate		= CPU.Opcode
 				CPU.PC_savestate			= CPU.PC
 				CPU.Stack_savestate		= CPU.Stack
 				CPU.SP_savestate			= CPU.SP
@@ -276,30 +278,49 @@ func Keyboard() {
 				CPU.SizeY_savestate		= CPU.SizeY
 				CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
 				CPU.Memory_savestate 		= CPU.Memory
-				fmt.Printf("\n\t\tSavestate Created")
+				fmt.Printf("\n\t\tSavestate Created\n")
 				time.Sleep(10 * keyboard_tmout * time.Millisecond)
+				// Register that have a savestate
+				CPU.Savestate_created		= 1
+				fmt.Printf("Cycle: %d\tOpcode: %04X(%04X)\tPC: %d(0x%X)\tSP: %d\tStack: %d\tV: %d\tI: %d\tDT: %d\tST: %d\tKey: %d\n", CPU.Cycle_savestate, CPU.Opcode_savestate, CPU.Opcode_savestate & 0xF000, CPU.PC_savestate, CPU.PC_savestate,  CPU.SP_savestate, CPU.Stack_savestate, CPU.V_savestate, CPU.I_savestate, CPU.DelayTimer_savestate, CPU.SoundTimer_savestate, CPU.Key)
+				//CPU.Show()
 			}
 
-			// Create Load
-			if index == 25 {
-				CPU.PC			= CPU.PC_savestate
-				CPU.Stack			= CPU.Stack_savestate
-				CPU.SP			= CPU.SP_savestate
-				CPU.V				= CPU.V_savestate
-				CPU.I				= CPU.I_savestate
-				CPU.Graphics		= CPU.Graphics_savestate
-				CPU.DelayTimer		= CPU.DelayTimer_savestate
-				CPU.SoundTimer		= CPU.SoundTimer_savestate
-				CPU.Cycle			= CPU.Cycle_savestate
-				CPU.Rewind_index		= CPU.Rewind_index_savestate
-				CPU.SCHIP			= CPU.SCHIP_savestate
-				CPU.SizeX			= CPU.SizeX_savestate
-				CPU.SizeY			= CPU.SizeY_savestate
-				CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
-				CPU.Memory 			= CPU.Memory_savestate
-				CPU.DrawFlag		= true
-				time.Sleep(10 * keyboard_tmout * time.Millisecond)
-				fmt.Printf("\n\t\tSavestate Loaded")
+			// Load Save State
+ 			if index == 25 {
+				if CPU.Savestate_created == 1 {
+					fmt.Printf("CPU CURRENT STATUS\n\n")
+					CPU.Show()
+
+					//CPU.Opcode			= CPU.Opcode_savestate
+					CPU.PC			= CPU.PC_savestate - 2
+					CPU.Stack			= CPU.Stack_savestate
+					CPU.SP			= CPU.SP_savestate
+					CPU.V				= CPU.V_savestate
+					CPU.I				= CPU.I_savestate
+					CPU.Graphics		= CPU.Graphics_savestate
+					CPU.DelayTimer		= CPU.DelayTimer_savestate
+					CPU.SoundTimer		= CPU.SoundTimer_savestate
+					CPU.Cycle			= CPU.Cycle_savestate
+					CPU.Rewind_index		= CPU.Rewind_index_savestate
+					CPU.SCHIP			= CPU.SCHIP_savestate
+					CPU.SizeX			= CPU.SizeX_savestate
+					CPU.SizeY			= CPU.SizeY_savestate
+					CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
+					CPU.Memory 			= CPU.Memory_savestate
+					CPU.DrawFlag		= true
+					CPU.Debug = true
+					CPU.Pause = true
+					time.Sleep(10 * keyboard_tmout * time.Millisecond)
+					fmt.Printf("\n\t\tSavestate Loaded\n")
+					fmt.Printf("CPU CURRENT STATUS AFTER LOAD\n\n")
+					fmt.Printf("Cycle: %d\tOpcode: %04X(%04X)\tPC: %d(0x%X)\tSP: %d\tStack: %d\tV: %d\tI: %d\tDT: %d\tST: %d\tKey: %d\n", CPU.Cycle, CPU.Opcode, CPU.Opcode & 0xF000, CPU.PC, CPU.PC,  CPU.SP, CPU.Stack, CPU.V, CPU.I, CPU.DelayTimer, CPU.SoundTimer, CPU.Key)
+					//CPU.Interpreter()
+				} else {
+					time.Sleep(10 * keyboard_tmout * time.Millisecond)
+					fmt.Printf("\n\t\tSavestate not loaded - No Savestate created\n")
+				}
+
 			}
 
 

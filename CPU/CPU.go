@@ -120,6 +120,7 @@ var (
 	RPL		[8]byte
 
 	// Savestates
+	Savestate_created			int = 0
 	PC_savestate			uint16
 	Stack_savestate			[16]uint16
 	SP_savestate			uint16
@@ -134,6 +135,7 @@ var (
 	SizeX_savestate			float64
 	SizeY_savestate			float64
 	CPU_Clock_Speed_savestate	time.Duration
+	Opcode_savestate			uint16
 	Memory_savestate			[4096]byte
 
 

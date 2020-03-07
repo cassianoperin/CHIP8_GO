@@ -24,7 +24,7 @@ func Initialize(file string) {
 		log.Fatal(err)
 	}
 
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/30000))
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10000))
 
 	Beep_buffer = beep.NewBuffer(format)
 	Beep_buffer.Append(streamer)
