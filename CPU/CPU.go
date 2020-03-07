@@ -69,8 +69,8 @@ var (
 		14:	pixelgl.KeyF,
 		15:	pixelgl.KeyV,
 		16:	pixelgl.KeyP,			// Pause
-		17:	pixelgl.KeyLeftBracket,		// CPU Cycle Rewind
-		18:	pixelgl.KeyRightBracket,	// CPU Cycle Forward
+		17:	pixelgl.KeyI,			// CPU Cycle Rewind
+		18:	pixelgl.KeyO,			// CPU Cycle Forward
 		19:	pixelgl.Key9,			// Debug
 		20:	pixelgl.Key0,			// Reset
 		21:	pixelgl.Key7,			// Decrease CPU Clock

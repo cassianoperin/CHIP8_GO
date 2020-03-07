@@ -109,9 +109,9 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 	`P`: Pause and Resume emulation
 
-	`[`: Step back (rewind) one CPU cycle **in Pause Mode** (for debug and study purposes)
+	`I`: Step back (rewind) one CPU cycle **in Pause Mode**
 
-	`]`: Step forward one CPU cycle in **Pause Mode** (for debug and study purposes)
+	`O`: Step forward one CPU cycle in **Pause Mode**
 
 	`6`: Change Color Themes
 
