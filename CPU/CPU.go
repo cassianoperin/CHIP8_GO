@@ -110,7 +110,10 @@ var (
 
 	// SCHIP
 	SCHIP = false
-	RPL	[8]byte // HP-48 RPL user flags
+	// SCHIP in Low Resolution mode (00FE)
+	SCHIP_LORES = false
+	// HP-48 RPL user flags
+	RPL	[8]byte
 
 	// LEGACY OPCODES / Quirks
 	// Game Signature (identify games that needs legacy opcodes)
@@ -126,6 +129,8 @@ var (
 	Resize_Quirk_00FE_00FF	bool	= true
 	// DXY0_loresWideSpriteQuirks - Draws a 16x16 sprite even in low-resolution (64x32) mode, row-major
 	DXY0_loresWideSpriteQuirks	bool	= false
+	scrollQuirks_00CN_00FB_00FC	bool	= false
+
 
 )
 
@@ -243,9 +248,9 @@ func rewind() {
 func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 
 	// Detect transition of draw resolution and clear the screen
-	if chip8_draw {
-		Graphics = [128 * 64]uint8{}
-	}
+	// if chip8_draw {
+	// 	Graphics = [128 * 64]uint8{}
+	// }
 
 	// Turn n in 16 (pixel size in SCHIP Mode)
 	n = 16
@@ -320,9 +325,9 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 
 	// Detect transition of draw resolution and clear the screen
-	if chip8_draw {
-		Graphics = [128 * 64]uint8{}
-	}
+	// if chip8_draw {
+	// 	Graphics = [128 * 64]uint8{}
+	// }
 
 	n = 16
 	if Debug {
@@ -397,9 +402,9 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 	// Draw in Chip-8 Low Resolution mode
 
 	// Detect transition of draw resolution and clear the screen
-	if schip_draw {
-		Graphics = [128 * 64]uint8{}
-	}
+	// if schip_draw {
+	// 	Graphics = [128 * 64]uint8{}
+	// }
 
 	if Debug {
 		fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
@@ -553,6 +558,8 @@ func Interpreter() {
 				if x == 0x000F {
 					// Enable SCHIP Mode
 					SCHIP = true
+					SCHIP_LORES = false
+					scrollQuirks_00CN_00FB_00FC = false
 
 					// Set the clock to SCHIP
 					CPU_Clock_Speed = 1500
@@ -578,6 +585,8 @@ func Interpreter() {
 				} else if x == 0x000E {
 					// Disable SCHIP Mode
 					SCHIP = false
+					SCHIP_LORES = true
+					scrollQuirks_00CN_00FB_00FC = true
 
 					// Set the clock to CHIP-8 Speed
 					CPU_Clock_Speed = 500
@@ -609,8 +618,13 @@ func Interpreter() {
 				} else if x == 0x000C {
 
 					shift := 4
+
+					// If in SCHIP Low Res mode, shift 2 pixels only
+					if scrollQuirks_00CN_00FB_00FC {
+						shift = 2
+					}
+
 					rowsize := int(SizeX)
-					//fmt.Printf(Graphics[])
 
 					gfx_len := 0
 					if SCHIP {
@@ -649,6 +663,12 @@ func Interpreter() {
 					} else if x == 0x000B {
 
 						shift := 4	// Number of bytes to be shifted
+
+						// If in SCHIP Low Res mode, shift 2 pixels only
+						if scrollQuirks_00CN_00FB_00FC {
+							shift = 2
+						}
+
 						rowsize := int(SizeX)
 						index := 0
 						gfx_len := 0
@@ -700,6 +720,11 @@ func Interpreter() {
 					SCHIP = true
 
 					shift := int(x) * 128
+
+					// If in SCHIP Low Res mode, scroll N/2 lines only
+					if scrollQuirks_00CN_00FB_00FC {
+						shift = (int(x) * 128 ) / 2
+					}
 
 					// Shift Right N lines on Graphics Array
 					for i:=len(Graphics) -1 ; i >= shift ; i-- {

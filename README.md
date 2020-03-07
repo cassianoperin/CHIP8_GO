@@ -150,8 +150,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 ## TODO LIST
 
 1. Migrate from pixel to SDL2
-2. Games that uses low res AND schip draw functions should shift 2 bytes (instead od 4) and scroll N/2 lines
-3. Sound glitches in Windows
-4. Implement Save States
-5. Add color schemas
-6. Create menus
+2. Sound glitches in Windows
+3. Implement Save States
+4. Add color schemas
+5. Create menus
