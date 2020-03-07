@@ -14,9 +14,6 @@ import (
 
 const (
 	// Rewind Buffer Size
-	// FIX IT, INCREASING IT TO 15000, emulation became slow due to vector and matrix processing
-	// Exponentially increased by size of graphics array!
-	// NEED TO FIND A WAY TO PROCESSES IT QUICKLY
 	Rewind_buffer	uint16 = 100
 	// Control the number of Keys mapped in Key Array
 	KeyArraySize	byte	= 24
@@ -33,23 +30,27 @@ var (
 	I		uint16
 	DelayTimer	byte
 	SoundTimer	byte
-	TimerClock	*time.Ticker
-	FPS	*time.Ticker
-	CPU_Clock	*time.Ticker
+	Graphics	[128 * 64]byte
+
+	// Timers
+	TimerClock		*time.Ticker
+	FPS			*time.Ticker
+	CPU_Clock		*time.Ticker
 	// SCHIP used to decrease DT faster than 60HZ to gain speed
 	SCHIP_TimerClockHack	*time.Ticker
-	CPU_Clock_Speed	time.Duration
-	//Graphics	[64 * 32]byte
-	Graphics	[128 * 64]byte
+	CPU_Clock_Speed		time.Duration
 
 	// Some games like Single Dragon changes memory, so to reset its necessary to reload game
 	MemoryCleanSnapshot	[4096]byte // Memory
 
 	// True if the screen must be drawn
 	DrawFlag	bool
-	Key		[KeyArraySize]byte
+
+	// CPU Cycle
 	Cycle		uint16
 
+	// Key Control
+	Key		[KeyArraySize]byte
 	// Control the Keys Pressed
 	KeyPressed = map[uint16]pixelgl.Button{
 		0:	pixelgl.KeyX,
@@ -79,45 +80,41 @@ var (
 	}
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
-	Pause		bool =  false
-
+	Pause		bool = false
 	// DEBUG modes
 	Debug		bool = false
 	// Debug Rewind Mode
 	Debug_v2	bool = false
 	// Debug Draw Graphics function
 	Debug_v3	bool = false
-	// Enable and Disable Rewind Mode
-	rewind_mode	bool	= true
+	// Enable and Disable Rewind Mode to increase speed
+	rewind_mode	bool = true
 
 	// Rewind Variables
 	Rewind_index	uint16 = 0
 	PC_track	= new([Rewind_buffer]uint16)
 	SP_track	= new([Rewind_buffer]uint16)
-	I_track	= new([Rewind_buffer]uint16)
+	I_track		= new([Rewind_buffer]uint16)
 	DT_track	= new([Rewind_buffer]byte)
 	ST_track	= new([Rewind_buffer]byte)
 	DF_track	= new([Rewind_buffer]bool)
-	V_track	= new([Rewind_buffer][16]byte)
+	V_track		= new([Rewind_buffer][16]byte)
 	Stack_track	= new([Rewind_buffer][16]uint16)
 	GFX_track	= new([Rewind_buffer][128 * 64]byte)
 
 	// Beep sound file
 	sound_file string
+
 	// GRAPHICS
 	SizeX		float64 = 64
 	SizeY		float64 = 32
 
-	// Map changes in draw resolution to clean the screen
-	chip8_draw	bool = false
-	schip_draw	bool = false
-
 	// SCHIP
-	SCHIP = false
+	SCHIP		= false
 	// SCHIP in Low Resolution mode (00FE)
-	SCHIP_LORES = false
+	SCHIP_LORES	= false
 	// HP-48 RPL user flags
-	RPL	[8]byte
+	RPL		[8]byte
 
 	// LEGACY OPCODES / Quirks
 	// Game Signature (identify games that needs legacy opcodes)
@@ -158,14 +155,14 @@ func Initialize() {
 	TimerClock	= time.NewTicker(time.Second / 60)
 
 	// Create a ticker at 60Hz to update the screen
-	FPS	= time.NewTicker(time.Second / 30)
+	FPS		= time.NewTicker(time.Second / 30)
 
 	// CPU Clock Speed
 	// CHIP-8=500, SCHIP=1000
-	CPU_Clock_Speed	= 500
-	CPU_Clock	= time.NewTicker(time.Second / CPU_Clock_Speed)
+	CPU_Clock_Speed		= 500
+	CPU_Clock		= time.NewTicker(time.Second / CPU_Clock_Speed)
 	// SCHIP Timer Speed Hack
-	SCHIP_TimerClockHack = time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
+	SCHIP_TimerClockHack	= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 
 	// Load CHIP-8 8x5 fontset
 	// Memory address 0-79
@@ -197,25 +194,25 @@ func rewind() {
 	if Rewind_index == 0 {
 		// PC
 		copy(PC_track[1:], PC_track[0:])
-		PC_track[0]		= PC
+		PC_track[0]	= PC
 		// SP
 		copy(SP_track[1:], SP_track[0:])
-		SP_track[0]		= SP
+		SP_track[0]	= SP
 		// I
 		copy(I_track[1:], I_track[0:])
-		I_track[0]		= I
+		I_track[0]	= I
 		// DelayTimer
 		copy(DT_track[1:], DT_track[0:])
-		DT_track[0]		= DelayTimer
+		DT_track[0]	= DelayTimer
 		// SoundTimer
 		copy(ST_track[1:], ST_track[0:])
-		ST_track[0]		= SoundTimer
+		ST_track[0]	= SoundTimer
 		// DrawFlag
 		copy(DF_track[1:], DF_track[0:])
-		DF_track[0]		= DrawFlag
+		DF_track[0]	= DrawFlag
 		// V
 		copy(V_track[1:], V_track[0:])
-		V_track[0]		= V
+		V_track[0]	= V
 		// Stack
 		copy(Stack_track[1:], Stack_track[0:])
 		Stack_track[0]	= Stack
@@ -251,11 +248,6 @@ func rewind() {
 // If in SCHIP mode will draw 16x16 sprites
 func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 
-	// Detect transition of draw resolution and clear the screen
-	// if chip8_draw {
-	// 	Graphics = [128 * 64]uint8{}
-	// }
-
 	// Turn n in 16 (pixel size in SCHIP Mode)
 	n = 16
 	if Debug {
@@ -266,23 +258,17 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 	for byte = 0 ; byte < n ; byte++ {
 
 		var (
-			binary string = ""
-			sprite uint8 = 0
-			sprite2 uint8 = 0
+			binary	string = ""
+			sprite	uint8  = 0
+			sprite2	uint8  = 0
 		)
 
-		// Set the sprite
-		//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
-
 		// DOCUMENT SPRITES
-		sprite = Memory[I + (byte * 2)]
+		sprite  = Memory[I + (byte * 2)]
 		sprite2 = Memory[I + (byte * 2) + 1]
 
-
 		// Sprite in binary format
-		//binary = fmt.Sprintf("%.8b", sprite)
 		binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
-		// fmt.Printf("BINARY = %b\n",sprite)
 
 		// Always print 8 bits
 		for bit := 0; bit < 16 ; bit++ {
@@ -290,9 +276,8 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 			// Convert the binary[bit] variable into an INT using Atoi method
 			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
 			if err == nil {
-				// fmt.Println(bit_binary)
-			}
 
+			}
 
 			// Set the index to write the 8 bits of each pixel
 			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
@@ -302,7 +287,6 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 				//fmt.Printf("Bigger than 2048 or 8192\n")
 				continue
 			}
-
 
 			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
 			if (bit_binary  == 1){
@@ -314,11 +298,6 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 				Graphics[gfx_index] ^= 1
 			}
 
-		// Flag last draw mode
-		chip8_draw	= false
-		schip_draw	= true
-		// DEBUG 2
-		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
 		}
 	}
 }
@@ -327,11 +306,6 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 // SCHIP LOW-RES MODE
 // If NOT in SCHIP mode will draw 16x8 sprites
 func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
-
-	// Detect transition of draw resolution and clear the screen
-	// if chip8_draw {
-	// 	Graphics = [128 * 64]uint8{}
-	// }
 
 	n = 16
 	if Debug {
@@ -347,19 +321,11 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 			//sprite2 uint8 = 0
 		)
 
-		// Set the sprite
-		//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
-
 		// DOCUMENT SPRITES
 		sprite = Memory[I + byte]
-		//sprite2 = Memory[I + (byte * 2) + 1]
-
 
 		// Sprite in binary format
 		binary = fmt.Sprintf("%.8b", sprite)
-		//binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
-		// fmt.Printf("BINARY = %b\n",sprite)
-		// fmt.Printf("\n")
 
 		// Always print 8 bits
 		for bit := 0; bit < 8 ; bit++ {
@@ -367,7 +333,7 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 			// Convert the binary[bit] variable into an INT using Atoi method
 			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
 			if err == nil {
-				// fmt.Println(bit_binary)
+
 			}
 
 			// Set the index to write the 8 bits of each pixel
@@ -389,12 +355,6 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 				Graphics[gfx_index] ^= 1
 			}
 
-			// Flag last draw mode
-			chip8_draw	= false
-			schip_draw	= true
-
-		// DEBUG 2
-		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
 		}
 	}
 }
@@ -405,15 +365,9 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 	// Draw in Chip-8 Low Resolution mode
 
-	// Detect transition of draw resolution and clear the screen
-	// if schip_draw {
-	// 	Graphics = [128 * 64]uint8{}
-	// }
-
 	if Debug {
 		fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
 	}
-
 
 	// Print N Bytes from address I in V[x]V[y] position of the screen
 	for byte = 0 ; byte < n ; byte++ {
@@ -424,7 +378,6 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 		)
 
 		// Set the sprite
-		//fmt.Printf("Memory I + Byte(%d): %d (%d)\n", byte, Memory[I+ byte], Memory[I + byte])
 		sprite = Memory[I + byte]
 
 		// Sprite in binary format
@@ -436,7 +389,7 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 			// Convert the binary[bit] variable into an INT using Atoi method
 			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
 			if err == nil {
-				// fmt.Println(bit_binary)
+
 			}
 
 			// Set the index to write the 8 bits of each pixel
@@ -458,11 +411,6 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 				Graphics[gfx_index] ^= 1
 			}
 
-			// Flag last draw mode
-			chip8_draw	= true
-			schip_draw	= false
-		// DEBUG 2
-		//fmt.Printf ("\n\tByte: %d,\tSprite: %d\tBinary: %s\tbit: %d\tIndex: %d\tbinary[bit]: %c\tGraphics[index]: %d",byte, sprite, binary, bit, index, binary[bit], Graphics[index])
 		}
 	}
 
@@ -500,19 +448,14 @@ func Interpreter() {
 		case 0x0000: //0NNN
 
 			x := Opcode & 0x000F
-			//fmt.Printf("\t\t%X", x)
-			//os.Exit(2)
-
 
 			switch Opcode & 0x00F0 {
-
 
 			case 0x00E0:
 				// 00E0 - CLS
 				// Clear the display.
 				if x == 0x0000 {
 					// Clear display
-					//Graphics = [64 * 32]byte{}
 					Graphics = [128 * 64]byte{}
 					PC += 2
 					if Debug {
@@ -526,7 +469,6 @@ func Interpreter() {
 				// The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
 				// MUST MOVE TO NEXT ADDRESS AFTER THIS (PC+=2)
 				if x == 0x000E {
-					//fmt.Println("   RCA 1802 Opcode 0x00EE - Return")
 					PC = Stack[SP] + 2
 					SP --
 					if Debug {
@@ -637,7 +579,6 @@ func Interpreter() {
 						gfx_len = (64 * 32)
 					}
 
-
 					// Run all the array
 					for i := 0 ; i < gfx_len ; i++ {
 
@@ -747,7 +688,6 @@ func Interpreter() {
 					}
 
 					break
-
 
 			default:
 				if Debug {
@@ -968,6 +908,7 @@ func Interpreter() {
 				}
 				break
 
+
 			// 8xy6 - SHR Vx {, Vy}
 			// Set Vx = Vx SHR 1.
 			// If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2 (SHR).
@@ -1004,6 +945,7 @@ func Interpreter() {
 
 				PC += 2
 				break
+
 
 			// 8xyE - SHL Vx {, Vy}
 			// Set Vx = Vx SHL 1.
@@ -1057,7 +999,6 @@ func Interpreter() {
 		// Set I = nnn.
 		// The value of register I is set to nnn.
 		case 0xA000:
-			//fmt.Println("   Opcode Family: 0xA000 - Sets I to the address NNN")
 			I = Opcode & 0x0FFF
 			PC += 2
 			if Debug {
@@ -1119,8 +1060,6 @@ func Interpreter() {
 
 			// Translate the x and Y to the Graphics Vector
 			gpx_position = (uint16(V[x]) + (uint16(SizeX) * uint16(V[y])))
-			// DEBUG
-			//fmt.Printf ("\tGraphic vector position: %d\tValue: %d\n", gpx_position, Graphics[x + (128 * y)] )
 
 			// SCHIP Dxy0
 			// When in high res mode show a 16x16 sprite at (VX, VY)
@@ -1310,6 +1249,7 @@ func Interpreter() {
 				}
 				break
 
+
 			// SCHIP Fx30 - LD F, Vx
 			// Set I = location of sprite for digit Vx.
 			// The value of I is set to the location for the hexadecimal sprite corresponding to the value of Vx.
@@ -1321,6 +1261,8 @@ func Interpreter() {
 					fmt.Printf("\t\tSCHIP Opcode Fx30 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*10)\n", I, x, V[x])
 				}
 				break
+
+
 			// Fx33 - LD B, Vx
 			// BCD - Binary Code hexadecimal
 			// Store BCD representation of Vx in memory locations I, I+1, and I+2.
@@ -1375,16 +1317,8 @@ func Interpreter() {
 
 				for i := uint16(0); i <= x; i++ {
 					V[i] = Memory[I+i]
-					//fmt.Printf("   New value of V[%d] = %d\n", i, V[i])
 				}
 
-				// Fix I implementation TEST SUGGESTED
-				//fmt.Println(I)
-				//fmt.Println(x)
-				// I = I + x + 1
-				//fmt.Println(I)
-				//fmt.Println(x)
-				// Increment Program Counter
 				PC += 2
 
 				// If needed, run the original Chip-8 opcode (not used in recent games)

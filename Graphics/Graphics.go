@@ -13,7 +13,7 @@ import (
 var (
 	win		*pixelgl.Window
 	WindowTitle	string = "Chip-8"
-	color_theme = 0
+	color_theme	= 0
 )
 
 const (
@@ -98,9 +98,9 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 
 
-	screenWidth := win.Bounds().W()
-	width := screenWidth/CPU.SizeX
-	height := screenHeight/CPU.SizeY
+	screenWidth	:= win.Bounds().W()
+	width		:= screenWidth/CPU.SizeX
+	height		:= screenHeight/CPU.SizeY
 
 	// If in SCHIP mode, read the entire vector. If in Chip8 mode, read from 0 to 2047 only
 	for gfxindex := 0 ; gfxindex < int(CPU.SizeX) * int(CPU.SizeY) ; gfxindex++ {
@@ -124,12 +124,12 @@ func drawGraphics(graphics [128 * 64]byte) {
 		}
 
 	}
+
 	if CPU.Debug_v3 {
 		fmt.Printf("\n")
 	}
 
 	imd.Draw(win)
-	//win.Update()
 
 }
 
@@ -388,19 +388,12 @@ func Run() {
 
 		// Update Input Events
 		win.UpdateInput()
-		//win.Update()
 
 		// 60 FPS Control - Update the screen
 		select {
 		case <-CPU.FPS .C:
-			//start := time.Now()
 
 			win.Update()
-
-			//if CPU.Debug {
-			//	elapsed := time.Since(start)
-				//fmt.Printf("\t\tTime track - Screen update: %s\n\n", elapsed)
-			//}
 
 			default:
 				// No timer to handle
