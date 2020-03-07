@@ -259,6 +259,50 @@ func Keyboard() {
 			}
 
 
+			// Create Savestate
+			if index == 24 {
+				CPU.PC_savestate			= CPU.PC
+				CPU.Stack_savestate		= CPU.Stack
+				CPU.SP_savestate			= CPU.SP
+				CPU.V_savestate			= CPU.V
+				CPU.I_savestate			= CPU.I
+				CPU.Graphics_savestate		= CPU.Graphics
+				CPU.DelayTimer_savestate	= CPU.DelayTimer
+				CPU.SoundTimer_savestate	= CPU.SoundTimer
+				CPU.Cycle_savestate		= CPU.Cycle
+				CPU.Rewind_index_savestate	= CPU.Rewind_index
+				CPU.SCHIP_savestate		= CPU.SCHIP_savestate
+				CPU.SizeX_savestate		= CPU.SizeX
+				CPU.SizeY_savestate		= CPU.SizeY
+				CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
+				CPU.Memory_savestate 		= CPU.Memory
+				fmt.Printf("\n\t\tSavestate Created")
+				time.Sleep(10 * keyboard_tmout * time.Millisecond)
+			}
+
+			// Create Load
+			if index == 25 {
+				CPU.PC			= CPU.PC_savestate
+				CPU.Stack			= CPU.Stack_savestate
+				CPU.SP			= CPU.SP_savestate
+				CPU.V				= CPU.V_savestate
+				CPU.I				= CPU.I_savestate
+				CPU.Graphics		= CPU.Graphics_savestate
+				CPU.DelayTimer		= CPU.DelayTimer_savestate
+				CPU.SoundTimer		= CPU.SoundTimer_savestate
+				CPU.Cycle			= CPU.Cycle_savestate
+				CPU.Rewind_index		= CPU.Rewind_index_savestate
+				CPU.SCHIP			= CPU.SCHIP_savestate
+				CPU.SizeX			= CPU.SizeX_savestate
+				CPU.SizeY			= CPU.SizeY_savestate
+				CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
+				CPU.Memory 			= CPU.Memory_savestate
+				CPU.DrawFlag		= true
+				time.Sleep(10 * keyboard_tmout * time.Millisecond)
+				fmt.Printf("\n\t\tSavestate Loaded")
+			}
+
+
 			// Decrease CPU Clock Speed
 			if index == 21 {
 				decrease_rate := 50

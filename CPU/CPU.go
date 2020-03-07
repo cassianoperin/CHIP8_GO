@@ -16,7 +16,7 @@ const (
 	// Rewind Buffer Size
 	Rewind_buffer	uint16 = 100
 	// Control the number of Keys mapped in Key Array
-	KeyArraySize	byte	= 24
+	KeyArraySize	byte	= 26
 )
 
 // Components
@@ -77,6 +77,9 @@ var (
 		21:	pixelgl.Key7,			// Decrease CPU Clock
 		22:	pixelgl.Key8,			// Increase CPU Clock
 		23:	pixelgl.Key6,			// Change Color Theme
+		24:	pixelgl.KeyK,			// Create Savestate
+		25:	pixelgl.KeyL,			// Load Savestate
+
 	}
 
 	// Pause (Used to Forward and Rewind CPU Cycles)
@@ -115,6 +118,24 @@ var (
 	SCHIP_LORES	= false
 	// HP-48 RPL user flags
 	RPL		[8]byte
+
+	// Savestates
+	PC_savestate			uint16
+	Stack_savestate			[16]uint16
+	SP_savestate			uint16
+	V_savestate				[16]byte
+	I_savestate				uint16
+	Graphics_savestate		[128 * 64]byte
+	DelayTimer_savestate		byte
+	SoundTimer_savestate		byte
+	Cycle_savestate			uint16
+	Rewind_index_savestate		uint16
+	SCHIP_savestate			bool
+	SizeX_savestate			float64
+	SizeY_savestate			float64
+	CPU_Clock_Speed_savestate	time.Duration
+	Memory_savestate			[4096]byte
+
 
 	// LEGACY OPCODES / Quirks
 	// Game Signature (identify games that needs legacy opcodes)
