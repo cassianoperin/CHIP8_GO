@@ -160,6 +160,6 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 ## TODO LIST
 
-1. Migrate from pixel to SDL2
-2. Create menus
-3. Map better buttons for main games
+1. Create graphical menus
+2. Sound glitches in Windows version
+3. Windows version is slowest than Mac version
