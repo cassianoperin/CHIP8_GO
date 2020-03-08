@@ -149,6 +149,45 @@ func handle_legacy_opcodes() {
 }
 
 
+func remap_keys() {
+	// Platform: SCHIP
+	// Game: "Blinky [Hans Christian Egeberg, 1991].ch8"
+	// MD5: fb3284205c90d80c3b17aeea2eedf0e4
+	if (CPU.Game_signature == "121A322E303020432E20") {
+		CPU.KeyPressed[3] = pixelgl.KeyUp
+		CPU.KeyPressed[6] = pixelgl.KeyDown
+		CPU.KeyPressed[7] = pixelgl.KeyLeft
+		CPU.KeyPressed[8] = pixelgl.KeyRight
+		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Up: ↑     Down: ↓"
+		fmt.Printf("Keys Remaped\n")
+	}
+
+	// Platform: SCHIP
+	// Game: "Spacefight 2091 [Carsten Soerensen, 1992].ch8"
+	// MD5: f99d0e82a489b8aff1c7203d90f740c3
+	if (CPU.Game_signature == "12245370616365466967") {
+		CPU.KeyPressed[10] = pixelgl.KeySpace
+		CPU.KeyPressed[3] = pixelgl.KeyLeft
+		CPU.KeyPressed[12] = pixelgl.KeyRight
+		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
+		fmt.Printf("Keys Remaped\n")
+	}
+
+	// Platform: CHIP-8
+	// Game: "Space Invaders [David Winter].ch8"
+	// MD5: a67f58742cff77702cc64c64413dc37d
+	if (CPU.Game_signature == "1225535041434520494E") {
+		CPU.KeyPressed[5] = pixelgl.KeySpace
+		CPU.KeyPressed[4] = pixelgl.KeyLeft
+		CPU.KeyPressed[6] = pixelgl.KeyRight
+		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
+		fmt.Printf("Keys Remaped\n")
+	}
+
+
+}
+
+
 func testFile(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		fmt.Printf("File '%s' not found.\n\n", os.Args[1])
@@ -178,6 +217,7 @@ func main() {
 	// Identify special games that needs legacy opcodes
 	get_game_signature()
 	handle_legacy_opcodes()
+	remap_keys()
 	CPU.MemoryCleanSnapshot = CPU.Memory
 
 	// Start Window System and draw Graphics

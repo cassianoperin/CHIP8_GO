@@ -100,7 +100,7 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	screenWidth	:= win.Bounds().W()
 	width		:= screenWidth/CPU.SizeX
-	height		:= screenHeight/CPU.SizeY
+	height		:= ((screenHeight)/CPU.SizeY)
 
 	// If in SCHIP mode, read the entire vector. If in Chip8 mode, read from 0 to 2047 only
 	for gfxindex := 0 ; gfxindex < int(CPU.SizeX) * int(CPU.SizeY) ; gfxindex++ {
@@ -110,7 +110,7 @@ func drawGraphics(graphics [128 * 64]byte) {
 			x := gfxindex % int(CPU.SizeX)
 			// Line
 			y := gfxindex / int(CPU.SizeX)
-			// Needs to be inverted to IMD Draw functoion before
+			// Needs to be inverted to IMD Draw function before
 			y = (int(CPU.SizeY) - 1) - y
 
 			if CPU.Debug_v3 {
