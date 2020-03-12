@@ -132,19 +132,15 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 
 ## Documentation
+
+### Chip-8
 [Cowgod's Chip-8 Technical Reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#0.0)
 
 [How to write an emulator (CHIP-8 interpreter) — Multigesture.net](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
 
 [Wikipedia - CHIP-8](https://en.wikipedia.org/wiki/CHIP-8)
 
-[HP48 Superchip](https://github.com/Chromatophore/HP48-Superchip)
-
-[SCHIP](http://devernay.free.fr/hacks/chip8/schip.txt)
-
 [trapexit chip-8 documentation](https://github.com/trapexit/chip-8_documentation)
-
-[CHIP‐8-Extensions-Reference](https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Extensions-Reference)
 
 [Thomas Daley Wiki (Game Compatibility)](https://github.com/tomdaley92/kiwi-8/issues/9)
 
@@ -152,9 +148,23 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 [Chip-8 Database](https://chip-8.github.io/database/)
 
+[Archive chip8.com](https://web.archive.org/web/20160401091945/http://www.chip8.com/)
+
+[Columbia University - Columbia University](http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf)
+
+
+### Superchip (SCHIP)
+[HP48 Superchip](https://github.com/Chromatophore/HP48-Superchip)
+
+[SCHIP](http://devernay.free.fr/hacks/chip8/schip.txt)
+
 [Chip-8 Reference Manual](http://chip8.sourceforge.net/chip8-1.1.pdf)
 
-[Archive chip8.com page](https://web.archive.org/web/20160401091945/http://www.chip8.com/)
+
+### Chip-8 Extensions
+[CHIP‐8 Extensions Reference](https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Extensions-Reference)
+
+[CHIP‐8 Extensions (Github)](https://chip-8.github.io/extensions/)
 
 
 
