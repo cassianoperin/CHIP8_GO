@@ -95,9 +95,6 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	}
 
-
-
-
 	screenWidth	:= win.Bounds().W()
 	width		:= screenWidth/CPU.SizeX
 	height		:= ((screenHeight)/CPU.SizeY)
@@ -144,6 +141,8 @@ func Keyboard() {
 				if CPU.Pause {
 					CPU.Pause = false
 					fmt.Printf("\t\tPAUSE mode Disabled\n")
+					drawGraphics(CPU.Graphics)
+					win.Update()
 					time.Sleep(100 * keyboard_tmout * time.Millisecond)
 				} else {
 					CPU.Pause = true
@@ -163,6 +162,7 @@ func Keyboard() {
 						if (CPU.Cycle == 1) {
 							fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
 							drawGraphics(CPU.Graphics)
+							win.Update()
 							time.Sleep(100 * keyboard_tmout * time.Millisecond)
 						} else {
 							// Update values, reading the track records
@@ -414,9 +414,9 @@ func Run() {
 				}
 
 				// If necessary, DRAW
-				if CPU.DrawFlag {
-					drawGraphics(CPU.Graphics)
-				}
+				// if CPU.DrawFlag {
+				// 	drawGraphics(CPU.Graphics)
+				// }
 
 				// Draw Graphics on Console
 				//drawGraphicsConsole()
@@ -448,7 +448,9 @@ func Run() {
 		// 60 FPS Control - Update the screen
 		select {
 		case <-CPU.FPS .C:
-
+			// Instead of draw screen every time drawflag is set, draw at 60Hz
+			drawGraphics(CPU.Graphics)
+			// Update the screen after draw
 			win.Update()
 
 			default:
