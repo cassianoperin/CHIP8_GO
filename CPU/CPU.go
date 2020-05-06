@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 	"strconv"
-	// "github.com/faiface/pixel/pixelgl"
 	"Chip8/Fontset"
 	"Chip8/Sound"
 
@@ -22,86 +21,86 @@ const (
 var (
 	// Components
 	Memory					[4096]byte		// Memory
-	PC						uint16			// Program Counter
+	PC					uint16			// Program Counter
 	Opcode					uint16			// CPU Operation Code
 	Stack					[16]uint16		// Stack
-	SP						uint16			// Stack Pointer
-	V						[16]byte			// V Register
-	I						uint16			// I Register
-	DelayTimer				byte				// Delay Timer
-	SoundTimer				byte				// Sound Timer
-	Graphics					[128 * 64]byte		// Graphic Array
+	SP					uint16			// Stack Pointer
+	V					[16]byte		// V Register
+	I					uint16			// I Register
+	DelayTimer				byte			// Delay Timer
+	SoundTimer				byte			// Sound Timer
+	Graphics				[128 * 64]byte		// Graphic Array
 
 	// Timers
-	TPS						int				// Ticks Per Second (used by Ebiten)
+	TPS					int			// Ticks Per Second (used by Ebiten)
 	DelayAndSoundClock			*time.Ticker		// Delay and Sound Timer
 	KeyboardClock				*time.Ticker		// Keyboard Timer to be used with emulator keys
-	CPU_Clock					*time.Ticker		// CPU Clock
-	CPU_Clock_Speed			time.Duration		// Value defined to CPU Clock
-	SCHIP_TimerClockHack		*time.Ticker		// SCHIP used to decrease DT faster than 60HZ to gain speed
+	CPU_Clock				*time.Ticker		// CPU Clock
+	CPU_Clock_Speed				time.Duration		// Value defined to CPU Clock
+	SCHIP_TimerClockHack			*time.Ticker		// SCHIP used to decrease DT faster than 60HZ to gain speed
 
 	// General Variables and flags
 	MemoryCleanSnapshot			[4096]byte 		// Some games like Single Dragon changes memory, so to reset its necessary to reload game
-	DrawFlag					bool				// True if the screen must be drawn
+	DrawFlag				bool			// True if the screen must be drawn
 	Cycle					uint16			// CPU Cycle Counter
-	Key						[KeyArraySize]byte	// Control the Keys Pressed
+	Key					[KeyArraySize]byte	// Control the Keys Pressed
 	sound_file				string			// Beep sound file
 	SizeX					uint16			// Number of Columns in Graphics
 	SizeY					uint16			// Number of Lines in Graphics
 
 	// SCHIP Specific Variables
-	SCHIP					bool				// SCHIP MODE ENABLED OR DISABLED
-	SCHIP_LORES				bool				// SCHIP in Low Resolution mode (00FE)
-	SCHIP_TimerHack			bool				// Enable or disable SCHIP DelayTimer Hack
-	RPL						[8]byte			// HP-48 RPL user flags
+	SCHIP					bool			// SCHIP MODE ENABLED OR DISABLED
+	SCHIP_LORES				bool			// SCHIP in Low Resolution mode (00FE)
+	SCHIP_TimerHack				bool			// Enable or disable SCHIP DelayTimer Hack
+	RPL					[8]byte			// HP-48 RPL user flags
 
 	// Rewind Variables
-	rewind_mode				bool				// Enable and Disable Rewind Mode to increase emulation speed
+	rewind_mode				bool			// Enable and Disable Rewind Mode to increase emulation speed
 	Rewind_index				uint16			// Rewind Index
-	PC_track					= new([Rewind_buffer]uint16)
-	SP_track					= new([Rewind_buffer]uint16)
+	PC_track				= new([Rewind_buffer]uint16)
+	SP_track				= new([Rewind_buffer]uint16)
 	I_track					= new([Rewind_buffer]uint16)
-	DT_track					= new([Rewind_buffer]byte)
-	ST_track					= new([Rewind_buffer]byte)
-	DF_track					= new([Rewind_buffer]bool)
+	DT_track				= new([Rewind_buffer]byte)
+	ST_track				= new([Rewind_buffer]byte)
+	DF_track				= new([Rewind_buffer]bool)
 	V_track					= new([Rewind_buffer][16]byte)
 	Stack_track				= new([Rewind_buffer][16]uint16)
-	GFX_track					= new([Rewind_buffer][128 * 64]byte)
+	GFX_track				= new([Rewind_buffer][128 * 64]byte)
 
 	// Savestates
 	Savestate_created			int
 	PC_savestate				uint16
-	Stack_savestate			[16]uint16
+	Stack_savestate				[16]uint16
 	SP_savestate				uint16
 	V_savestate				[16]byte
 	I_savestate				uint16
 	Graphics_savestate			[128 * 64]byte
-	DelayTimer_savestate		byte
-	SoundTimer_savestate		byte
-	Cycle_savestate			uint16
-	Rewind_index_savestate		uint16
-	SCHIP_savestate			bool
-	SCHIP_LORES_savestate		bool
-	SizeX_savestate			uint16
-	SizeY_savestate			uint16
-	CPU_Clock_Speed_savestate	time.Duration
+	DelayTimer_savestate			byte
+	SoundTimer_savestate			byte
+	Cycle_savestate				uint16
+	Rewind_index_savestate			uint16
+	SCHIP_savestate				bool
+	SCHIP_LORES_savestate			bool
+	SizeX_savestate				uint16
+	SizeY_savestate				uint16
+	CPU_Clock_Speed_savestate		time.Duration
 	Opcode_savestate			uint16
 	Memory_savestate			[4096]byte
 
 	// Legacy Opcodes and Quirks
 	Game_signature				string	// Game Signature (identify games that needs legacy opcodes)
-	Legacy_Fx55_Fx65			bool		// Enable original Chip-8 Fx55 and Fx65 opcodes (increases I)
-	Legacy_8xy6_8xyE			bool		// Enable original Chip-8 8xy6 and 8xyE opcodes
-	FX1E_spacefight2091			bool		// FX1E undocumented feature needed by Spacefight 2091!
-	DXYN_bowling_wrap			bool		// DXYN sprite wrap in Bowling game
-	Resize_Quirk_00FE_00FF		bool		// Resize_Quirk_00FE_00FF - Clears the screen - Must be set to True always
-	DXY0_loresWideSpriteQuirks	bool		// DXY0_loresWideSpriteQuirks - Draws a 16x16 sprite even in low-resolution (64x32) mode, row-major
-	scrollQuirks_00CN_00FB_00FC	bool		// Shift only 2 lines
+	Legacy_Fx55_Fx65			bool	// Enable original Chip-8 Fx55 and Fx65 opcodes (increases I)
+	Legacy_8xy6_8xyE			bool	// Enable original Chip-8 8xy6 and 8xyE opcodes
+	FX1E_spacefight2091			bool	// FX1E undocumented feature needed by Spacefight 2091!
+	DXYN_bowling_wrap			bool	// DXYN sprite wrap in Bowling game
+	Resize_Quirk_00FE_00FF			bool	// Resize_Quirk_00FE_00FF - Clears the screen - Must be set to True always
+	DXY0_loresWideSpriteQuirks		bool	// DXY0_loresWideSpriteQuirks - Draws a 16x16 sprite even in low-resolution (64x32) mode, row-major
+	scrollQuirks_00CN_00FB_00FC		bool	// Shift only 2 lines
 
 	// DEBUG
-	Pause					bool		// Pause (Used to Forward and Rewind CPU Cycles)
-	Debug					bool		// DEBUG mode
-	Debug_v2					bool		// DEBUG Rewind Mode
+	Pause					bool	// Pause (Used to Forward and Rewind CPU Cycles)
+	Debug					bool	// DEBUG mode
+	Debug_v2				bool	// DEBUG Rewind Mode
 
 )
 
@@ -110,35 +109,35 @@ var (
 func Initialize() {
 	// Components
 	Memory					= [4096]byte{}
-	PC						= 0x200
+	PC					= 0x200
 	Opcode					= 0
 	Stack					= [16]uint16{}
-	SP						= 0
-	V						= [16]byte{}
-	I						= 0
+	SP					= 0
+	V					= [16]byte{}
+	I					= 0
 	DelayTimer				= 0
 	SoundTimer				= 0
-	Graphics					= [128 * 64]byte{}
+	Graphics				= [128 * 64]byte{}
 
 	// Timers
-	TPS						= 5000
-	CPU_Clock_Speed			= 500	// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
-	CPU_Clock					= time.NewTicker(time.Second / CPU_Clock_Speed)
-	SCHIP_TimerClockHack		= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
+	TPS					= 5000
+	CPU_Clock_Speed				= 500	// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
+	CPU_Clock				= time.NewTicker(time.Second / CPU_Clock_Speed)
+	SCHIP_TimerClockHack			= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 	DelayAndSoundClock			= time.NewTicker(time.Second / 60)
 	KeyboardClock				= time.NewTicker(time.Second / 2)
 
 	// General Variables and flags
-	DrawFlag					= false
+	DrawFlag				= false
 	Cycle					= 0
-	Key						= [KeyArraySize]byte{}
+	Key					= [KeyArraySize]byte{}
 	SizeX					= 64
 	SizeY					= 32
 
 	// SCHIP Specific Variables
 	SCHIP					= false
 	SCHIP_LORES				= false
-	SCHIP_TimerHack			= false
+	SCHIP_TimerHack				= false
 
 	// Rewind Variables
 	rewind_mode				= true
@@ -153,14 +152,14 @@ func Initialize() {
 	Legacy_8xy6_8xyE			= false
 	FX1E_spacefight2091			= false
 	DXYN_bowling_wrap			= false
-	Resize_Quirk_00FE_00FF		= true
-	DXY0_loresWideSpriteQuirks	= false
-	scrollQuirks_00CN_00FB_00FC	= false
+	Resize_Quirk_00FE_00FF			= true
+	DXY0_loresWideSpriteQuirks		= false
+	scrollQuirks_00CN_00FB_00FC		= false
 
 	// DEBUG
 	Pause					= false
 	Debug					= false
-	Debug_v2					= false
+	Debug_v2				= false
 
 	// Load CHIP-8 8x5 fontset (Memory address 0-79)
 	for i := 0; i < len(Fontset.Chip8Fontset); i++ {
