@@ -32,7 +32,8 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 * Install library requisites:
 
-	`go get github.com/faiface/pixel/pixelgl`
+
+	`go get github.com/hajimehoshi/ebiten`
 
 	`go get github.com/faiface/beep`
 
@@ -57,7 +58,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 * Install library requisites:
 
-	`go get github.com/faiface/pixel/pixelgl`
+	`go get github.com/hajimehoshi/ebiten`
 
 	`go get github.com/faiface/beep`
 
@@ -173,3 +174,4 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 1. Create graphical menus
 2. Sound glitches in Windows version
 3. Windows version is slowest than Mac version
+4. Improve sound to a channel and play continuously the beep when SoundTimer is positive
