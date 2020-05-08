@@ -12,7 +12,7 @@ var (
 	// Initial Color Theme
 	Color_theme = 2
 
-	// Flag used to set fullscreen
+	// Flag used to simulate IsKeyJustPressed function
 	pressedKeys = map[ebiten.Key]bool{}	//Map used to make manually IsKeyJustPressed
 )
 
@@ -235,12 +235,18 @@ func Keyboard_emulator() {
 			if CPU.Pause {
 				CPU.Pause = false
 				fmt.Printf("\t\tPAUSE mode Disabled\n")
+				// Display Message
+				CPU.TextMessage	= "PAUSE mode Disabled"
+				CPU.FlagMessage	= true
 			} else {
 				CPU.Pause = true
 				fmt.Printf("\t\tPAUSE mode Enabled\n")
+				// Display Message
+				CPU.TextMessage	= "PAUSE mode Enabled"
+				CPU.FlagMessage	= true
 			}
 		}
- 		pressedKeys[ebiten.KeyP] = true
+		pressedKeys[ebiten.KeyP] = true
 	} else {
 		pressedKeys[ebiten.KeyP] = false
 	}
@@ -258,11 +264,15 @@ func Keyboard_emulator() {
 					if CPU.Rewind_index < CPU.Rewind_buffer -2 {
 						// Take care of the first loop
 						if (CPU.Cycle == 1) {
-							fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
+							if CPU.Debug {
+								fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
+							}
+							CPU.TextMessage = "Rewind mode - Nothing to rewind (Cycle 0)"
+							CPU.FlagMessage = true
 						} else {
 							// Update values, reading the track records
 							CPU.PC			= CPU.PC_track[CPU.Rewind_index +1]
-							CPU.Stack			= CPU.Stack_track[CPU.Rewind_index +1]
+							CPU.Stack		= CPU.Stack_track[CPU.Rewind_index +1]
 							CPU.SP			= CPU.SP_track[CPU.Rewind_index +1]
 							CPU.V			= CPU.V_track[CPU.Rewind_index +1]
 							CPU.I			= CPU.I_track[CPU.Rewind_index +1]
@@ -271,14 +281,22 @@ func Keyboard_emulator() {
 							CPU.DelayTimer		= CPU.DT_track[CPU.Rewind_index +1]
 							CPU.SoundTimer		= CPU.ST_track[CPU.Rewind_index +1]
 							CPU.Key			= [16]byte{}
-							CPU.Cycle			= CPU.Cycle - 2
+							CPU.Cycle		= CPU.Cycle - 2
 							CPU.Rewind_index	= CPU.Rewind_index +1
 							// Call a CPU Cycle
 							CPU.Interpreter()
-							fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n\n", CPU.Rewind_index)
+							if CPU.Debug {
+								fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n", CPU.Rewind_index)
+							}
+							CPU.TextMessage = fmt.Sprintf("Rewind mode - Rewind_index = %d", CPU.Rewind_index)
+							CPU.FlagMessage = true
 						}
 					} else {
-						fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
+						if CPU.Debug {
+							fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
+						}
+						CPU.TextMessage = "Rewind mode - END OF TRACK HISTORY!!!"
+						CPU.FlagMessage = true
 					}
 				}
 
@@ -299,7 +317,7 @@ func Keyboard_emulator() {
 					// DO NOT update the track records in this stage
 					if CPU.Rewind_index > 0 {
 						CPU.PC			= CPU.PC_track[CPU.Rewind_index -1]
-						CPU.Stack			= CPU.Stack_track[CPU.Rewind_index -1]
+						CPU.Stack		= CPU.Stack_track[CPU.Rewind_index -1]
 						CPU.SP			= CPU.SP_track[CPU.Rewind_index -1]
 						CPU.V			= CPU.V_track[CPU.Rewind_index -1]
 						CPU.I			= CPU.I_track[CPU.Rewind_index -1]
@@ -311,12 +329,20 @@ func Keyboard_emulator() {
 						CPU.Rewind_index	-= 1
 						// Call a CPU Cycle
 						CPU.Interpreter()
-						fmt.Printf("\t\tForward mode - Rewind_index := %d\n\n", CPU.Rewind_index)
+						if CPU.Debug {
+							fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
+						}
+						CPU.TextMessage = fmt.Sprintf("Forward mode - Rewind_index = %d", CPU.Rewind_index)
+						CPU.FlagMessage = true
 					// Return to real time, forward CPU normally and UPDATE de tracks
 					} else {
 						// Call a CPU Cycle
 						CPU.Interpreter()
-						fmt.Printf("\t\tForward mode\n\n")
+						if CPU.Debug {
+							fmt.Printf("\t\tForward mode\n")
+						}
+						CPU.TextMessage = "Forward mode"
+						CPU.FlagMessage = true
 					}
 				}
 
@@ -334,13 +360,16 @@ func Keyboard_emulator() {
 			// Key has been pressed
 			if CPU.Debug {
 				CPU.Debug = false
-				fmt.Printf("\t\tDEBUG mode Disabled\n")
+				// Display Message
+				CPU.TextMessage = "DEBUG mode Disabled"
+				CPU.FlagMessage = true
 			} else {
 				CPU.Debug = true
-				fmt.Printf("\t\tDEBUG mode Enabled\n")
+				CPU.TextMessage = "DEBUG mode Enabled"
+				CPU.FlagMessage = true
 			}
 		}
- 		pressedKeys[ebiten.Key9] = true
+		pressedKeys[ebiten.Key9] = true
 	} else {
 		pressedKeys[ebiten.Key9] = false
 	}
@@ -352,7 +381,7 @@ func Keyboard_emulator() {
 		if !pressedKeys[ebiten.Key0] {
 			// Key has been pressed
 			CPU.PC			= 0x200
-			CPU.Stack			= [16]uint16{}
+			CPU.Stack		= [16]uint16{}
 			CPU.SP			= 0
 			CPU.V			= [16]byte{}
 			CPU.I			= 0
@@ -361,19 +390,22 @@ func Keyboard_emulator() {
 			CPU.DelayTimer		= 0
 			CPU.SoundTimer		= 0
 			CPU.Key			= [16]byte{}
-			CPU.Cycle			= 0
+			CPU.Cycle		= 0
 			CPU.Rewind_index	= 0
 			// If paused, remove the pause to continue CPU Loop
 			if CPU.Pause {
 				CPU.Pause = false
 			}
-			CPU.SCHIP 		= false
-			CPU.SizeX			= 64
-			CPU.SizeY			= 32
-			CPU.CPU_Clock_Speed = 500
-			CPU.Memory 		= CPU.MemoryCleanSnapshot
+			CPU.SCHIP		= false
+			CPU.SizeX		= 64
+			CPU.SizeY		= 32
+			CPU.CPU_Clock_Speed	= 500
+			CPU.Memory		= CPU.MemoryCleanSnapshot
+			// Display Message
+			CPU.TextMessage		= "RESET"
+			CPU.FlagMessage		= true
 		}
- 		pressedKeys[ebiten.Key0] = true
+		pressedKeys[ebiten.Key0] = true
 	} else {
 		pressedKeys[ebiten.Key0] = false
 	}
@@ -384,27 +416,29 @@ func Keyboard_emulator() {
 		if !pressedKeys[ebiten.KeyK] {
 			// Key has been pressed
 			CPU.Opcode_savestate		= CPU.Opcode
-			CPU.PC_savestate			= CPU.PC
-			CPU.Stack_savestate			= CPU.Stack
-			CPU.SP_savestate			= CPU.SP
+			CPU.PC_savestate		= CPU.PC
+			CPU.Stack_savestate		= CPU.Stack
+			CPU.SP_savestate		= CPU.SP
 			CPU.V_savestate			= CPU.V
 			CPU.I_savestate			= CPU.I
 			CPU.Graphics_savestate		= CPU.Graphics
-			CPU.DelayTimer_savestate		= CPU.DelayTimer
-			CPU.SoundTimer_savestate		= CPU.SoundTimer
-			CPU.Cycle_savestate			= CPU.Cycle
+			CPU.DelayTimer_savestate	= CPU.DelayTimer
+			CPU.SoundTimer_savestate	= CPU.SoundTimer
+			CPU.Cycle_savestate		= CPU.Cycle
 			CPU.Rewind_index_savestate	= CPU.Rewind_index
-			CPU.SCHIP_savestate			= CPU.SCHIP
+			CPU.SCHIP_savestate		= CPU.SCHIP
 			CPU.SCHIP_LORES_savestate	= CPU.SCHIP_LORES
-			CPU.SizeX_savestate			= CPU.SizeX
-			CPU.SizeY_savestate			= CPU.SizeY
+			CPU.SizeX_savestate		= CPU.SizeX
+			CPU.SizeY_savestate		= CPU.SizeY
 			CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
-			CPU.Memory_savestate 		= CPU.Memory
-			fmt.Printf("\n\t\tSavestate Created\n")
+			CPU.Memory_savestate		= CPU.Memory
+			// Display Message
+			CPU.TextMessage			= "Savestate Created"
+			CPU.FlagMessage			= true
 			// Register that have a savestate
 			CPU.Savestate_created		= 1
 		}
- 		pressedKeys[ebiten.KeyK] = true
+		pressedKeys[ebiten.KeyK] = true
 	} else {
 		pressedKeys[ebiten.KeyK] = false
 	}
@@ -418,28 +452,32 @@ func Keyboard_emulator() {
 			if CPU.Savestate_created == 1 {
 				CPU.Opcode		= CPU.Opcode_savestate
 				CPU.PC			= CPU.PC_savestate
-				CPU.Stack			= CPU.Stack_savestate
+				CPU.Stack		= CPU.Stack_savestate
 				CPU.SP			= CPU.SP_savestate
 				CPU.V			= CPU.V_savestate
 				CPU.I			= CPU.I_savestate
 				CPU.Graphics		= CPU.Graphics_savestate
 				CPU.DelayTimer		= CPU.DelayTimer_savestate
 				CPU.SoundTimer		= CPU.SoundTimer_savestate
-				CPU.Cycle			= CPU.Cycle_savestate
+				CPU.Cycle		= CPU.Cycle_savestate
 				CPU.Rewind_index	= CPU.Rewind_index_savestate
-				CPU.SCHIP			= CPU.SCHIP_savestate
+				CPU.SCHIP		= CPU.SCHIP_savestate
 				CPU.SCHIP_LORES	= CPU.SCHIP_LORES_savestate
-				CPU.SizeX			= CPU.SizeX_savestate
-				CPU.SizeY			= CPU.SizeY_savestate
+				CPU.SizeX		= CPU.SizeX_savestate
+				CPU.SizeY		= CPU.SizeY_savestate
 				CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
-				CPU.Memory 		= CPU.Memory_savestate
+				CPU.Memory		= CPU.Memory_savestate
 				CPU.DrawFlag		= true
-				fmt.Printf("\n\t\tSavestate Loaded\n")
+				// Display Message
+				CPU.TextMessage		= "Savestate Loaded"
+				CPU.FlagMessage		= true
 			} else {
-				fmt.Printf("\n\t\tSavestate not loaded - No Savestate created\n")
+				// Display Message
+				CPU.TextMessage		= "Savestate not loaded - No Savestate created"
+				CPU.FlagMessage		= true
 			}
 		}
- 		pressedKeys[ebiten.KeyL] = true
+		pressedKeys[ebiten.KeyL] = true
 	} else {
 		pressedKeys[ebiten.KeyL] = false
 	}
@@ -450,17 +488,25 @@ func Keyboard_emulator() {
 		select {
 			case <- CPU.KeyboardClock.C:
 
-				decrease_rate := 100
-				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
-				if (CPU.CPU_Clock_Speed - time.Duration(decrease_rate)) > 0 {
-					CPU.CPU_Clock_Speed -= time.Duration(decrease_rate)
-					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+				decrease_rate	:= 100
+				tmp		:= CPU.CPU_Clock_Speed
+				if (CPU.CPU_Clock_Speed	- time.Duration(decrease_rate)) > 0 {
+					CPU.CPU_Clock_Speed	-= time.Duration(decrease_rate)
+					CPU.CPU_Clock		= time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
+					CPU.TextMessage		= fmt.Sprintf("Decreasing CPU Clock: %d Hz --> %d Hz", tmp, CPU.CPU_Clock_Speed)
+					CPU.FlagMessage		= true
+					if CPU.Debug {
+						fmt.Printf("\t\tDecreasing CPU Clock: %d Hz  -->  %d Hz\n", tmp, CPU.CPU_Clock_Speed)
+					}
 				} else {
 					// Reached minimum CPU Clock Speed (1 Hz)
 					CPU.CPU_Clock_Speed = 1
 					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+					CPU.TextMessage			= fmt.Sprintf("Decreasing CPU Clock: %d Hz --> %d Hz", tmp, CPU.CPU_Clock_Speed)
+					CPU.FlagMessage			= true
+					if CPU.Debug {
+						fmt.Printf("\t\tDecreasing CPU Clock: %d Hz --> %d Hz\n", tmp, CPU.CPU_Clock_Speed)
+					}
 				}
 
 			default:
@@ -474,26 +520,38 @@ func Keyboard_emulator() {
 			case <- CPU.KeyboardClock.C:
 
 				increase_rate := 100
-				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
+				tmp := CPU.CPU_Clock_Speed
 				if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= time.Duration(CPU.TPS) {
 					// If Clock Speed = 1, return to multiples of 'increase_rate'
 					if CPU.CPU_Clock_Speed == 1 {
 						CPU.CPU_Clock_Speed += time.Duration(increase_rate - 1)
 						CPU.CPU_Clock.Stop()
 						CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-						fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+						CPU.TextMessage	= fmt.Sprintf("Increasing CPU Clock: %d Hz --> %d Hz", tmp, CPU.CPU_Clock_Speed)
+						CPU.FlagMessage	= true
+						if CPU.Debug {
+							fmt.Printf("\t\tIncreasing CPU Clock: %d Hz  -->  %d Hz\n", tmp, CPU.CPU_Clock_Speed)
+						}
 					} else {
 						CPU.CPU_Clock_Speed += time.Duration(increase_rate)
 						CPU.CPU_Clock.Stop()
 						CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-						fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+						CPU.TextMessage	= fmt.Sprintf("Increasing CPU Clock: %d Hz --> %d Hz", tmp, CPU.CPU_Clock_Speed)
+						CPU.FlagMessage	= true
+						if CPU.Debug {
+							fmt.Printf("\t\tIncreasing CPU Clock: %d Hz  -->  %d Hz\n", tmp, CPU.CPU_Clock_Speed)
+						}
 					}
 				} else {
 					// Reached Maximum TPS
 					CPU.CPU_Clock_Speed = time.Duration(CPU.TPS)
 					CPU.CPU_Clock.Stop()
 					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
+					CPU.TextMessage	= fmt.Sprintf("Increasing CPU Clock: %d Hz --> %d Hz", tmp, CPU.CPU_Clock_Speed)
+					CPU.FlagMessage	= true
+					if CPU.Debug {
+						fmt.Printf("\t\tIncreasing CPU Clock: %d Hz  -->  %d Hz\n", tmp, CPU.CPU_Clock_Speed)
+					}
 				}
 
 			default:
@@ -512,8 +570,10 @@ func Keyboard_emulator() {
 			if Color_theme > 7 {
 				Color_theme = 0
 			}
+			CPU.TextMessage = fmt.Sprintf("Color Theme: %d", Color_theme)
+			CPU.FlagMessage = true
 		}
- 		pressedKeys[ebiten.Key6] = true
+		pressedKeys[ebiten.Key6] = true
 	} else {
 		pressedKeys[ebiten.Key6] = false
 	}
@@ -525,6 +585,14 @@ func Keyboard_emulator() {
 		if !pressedKeys[ebiten.KeyN] {
 			// Key has been pressed
 			ebiten.SetFullscreen(!ebiten.IsFullscreen())
+			// Display Message
+			if ebiten.IsFullscreen() {
+				CPU.TextMessage = "Fullscreen ENABLED"
+				CPU.FlagMessage = true
+			} else {
+				CPU.TextMessage = "Fullscreen DISABLED"
+				CPU.FlagMessage = true
+			}
 		}
 		pressedKeys[ebiten.KeyN] = true
 	} else {
@@ -537,8 +605,16 @@ func Keyboard_emulator() {
 		if !pressedKeys[ebiten.KeyM] {
 			// Key has been pressed
 			ebiten.SetCursorVisible(!ebiten.IsCursorVisible())
+			// Display Message
+			if ebiten.IsCursorVisible() {
+				CPU.TextMessage = "Cursor View ENABLED"
+				CPU.FlagMessage = true
+			} else {
+				CPU.TextMessage = "Cursor View DISABLED"
+				CPU.FlagMessage = true
+			}
 		}
- 		pressedKeys[ebiten.KeyM] = true
+		pressedKeys[ebiten.KeyM] = true
 	} else {
 		pressedKeys[ebiten.KeyM] = false
 	}
@@ -549,8 +625,17 @@ func Keyboard_emulator() {
 		if !pressedKeys[ebiten.KeyH] {
 			// Key has been pressed
 			ebiten.SetWindowDecorated(!ebiten.IsWindowDecorated())
+			// Display Message
+			if ebiten.IsWindowDecorated() {
+				CPU.TextMessage = "Window Decoration ENABLED"
+				CPU.FlagMessage = true
+			} else {
+				CPU.TextMessage = "Window Decoration DISABLED"
+				CPU.FlagMessage = true
+			}
+
 		}
- 		pressedKeys[ebiten.KeyH] = true
+		pressedKeys[ebiten.KeyH] = true
 	} else {
 		pressedKeys[ebiten.KeyH] = false
 	}
@@ -561,8 +646,16 @@ func Keyboard_emulator() {
 		if !pressedKeys[ebiten.KeyJ] {
 			// Key has been pressed
 			ebiten.SetRunnableOnUnfocused(!ebiten.IsRunnableOnUnfocused())
+			// Display Message
+			if ebiten.IsRunnableOnUnfocused() {
+				CPU.TextMessage = "Run on Unfocused ENABLED"
+				CPU.FlagMessage = true
+			} else {
+				CPU.TextMessage = "Run on Unfocused DISABLED"
+				CPU.FlagMessage = true
+			}
 		}
- 		pressedKeys[ebiten.KeyJ] = true
+		pressedKeys[ebiten.KeyJ] = true
 	} else {
 		pressedKeys[ebiten.KeyJ] = false
 	}
@@ -574,7 +667,7 @@ func Keyboard_emulator() {
 			// Key has been pressed
 			CPU.ShowTPS = !CPU.ShowTPS
 		}
- 		pressedKeys[ebiten.KeyU] = true
+		pressedKeys[ebiten.KeyU] = true
 	} else {
 		pressedKeys[ebiten.KeyU] = false
 	}

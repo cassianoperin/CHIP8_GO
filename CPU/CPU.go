@@ -31,21 +31,24 @@ var (
 
 	// Timers
 	TPS					int			// Ticks Per Second (used by Ebiten)
-	ShowTPS				bool		// Flag used to Show TPS and FPS on screen
+	ShowTPS					bool			// Flag used to Show TPS and FPS on screen
 	DelayAndSoundClock			*time.Ticker		// Delay and Sound Timer
 	KeyboardClock				*time.Ticker		// Keyboard Timer to be used with emulator keys
 	CPU_Clock				*time.Ticker		// CPU Clock
 	CPU_Clock_Speed				time.Duration		// Value defined to CPU Clock
 	SCHIP_TimerClockHack			*time.Ticker		// SCHIP used to decrease DT faster than 60HZ to gain speed
+	MessagesClock				*time.Ticker		// Clock used to display messages on screen
 
 	// General Variables and flags
-	MemoryCleanSnapshot			[4096]byte 		// Some games like Single Dragon changes memory, so to reset its necessary to reload game
+	MemoryCleanSnapshot			[4096]byte		// Some games like Single Dragon changes memory, so to reset its necessary to reload game
 	DrawFlag				bool			// True if the screen must be drawn
 	Cycle					uint16			// CPU Cycle Counter
-	Key					[16]byte	// Control the Keys Pressed
+	Key					[16]byte		// Control the Keys Pressed
 	sound_file				string			// Beep sound file
 	SizeX					uint16			// Number of Columns in Graphics
 	SizeY					uint16			// Number of Lines in Graphics
+	TextMessage				string			// Text to be displayed on screen
+	FlagMessage				bool			// Display messages on screen
 
 	// SCHIP Specific Variables
 	SCHIP					bool			// SCHIP MODE ENABLED OR DISABLED
@@ -120,12 +123,13 @@ func Initialize() {
 
 	// Timers
 	TPS					= 5000
-	ShowTPS				= true
+	ShowTPS					= true
 	CPU_Clock_Speed				= 500	// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
 	CPU_Clock				= time.NewTicker(time.Second / CPU_Clock_Speed)
 	SCHIP_TimerClockHack			= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 	DelayAndSoundClock			= time.NewTicker(time.Second / 60)
-	KeyboardClock				= time.NewTicker(time.Second / 60)
+	KeyboardClock				= time.NewTicker(time.Second / 30)
+	MessagesClock				= time.NewTicker(time.Second * 5)
 
 	// General Variables and flags
 	DrawFlag				= false

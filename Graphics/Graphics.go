@@ -235,7 +235,24 @@ func Update(screen *ebiten.Image) error {
 	}
 
 	if CPU.ShowTPS {
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f   FPS: %0.2f", ebiten.CurrentTPS(), ebiten.CurrentFPS() ))
+		if !CPU.Pause {
+			ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f   FPS: %0.2f   CPU: %dHz", ebiten.CurrentTPS(), ebiten.CurrentFPS(), CPU.CPU_Clock_Speed ))
+		} else {
+			ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f   FPS: %0.2f   CPU: %dHz   PAUSED", ebiten.CurrentTPS(), ebiten.CurrentFPS(), CPU.CPU_Clock_Speed ))
+		}
+	}
+
+	if CPU.FlagMessage {
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("\n%s", CPU.TextMessage ))
+		// Time to keep message on screen
+		select {
+		case <- CPU.MessagesClock.C:
+
+			CPU.FlagMessage = false
+
+			default:
+				// No timer to handle
+		}
 	}
 
 	return nil
