@@ -11,8 +11,7 @@ import (
 )
 
 var (
-	// Ebiten Image Declaration
-	emptyImage, _	= ebiten.NewImage(16, 16, ebiten.FilterDefault)
+	emptyImage, _	= ebiten.NewImage(16, 16, ebiten.FilterDefault)			// Ebiten Image Declaration
 )
 
 const (
@@ -43,6 +42,15 @@ func drawGraphicsConsole() {
 // Ebiten Initialization
 func init() {
 	emptyImage.Fill(color.White)
+
+	// By default disable run on unfocused
+	ebiten.SetRunnableOnUnfocused(false)
+
+	// By default disable mouse cursor into the game window
+	ebiten.SetCursorVisible(false)
+
+	// Disable VSync
+	ebiten.SetVsyncEnabled(true)
 }
 
 
@@ -113,6 +121,7 @@ func Update(screen *ebiten.Image) error {
 		height	uint16
 	)
 
+
 	// Select Color Schema
 	if Input.Color_theme != 0 {
 
@@ -172,7 +181,6 @@ func Update(screen *ebiten.Image) error {
 	// Handle emulator Keys (specific timer)
 	Input.Keyboard_emulator()
 
-
 	// --------------------------------------- CPU -------------------------------------- //
 
 	// Every Cycle Control the clock, limited by TPS configured
@@ -226,7 +234,9 @@ func Update(screen *ebiten.Image) error {
 		}
 	}
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f", ebiten.CurrentTPS() ))
+	if CPU.ShowTPS {
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f   FPS: %0.2f", ebiten.CurrentTPS(), ebiten.CurrentFPS() ))
+	}
 
 	return nil
 }

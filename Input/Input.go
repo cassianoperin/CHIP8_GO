@@ -9,7 +9,11 @@ import (
 )
 
 var (
-	Color_theme	= 0
+	// Initial Color Theme
+	Color_theme = 2
+
+	// Flag used to set fullscreen
+	pressedKeys = map[ebiten.Key]bool{}	//Map used to make manually IsKeyJustPressed
 )
 
 // ------------------------ Remap Keys ------------------------ //
@@ -224,21 +228,23 @@ func Keyboard_chip8() {
 func Keyboard_emulator() {
 
 	// CPU.Pause Key
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
 	if ebiten.IsKeyPressed(ebiten.KeyP) {
-		select {
-			case <- CPU.KeyboardClock.C:
-				if CPU.Pause {
-					CPU.Pause = false
-					fmt.Printf("\t\tPAUSE mode Disabled\n")
-				} else {
-					CPU.Pause = true
-					fmt.Printf("\t\tPAUSE mode Enabled\n")
-				}
-
-			default:
-				// No timer to handle
+		if !pressedKeys[ebiten.KeyP] {
+			// Key has been pressed
+			if CPU.Pause {
+				CPU.Pause = false
+				fmt.Printf("\t\tPAUSE mode Disabled\n")
+			} else {
+				CPU.Pause = true
+				fmt.Printf("\t\tPAUSE mode Enabled\n")
+			}
 		}
+ 		pressedKeys[ebiten.KeyP] = true
+	} else {
+		pressedKeys[ebiten.KeyP] = false
 	}
+
 
 	// // Rewind CPU
 	if ebiten.IsKeyPressed(ebiten.KeyI) {
@@ -264,7 +270,7 @@ func Keyboard_emulator() {
 							CPU.DrawFlag		= CPU.DF_track[CPU.Rewind_index +1]
 							CPU.DelayTimer		= CPU.DT_track[CPU.Rewind_index +1]
 							CPU.SoundTimer		= CPU.ST_track[CPU.Rewind_index +1]
-							CPU.Key			= [CPU.KeyArraySize]byte{}
+							CPU.Key			= [16]byte{}
 							CPU.Cycle			= CPU.Cycle - 2
 							CPU.Rewind_index	= CPU.Rewind_index +1
 							// Call a CPU Cycle
@@ -301,7 +307,7 @@ func Keyboard_emulator() {
 						CPU.DrawFlag		= CPU.DF_track[CPU.Rewind_index -1]
 						CPU.DelayTimer		= CPU.DT_track[CPU.Rewind_index -1]
 						CPU.SoundTimer		= CPU.ST_track[CPU.Rewind_index -1]
-						CPU.Key			= [CPU.KeyArraySize]byte{}
+						CPU.Key			= [16]byte{}
 						CPU.Rewind_index	-= 1
 						// Call a CPU Cycle
 						CPU.Interpreter()
@@ -320,121 +326,124 @@ func Keyboard_emulator() {
 
 	}
 
+
 	// Debug
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
 	if ebiten.IsKeyPressed(ebiten.Key9) {
-		select {
-			case <- CPU.KeyboardClock.C:
-
-				if CPU.Debug {
-					CPU.Debug = false
-					fmt.Printf("\t\tDEBUG mode Disabled\n")
-				} else {
-					CPU.Debug = true
-					fmt.Printf("\t\tDEBUG mode Enabled\n")
-				}
-
-			default:
-				// No timer to handle
+		if !pressedKeys[ebiten.Key9] {
+			// Key has been pressed
+			if CPU.Debug {
+				CPU.Debug = false
+				fmt.Printf("\t\tDEBUG mode Disabled\n")
+			} else {
+				CPU.Debug = true
+				fmt.Printf("\t\tDEBUG mode Enabled\n")
+			}
 		}
+ 		pressedKeys[ebiten.Key9] = true
+	} else {
+		pressedKeys[ebiten.Key9] = false
 	}
 
 
 	// Reset
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
 	if ebiten.IsKeyPressed(ebiten.Key0) {
-		select {
-			case <- CPU.KeyboardClock.C:
-
-				CPU.PC			= 0x200
-				CPU.Stack			= [16]uint16{}
-				CPU.SP			= 0
-				CPU.V			= [16]byte{}
-				CPU.I			= 0
-				CPU.Graphics		= [128 * 64]byte{}
-				CPU.DrawFlag		= false
-				CPU.DelayTimer		= 0
-				CPU.SoundTimer		= 0
-				CPU.Key			= [CPU.KeyArraySize]byte{}
-				CPU.Cycle			= 0
-				CPU.Rewind_index	= 0
-				// If paused, remove the pause to continue CPU Loop
-				if CPU.Pause {
-					CPU.Pause = false
-				}
-				CPU.SCHIP 		= false
-				CPU.SizeX			= 64
-				CPU.SizeY			= 32
-				CPU.CPU_Clock_Speed = 500
-				CPU.Memory 		= CPU.MemoryCleanSnapshot
-
-			default:
-				// No timer to handle
+		if !pressedKeys[ebiten.Key0] {
+			// Key has been pressed
+			CPU.PC			= 0x200
+			CPU.Stack			= [16]uint16{}
+			CPU.SP			= 0
+			CPU.V			= [16]byte{}
+			CPU.I			= 0
+			CPU.Graphics		= [128 * 64]byte{}
+			CPU.DrawFlag		= false
+			CPU.DelayTimer		= 0
+			CPU.SoundTimer		= 0
+			CPU.Key			= [16]byte{}
+			CPU.Cycle			= 0
+			CPU.Rewind_index	= 0
+			// If paused, remove the pause to continue CPU Loop
+			if CPU.Pause {
+				CPU.Pause = false
+			}
+			CPU.SCHIP 		= false
+			CPU.SizeX			= 64
+			CPU.SizeY			= 32
+			CPU.CPU_Clock_Speed = 500
+			CPU.Memory 		= CPU.MemoryCleanSnapshot
 		}
+ 		pressedKeys[ebiten.Key0] = true
+	} else {
+		pressedKeys[ebiten.Key0] = false
 	}
 
 
 	// Create Save State
 	if ebiten.IsKeyPressed(ebiten.KeyK) {
-		select {
-			case <- CPU.KeyboardClock.C:
-				CPU.Opcode_savestate		= CPU.Opcode
-				CPU.PC_savestate			= CPU.PC
-				CPU.Stack_savestate			= CPU.Stack
-				CPU.SP_savestate			= CPU.SP
-				CPU.V_savestate			= CPU.V
-				CPU.I_savestate			= CPU.I
-				CPU.Graphics_savestate		= CPU.Graphics
-				CPU.DelayTimer_savestate		= CPU.DelayTimer
-				CPU.SoundTimer_savestate		= CPU.SoundTimer
-				CPU.Cycle_savestate			= CPU.Cycle
-				CPU.Rewind_index_savestate	= CPU.Rewind_index
-				CPU.SCHIP_savestate			= CPU.SCHIP
-				CPU.SCHIP_LORES_savestate	= CPU.SCHIP_LORES
-				CPU.SizeX_savestate			= CPU.SizeX
-				CPU.SizeY_savestate			= CPU.SizeY
-				CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
-				CPU.Memory_savestate 		= CPU.Memory
-				fmt.Printf("\n\t\tSavestate Created\n")
-				// Register that have a savestate
-				CPU.Savestate_created		= 1
-
-			default:
-				// No timer to handle
+		if !pressedKeys[ebiten.KeyK] {
+			// Key has been pressed
+			CPU.Opcode_savestate		= CPU.Opcode
+			CPU.PC_savestate			= CPU.PC
+			CPU.Stack_savestate			= CPU.Stack
+			CPU.SP_savestate			= CPU.SP
+			CPU.V_savestate			= CPU.V
+			CPU.I_savestate			= CPU.I
+			CPU.Graphics_savestate		= CPU.Graphics
+			CPU.DelayTimer_savestate		= CPU.DelayTimer
+			CPU.SoundTimer_savestate		= CPU.SoundTimer
+			CPU.Cycle_savestate			= CPU.Cycle
+			CPU.Rewind_index_savestate	= CPU.Rewind_index
+			CPU.SCHIP_savestate			= CPU.SCHIP
+			CPU.SCHIP_LORES_savestate	= CPU.SCHIP_LORES
+			CPU.SizeX_savestate			= CPU.SizeX
+			CPU.SizeY_savestate			= CPU.SizeY
+			CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
+			CPU.Memory_savestate 		= CPU.Memory
+			fmt.Printf("\n\t\tSavestate Created\n")
+			// Register that have a savestate
+			CPU.Savestate_created		= 1
 		}
+ 		pressedKeys[ebiten.KeyK] = true
+	} else {
+		pressedKeys[ebiten.KeyK] = false
 	}
+
 
 	// Load Save State
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
 	if ebiten.IsKeyPressed(ebiten.KeyL) {
-		select {
-			case <- CPU.KeyboardClock.C:
-
-				if CPU.Savestate_created == 1 {
-					CPU.Opcode		= CPU.Opcode_savestate
-					CPU.PC			= CPU.PC_savestate
-					CPU.Stack			= CPU.Stack_savestate
-					CPU.SP			= CPU.SP_savestate
-					CPU.V			= CPU.V_savestate
-					CPU.I			= CPU.I_savestate
-					CPU.Graphics		= CPU.Graphics_savestate
-					CPU.DelayTimer		= CPU.DelayTimer_savestate
-					CPU.SoundTimer		= CPU.SoundTimer_savestate
-					CPU.Cycle			= CPU.Cycle_savestate
-					CPU.Rewind_index	= CPU.Rewind_index_savestate
-					CPU.SCHIP			= CPU.SCHIP_savestate
-					CPU.SCHIP_LORES	= CPU.SCHIP_LORES_savestate
-					CPU.SizeX			= CPU.SizeX_savestate
-					CPU.SizeY			= CPU.SizeY_savestate
-					CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
-					CPU.Memory 		= CPU.Memory_savestate
-					CPU.DrawFlag		= true
-					fmt.Printf("\n\t\tSavestate Loaded\n")
-				} else {
-					fmt.Printf("\n\t\tSavestate not loaded - No Savestate created\n")
-				}
-
-			default:
-				// No timer to handle
+		if !pressedKeys[ebiten.KeyL] {
+			// Key has been pressed
+			if CPU.Savestate_created == 1 {
+				CPU.Opcode		= CPU.Opcode_savestate
+				CPU.PC			= CPU.PC_savestate
+				CPU.Stack			= CPU.Stack_savestate
+				CPU.SP			= CPU.SP_savestate
+				CPU.V			= CPU.V_savestate
+				CPU.I			= CPU.I_savestate
+				CPU.Graphics		= CPU.Graphics_savestate
+				CPU.DelayTimer		= CPU.DelayTimer_savestate
+				CPU.SoundTimer		= CPU.SoundTimer_savestate
+				CPU.Cycle			= CPU.Cycle_savestate
+				CPU.Rewind_index	= CPU.Rewind_index_savestate
+				CPU.SCHIP			= CPU.SCHIP_savestate
+				CPU.SCHIP_LORES	= CPU.SCHIP_LORES_savestate
+				CPU.SizeX			= CPU.SizeX_savestate
+				CPU.SizeY			= CPU.SizeY_savestate
+				CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
+				CPU.Memory 		= CPU.Memory_savestate
+				CPU.DrawFlag		= true
+				fmt.Printf("\n\t\tSavestate Loaded\n")
+			} else {
+				fmt.Printf("\n\t\tSavestate not loaded - No Savestate created\n")
+			}
 		}
+ 		pressedKeys[ebiten.KeyL] = true
+	} else {
+		pressedKeys[ebiten.KeyL] = false
 	}
+
 
 	// Decrease CPU Clock Speed
 	if ebiten.IsKeyPressed(ebiten.Key7) {
@@ -494,19 +503,80 @@ func Keyboard_emulator() {
 
 
 	// Color Theme
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
 	if ebiten.IsKeyPressed(ebiten.Key6) {
-		select {
-			case <- CPU.KeyboardClock.C:
+		if !pressedKeys[ebiten.Key6] {
+			// Key has been pressed
+			Color_theme += 1
 
-				Color_theme += 1
-
-				if Color_theme > 7 {
-					Color_theme = 0
-				}
-
-			default:
-				// No timer to handle
+			if Color_theme > 7 {
+				Color_theme = 0
+			}
 		}
+ 		pressedKeys[ebiten.Key6] = true
+	} else {
+		pressedKeys[ebiten.Key6] = false
+	}
+
+
+	// Fullscreen
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
+	if ebiten.IsKeyPressed(ebiten.KeyN) {
+		if !pressedKeys[ebiten.KeyN] {
+			// Key has been pressed
+			ebiten.SetFullscreen(!ebiten.IsFullscreen())
+		}
+		pressedKeys[ebiten.KeyN] = true
+	} else {
+		pressedKeys[ebiten.KeyN] = false
+	}
+
+	// Cursor Visibility
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
+	if ebiten.IsKeyPressed(ebiten.KeyM) {
+		if !pressedKeys[ebiten.KeyM] {
+			// Key has been pressed
+			ebiten.SetCursorVisible(!ebiten.IsCursorVisible())
+		}
+ 		pressedKeys[ebiten.KeyM] = true
+	} else {
+		pressedKeys[ebiten.KeyM] = false
+	}
+
+	// Windows Decorated
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
+	if ebiten.IsKeyPressed(ebiten.KeyH) {
+		if !pressedKeys[ebiten.KeyH] {
+			// Key has been pressed
+			ebiten.SetWindowDecorated(!ebiten.IsWindowDecorated())
+		}
+ 		pressedKeys[ebiten.KeyH] = true
+	} else {
+		pressedKeys[ebiten.KeyH] = false
+	}
+
+	// Runnable On Unfocused
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
+	if ebiten.IsKeyPressed(ebiten.KeyJ) {
+		if !pressedKeys[ebiten.KeyJ] {
+			// Key has been pressed
+			ebiten.SetRunnableOnUnfocused(!ebiten.IsRunnableOnUnfocused())
+		}
+ 		pressedKeys[ebiten.KeyJ] = true
+	} else {
+		pressedKeys[ebiten.KeyJ] = false
+	}
+
+	// Show TPS and FPS on screen
+	// IsKeyJustPressed make the entire emulator slow, so made it manually
+	if ebiten.IsKeyPressed(ebiten.KeyU) {
+		if !pressedKeys[ebiten.KeyU] {
+			// Key has been pressed
+			CPU.ShowTPS = !CPU.ShowTPS
+		}
+ 		pressedKeys[ebiten.KeyU] = true
+	} else {
+		pressedKeys[ebiten.KeyU] = false
 	}
 
 }

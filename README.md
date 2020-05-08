@@ -22,6 +22,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 * Increase and Decrease CPU Clock Speed
 * Color Themes
 * Save States
+* Fullscreen mode
 
 ## Compile Instructions
 
@@ -115,9 +116,19 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 	`O`: Step forward one CPU cycle in **Pause Mode**
 
+	`U`: Show / Hide TPS and FPS display
+
 	`K`: Create Save State
 
 	`L`: Load Save State
+
+	`J`: Enable / Disable Run On Unfocused
+
+	`H`: Show / Hide Windows Decoration
+
+	`M`: Show / Hide Mouse Cursor
+
+	`N`: Fullscreen
 
 	`6`: Change Color Themes
 
@@ -173,5 +184,8 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 1. Create graphical menus
 2. Sound glitches in Windows version
-3. Windows version is slowest than Mac version
+3. Windows version is slowest than Mac version (review after Ebiten migration)
 4. Improve sound to a channel and play continuously the beep when SoundTimer is positive
+5. Create .ini file to the remap keyboard games
+6. Create .ini file to general configuration (may be used for the GUI settings to be read by the main program)
+7. Save and read savestates from disk

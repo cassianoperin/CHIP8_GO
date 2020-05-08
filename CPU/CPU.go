@@ -14,8 +14,6 @@ import (
 const (
 	// Rewind Buffer Size
 	Rewind_buffer				uint16 = 100
-	// Control the number of Keys mapped in Key Array
-	KeyArraySize				byte	= 26
 )
 
 var (
@@ -33,6 +31,7 @@ var (
 
 	// Timers
 	TPS					int			// Ticks Per Second (used by Ebiten)
+	ShowTPS				bool		// Flag used to Show TPS and FPS on screen
 	DelayAndSoundClock			*time.Ticker		// Delay and Sound Timer
 	KeyboardClock				*time.Ticker		// Keyboard Timer to be used with emulator keys
 	CPU_Clock				*time.Ticker		// CPU Clock
@@ -43,7 +42,7 @@ var (
 	MemoryCleanSnapshot			[4096]byte 		// Some games like Single Dragon changes memory, so to reset its necessary to reload game
 	DrawFlag				bool			// True if the screen must be drawn
 	Cycle					uint16			// CPU Cycle Counter
-	Key					[KeyArraySize]byte	// Control the Keys Pressed
+	Key					[16]byte	// Control the Keys Pressed
 	sound_file				string			// Beep sound file
 	SizeX					uint16			// Number of Columns in Graphics
 	SizeY					uint16			// Number of Lines in Graphics
@@ -121,16 +120,17 @@ func Initialize() {
 
 	// Timers
 	TPS					= 5000
+	ShowTPS				= true
 	CPU_Clock_Speed				= 500	// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
 	CPU_Clock				= time.NewTicker(time.Second / CPU_Clock_Speed)
 	SCHIP_TimerClockHack			= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 	DelayAndSoundClock			= time.NewTicker(time.Second / 60)
-	KeyboardClock				= time.NewTicker(time.Second / 2)
+	KeyboardClock				= time.NewTicker(time.Second / 60)
 
 	// General Variables and flags
 	DrawFlag				= false
 	Cycle					= 0
-	Key					= [KeyArraySize]byte{}
+	Key					= [16]byte{}
 	SizeX					= 64
 	SizeY					= 32
 
