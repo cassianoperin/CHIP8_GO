@@ -6,9 +6,9 @@ import (
 	"os"
 	"runtime"
 	"Chip8/CPU"
-	"Chip8/Sound"
 	"Chip8/Graphics"
-	"github.com/hajimehoshi/ebiten"
+	"Chip8/Sound"
+	"github.com/faiface/pixel/pixelgl"
 )
 
 
@@ -61,8 +61,11 @@ func readROM(filename string) {
 		CPU.Memory[i+512] = data[i]
 	}
 
-	// Some games like Single Dragon changes memory, so to reset its necessary to reload game
-	CPU.MemoryCleanSnapshot = CPU.Memory
+	// //Print Memory
+	// for i := 0; i < len(CPU.Memory); i++ {
+	// 	fmt.Printf("%X ", CPU.Memory[i])
+	// }
+	// os.Exit(2)
 }
 
 func checkArgs() {
@@ -151,21 +154,34 @@ func remap_keys() {
 	// Game: "Blinky [Hans Christian Egeberg, 1991].ch8"
 	// MD5: fb3284205c90d80c3b17aeea2eedf0e4
 	if (CPU.Game_signature == "121A322E303020432E20") {
-		fmt.Printf("Keys Remaped:\tLeft: ←\t\tRight: →\tUp: ↑\t\tDown: ↓\n\n")
+		CPU.KeyPressed[3] = pixelgl.KeyUp
+		CPU.KeyPressed[6] = pixelgl.KeyDown
+		CPU.KeyPressed[7] = pixelgl.KeyLeft
+		CPU.KeyPressed[8] = pixelgl.KeyRight
+		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Up: ↑     Down: ↓"
+		fmt.Printf("Keys Remaped\n")
 	}
 
 	// Platform: SCHIP
 	// Game: "Spacefight 2091 [Carsten Soerensen, 1992].ch8"
 	// MD5: f99d0e82a489b8aff1c7203d90f740c3
 	if (CPU.Game_signature == "12245370616365466967") {
-		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
+		CPU.KeyPressed[10] = pixelgl.KeySpace
+		CPU.KeyPressed[3] = pixelgl.KeyLeft
+		CPU.KeyPressed[12] = pixelgl.KeyRight
+		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
+		fmt.Printf("Keys Remaped\n")
 	}
 
 	// Platform: CHIP-8
 	// Game: "Space Invaders [David Winter].ch8"
 	// MD5: a67f58742cff77702cc64c64413dc37d
 	if (CPU.Game_signature == "1225535041434520494E") {
-		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
+		CPU.KeyPressed[5] = pixelgl.KeySpace
+		CPU.KeyPressed[4] = pixelgl.KeyLeft
+		CPU.KeyPressed[6] = pixelgl.KeyRight
+		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
+		fmt.Printf("Keys Remaped\n")
 	}
 
 
@@ -180,7 +196,6 @@ func testFile(filename string) {
 }
 
 
-
 // Main function
 func main() {
 
@@ -190,6 +205,10 @@ func main() {
 	// Check if file exist
 	testFile(os.Args[1])
 
+	// Check the number of CPUS to create threads
+	// fmt.Println("MaxParallelism: ", MaxParallelism())
+	runtime.GOMAXPROCS( MaxParallelism() )
+
 	// Set initial variables values
 	CPU.Initialize()
 	Sound.Initialize("Sound/beep.mp3")
@@ -197,20 +216,11 @@ func main() {
 
 	// Identify special games that needs legacy opcodes
 	get_game_signature()
-
-	// Check the number of CPUS to create threads
-	runtime.GOMAXPROCS( MaxParallelism() )
-	fmt.Printf("CPU Cores used: %d\n", MaxParallelism())
-
-
 	handle_legacy_opcodes()
 	remap_keys()
+	CPU.MemoryCleanSnapshot = CPU.Memory
 
 	// Start Window System and draw Graphics
-	ebiten.SetMaxTPS(CPU.TPS)
-
-	if err := ebiten.Run(Graphics.Update, Graphics.ScreenWidth, Graphics.ScreenHeight, 1, "Chip8"); err != nil {
-		log.Fatal(err)
-	}
+	pixelgl.Run(Graphics.Run)
 
 }
