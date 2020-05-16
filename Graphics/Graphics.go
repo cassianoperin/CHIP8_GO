@@ -22,6 +22,16 @@ const (
 	screenHeight	= float64(768)
 )
 
+var (
+	// FPS
+	drawCounter	= 0			// imd.Draw per second counter
+	updateCounter	= 0			// Win.Updates per second counter
+	textFPS		*text.Text	// On screen FPS counter
+
+	// Video modes and Fullscreen
+	atlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
+)
+
 
 
 
@@ -60,14 +70,10 @@ func renderGraphics() {
 		panic(err)
 	}
 
-	// Video modes and Fullscreen
-	atlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
-
 	// Retrieve all monitors.
 	monitors := pixelgl.Monitors()
 
-	Global.Texts = make([]*text.Text, len(monitors))
-	index := byte('0')
+	// Map the video modes available
 	for i := 0; i < len(monitors); i++ {
 		// Retrieve all video modes for a specific monitor.
 		modes := monitors[i].VideoModes()
@@ -78,22 +84,12 @@ func renderGraphics() {
 			})
 		}
 
-		Global.Texts[i] = text.New(pixel.V(10+250*float64(i), -20), atlas)
-		Global.Texts[i].Color = colornames.Red
-		Global.Texts[i].WriteString(fmt.Sprintf("MONITOR %s\n\n", monitors[i].Name()))
-
-		for _, v := range modes {
-			Global.Texts[i].WriteString(fmt.Sprintf("(%c) %dx%d @ %d hz\n", index, v.Width, v.Height, v.RefreshRate))
-				index++
-		}
 	}
-
-	Global.StaticText = text.New(pixel.V(10, 30), atlas)
-	Global.StaticText.Color = colornames.Black
-	Global.StaticText.WriteString("ESC to exit\nW toggles windowed/fullscreen")
 
 	Global.ActiveSetting = &Global.Settings[0]
 
+	//Initialize FPS Text
+	textFPS = text.New(pixel.V(10, 750), atlas)
 }
 
 
@@ -160,18 +156,12 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	}
 
-
-	// Draw Global.Texts
-	for _, txt := range Global.Texts {
-		txt.Draw(Global.Win, pixel.IM.Moved(pixel.V(0, Global.Win.Bounds().H())))
-	}
-	Global.StaticText.Draw(Global.Win, pixel.IM)
-
-
-
-
+	// Draw Graphics to the screen
 	imd.Draw(Global.Win)
+	drawCounter ++	// Increment the draws per second counter
 
+	// Draw text to the screen
+	textFPS.Draw(Global.Win, pixel.IM)
 }
 
 
@@ -286,6 +276,21 @@ func Run() {
 				drawGraphics(CPU.Graphics)
 				// Update the screen after draw
 				Global.Win.Update()
+				updateCounter++	// Increment the updates per second counter
+
+
+			// Once per second count the number of draws and Win Updates
+			case <-CPU.FPSCounter.C:
+
+				// Initialize Text
+				textFPS = text.New(pixel.V(10, 750), atlas)
+				// textFPS.Color = colornames.Red
+				fmt.Fprintf(textFPS, "FPS: %d\tDraws: %d", updateCounter, drawCounter)
+
+				// fmt.Printf("Draws per second:\t%d\n", drawCounter)
+				// fmt.Printf("Win Updates per second:\t%d\n", updateCounter)
+				drawCounter = 0
+				updateCounter = 0
 
 
 			default:

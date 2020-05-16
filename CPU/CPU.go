@@ -37,7 +37,8 @@ var (
 
 
 	// Timers
-	FPS					*time.Ticker
+	FPS					*time.Ticker		// Frames per second
+	FPSCounter			*time.Ticker		// Count frames per second
 	TimersClock			*time.Ticker		// Delay and Sound Timer
 	KeyboardClock				*time.Ticker		// Keyboard Timer to be used with emulator keys
 	CPU_Clock				*time.Ticker		// CPU Clock
@@ -127,6 +128,7 @@ func Initialize() {
 
 	// Timers
 	FPS					= time.NewTicker(time.Second / 60)	// FPS Clock
+	FPSCounter				= time.NewTicker(time.Second)	// FPS Counter Clock
 	CPU_Clock_Speed				= 500	// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
 	CPU_Clock				= time.NewTicker(time.Second / CPU_Clock_Speed)
 	SCHIP_TimerClockHack			= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )

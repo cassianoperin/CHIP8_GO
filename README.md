@@ -179,3 +179,5 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 6. Review keyboard timers, there is a small lag
 7. Save the savestates to files
 8. Create a help menu and command line arguments (SCHIP hack mode and other options)
+9. Keyboard Timer strange because its inside another clock?
+10. Review variables to migrate to Global
