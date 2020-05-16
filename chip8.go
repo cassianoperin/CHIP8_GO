@@ -5,9 +5,11 @@ import (
 	"log"
 	"os"
 	"runtime"
+
 	"Chip8/CPU"
 	"Chip8/Graphics"
 	"Chip8/Sound"
+
 	"github.com/faiface/pixel/pixelgl"
 )
 
@@ -42,6 +44,12 @@ func readROM(filename string) {
 	fmt.Println("Loading ROM:", filename)
 	romsize := fileInfo.Size()
 	fmt.Printf("Size in bytes: %d\n", romsize)
+
+	// Don't run with files bigger than 4KB
+	if romsize >= 4096 {
+		fmt.Printf("File bigger than 4KB, invalid ROM.\n")
+		os.Exit(1)
+	}
 
 	// Open ROM file, insert all bytes into memory
 	file, err := os.Open(filename)
@@ -87,107 +95,6 @@ func MaxParallelism() int {
 }
 
 
-func get_game_signature() {
-
-	// Used to identify games that needs legacy opcodes
-	// Read the first 10 game instructions in memory
-	signature_size := 10
-	for i:=0 ; i < signature_size ; i++ {
-		CPU.Game_signature += fmt.Sprintf("%X", CPU.Memory[int(CPU.PC)+i])
-	}
-	fmt.Printf("Game signature: %s\n", CPU.Game_signature)
-}
-
-func handle_legacy_opcodes() {
-
-	// Quirks needed by specific games
-
-	// Enable Fx55 and Fx65 legacy mode
-	// Game "Animal Race [Brian Astle]"
-	// MD5: 46497c35ce549cd7617462fe7c9fc284
-	if (CPU.Game_signature == "6DA6E268E69BA5B5") {
-		CPU.Legacy_Fx55_Fx65 = true
-		fmt.Printf("Legacy mode Fx55/Fx65 enabled.\n")
-	}
-	// Enable 2nd legacy mode
-	//if (CPU.Game_signature == "xxxxxxxxxxxxx") {
-	//	CPU.Legacy_8xy6_8xyE = true
-	//	fmt.Printf("Legacy mode 8xy6/8xyE enabled.\n")
-	//}
-
-	// Enable undocumented FX1E feature needed by Spacefight 2091!
-	// Game "Spacefight 2091 [Carsten Soerensen, 1992].ch8"
-	// MD5: f99d0e82a489b8aff1c7203d90f740c3
-	if (CPU.Game_signature == "12245370616365466967") {
-		CPU.FX1E_spacefight2091 = true
-		fmt.Printf("FX1E undocumented feature enabled.\n")
-	}
-	// Enable undocumented FX1E feature needed by Spacefight 2091!
-	// SCHIP Test Program "sctest_12"
-	// MD5: 3ff053faaf994c051ed9b432f412b551
-	if (CPU.Game_signature == "12122054726F6E697820") {
-		CPU.FX1E_spacefight2091 = true
-		fmt.Printf("FX1E undocumented feature enabled.\n")
-	}
-
-	// Enable Pixel Wrap Fix for Bowling game
-	// Game: "Bowling [Gooitzen van der Wal]"
-	// MD5: b56e0e6e3930011049fcf6cf3384e964
-	if (CPU.Game_signature == "6314640255E60525B4") {
-		CPU.DXYN_bowling_wrap = true
-		fmt.Printf("DXYN pixel wrap fix enabled.\n")
-	}
-
-	// Enable Low Res 16x16 Pixel Draw in Robot.ch8 DEMO
-	// SCHIP Demo: "Robot"
-	// MD5: e2cd0812b43fb46e4b8abbb3a8d30f4b
-	if (CPU.Game_signature == "0FEA23A60061062F") {
-		CPU.DXY0_loresWideSpriteQuirks = true
-		fmt.Printf("DXY0 SCHIP Low Res 16x16 Pixel fix enabled.\n")
-	}
-
-}
-
-
-func remap_keys() {
-	// Platform: SCHIP
-	// Game: "Blinky [Hans Christian Egeberg, 1991].ch8"
-	// MD5: fb3284205c90d80c3b17aeea2eedf0e4
-	if (CPU.Game_signature == "121A322E303020432E20") {
-		CPU.KeyPressed[3] = pixelgl.KeyUp
-		CPU.KeyPressed[6] = pixelgl.KeyDown
-		CPU.KeyPressed[7] = pixelgl.KeyLeft
-		CPU.KeyPressed[8] = pixelgl.KeyRight
-		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Up: ↑     Down: ↓"
-		fmt.Printf("Keys Remaped\n")
-	}
-
-	// Platform: SCHIP
-	// Game: "Spacefight 2091 [Carsten Soerensen, 1992].ch8"
-	// MD5: f99d0e82a489b8aff1c7203d90f740c3
-	if (CPU.Game_signature == "12245370616365466967") {
-		CPU.KeyPressed[10] = pixelgl.KeySpace
-		CPU.KeyPressed[3] = pixelgl.KeyLeft
-		CPU.KeyPressed[12] = pixelgl.KeyRight
-		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
-		fmt.Printf("Keys Remaped\n")
-	}
-
-	// Platform: CHIP-8
-	// Game: "Space Invaders [David Winter].ch8"
-	// MD5: a67f58742cff77702cc64c64413dc37d
-	if (CPU.Game_signature == "1225535041434520494E") {
-		CPU.KeyPressed[5] = pixelgl.KeySpace
-		CPU.KeyPressed[4] = pixelgl.KeyLeft
-		CPU.KeyPressed[6] = pixelgl.KeyRight
-		Graphics.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
-		fmt.Printf("Keys Remaped\n")
-	}
-
-
-}
-
-
 func testFile(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		fmt.Printf("File '%s' not found.\n\n", os.Args[1])
@@ -211,14 +118,12 @@ func main() {
 
 	// Set initial variables values
 	CPU.Initialize()
-	Sound.Initialize("Sound/beep.mp3")
-	readROM(os.Args[1])
 
-	// Identify special games that needs legacy opcodes
-	get_game_signature()
-	handle_legacy_opcodes()
-	remap_keys()
-	CPU.MemoryCleanSnapshot = CPU.Memory
+	// Initialize sound buffer
+	Sound.Initialize("Sound/beep.mp3")
+
+	// Read ROM into Memory
+	readROM(os.Args[1])
 
 	// Start Window System and draw Graphics
 	pixelgl.Run(Graphics.Run)

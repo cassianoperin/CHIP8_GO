@@ -1,26 +1,22 @@
 package Graphics
 
 import (
-	"time"
 	"fmt"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
 	"Chip8/CPU"
-)
-
-var (
-	win		*pixelgl.Window
-	WindowTitle	string = "Chip-8"
-	color_theme	= 0
+	"Chip8/Sound"
+	"Chip8/Input"
+	"Chip8/Global"
 )
 
 const (
 	screenWidth	= float64(1024)
 	screenHeight	= float64(768)
-	keyboard_tmout	= 30	// Milliseconds
 )
+
 
 // Print Graphics on Console
 func drawGraphicsConsole() {
@@ -43,12 +39,16 @@ func drawGraphicsConsole() {
 
 func renderGraphics() {
 	cfg := pixelgl.WindowConfig{
-		Title:  WindowTitle,
+		Title:  Global.WindowTitle,
 		Bounds: pixel.R(0, 0, screenWidth, screenHeight),
 		VSync:  false,
+		Resizable: false,
+		Undecorated: false,
+		NoIconify: false,
+		AlwaysOnTop: true,
 	}
 	var err error
-	win, err = pixelgl.NewWindow(cfg)
+	Global.Win, err = pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -58,44 +58,44 @@ func renderGraphics() {
 func drawGraphics(graphics [128 * 64]byte) {
 
 	// Background color
-	win.Clear(colornames.Black)
+	Global.Win.Clear(colornames.Black)
 	imd := imdraw.New(nil)
 	imd.Color = pixel.RGB(1, 1, 1)
 
 	//Select Color Schema
-	if color_theme != 0 {
+	if Global.Color_theme != 0 {
 
-		switch color_theme := color_theme ; {
+		switch color_theme := Global.Color_theme ; {
 
 		case color_theme == 1:
-			win.Clear(colornames.White)
+			Global.Win.Clear(colornames.White)
 			imd.Color = colornames.Black
 
 		case color_theme == 2:
 			imd.Color = colornames.Lightgreen
 
 		case color_theme == 3:
-			win.Clear(colornames.Dimgray)
+			Global.Win.Clear(colornames.Dimgray)
 			imd.Color = colornames.Lightgreen
 
 		case color_theme == 4:
 			imd.Color = colornames.Steelblue
 
 		case color_theme == 5:
-			win.Clear(colornames.Darkgray)
+			Global.Win.Clear(colornames.Darkgray)
 			imd.Color = colornames.Steelblue
 
 		case color_theme == 6:
 			imd.Color = colornames.Indianred
 
 		case color_theme == 7:
-			win.Clear(colornames.Darkgray)
+			Global.Win.Clear(colornames.Darkgray)
 			imd.Color = colornames.Indianred
 		}
 
 	}
 
-	screenWidth	:= win.Bounds().W()
+	screenWidth	:= Global.Win.Bounds().W()
 	width		:= screenWidth/CPU.SizeX
 	height		:= ((screenHeight)/CPU.SizeY)
 
@@ -110,10 +110,6 @@ func drawGraphics(graphics [128 * 64]byte) {
 			// Needs to be inverted to IMD Draw function before
 			y = (int(CPU.SizeY) - 1) - y
 
-			if CPU.Debug_v3 {
-				fmt.Printf("\n\t Graphics.drawGraphics Debug: Column(X): %d, Line(Y): %d", x, y)
-			}
-
 			//draw_rectangle(10, 10, 50, 50, red)
 			imd.Push(pixel.V ( width * float64(x)         , height * float64(y)          ) )
 			imd.Push(pixel.V ( width * float64(x) + width , height * float64(y) + height ) )
@@ -122,280 +118,57 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	}
 
-	if CPU.Debug_v3 {
-		fmt.Printf("\n")
-	}
 
-	imd.Draw(win)
+	imd.Draw(Global.Win)
 
 }
 
 
-func Keyboard() {
-	for index, key := range CPU.KeyPressed {
-		if win.Pressed(key) {
-			CPU.Key[index] = 1
-
-			// CPU.Pause Key
-			if index == 16 {
-				if CPU.Pause {
-					CPU.Pause = false
-					fmt.Printf("\t\tPAUSE mode Disabled\n")
-					drawGraphics(CPU.Graphics)
-					win.Update()
-					time.Sleep(100 * keyboard_tmout * time.Millisecond)
-				} else {
-					CPU.Pause = true
-					fmt.Printf("\t\tPAUSE mode Enabled\n")
-					time.Sleep(100 * keyboard_tmout * time.Millisecond)
-				}
-			}
-
-			// Rewind CPU
-			if index == 17 {
-				if CPU.Pause {
-					// Search for track limit history
-					// Rewind_buffer size minus [0] used for current value
-					// (-2 because I use Rewind_buffer +1 to identify the last vector number)
-					if CPU.Rewind_index < CPU.Rewind_buffer -2 {
-						// Take care of the first loop
-						if (CPU.Cycle == 1) {
-							fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
-							drawGraphics(CPU.Graphics)
-							win.Update()
-							time.Sleep(100 * keyboard_tmout * time.Millisecond)
-						} else {
-							// Update values, reading the track records
-							CPU.PC		= CPU.PC_track[CPU.Rewind_index +1]
-							CPU.Stack	= CPU.Stack_track[CPU.Rewind_index +1]
-							CPU.SP		= CPU.SP_track[CPU.Rewind_index +1]
-							CPU.V		= CPU.V_track[CPU.Rewind_index +1]
-							CPU.I		= CPU.I_track[CPU.Rewind_index +1]
-							CPU.Graphics	= CPU.GFX_track[CPU.Rewind_index +1]
-							CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
-							CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index +1]
-							CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index +1]
-							CPU.Key		= [CPU.KeyArraySize]byte{}
-							CPU.Cycle	= CPU.Cycle - 2
-							CPU.Rewind_index= CPU.Rewind_index +1
-							// Call a CPU Cycle
-							CPU.Interpreter()
-							time.Sleep(keyboard_tmout * time.Millisecond)
-							fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n\n", CPU.Rewind_index)
-						}
-					} else {
-						fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
-						time.Sleep(100 * keyboard_tmout * time.Millisecond)
-					}
-				}
-			}
-
-			// Cycle Step Forward Key
-			if index == 18 {
-				if CPU.Pause {
-					// If inside the rewind loop, search for cycles inside it
-					// DO NOT update the track records in this stage
-					if CPU.Rewind_index > 0 {
-						CPU.PC		= CPU.PC_track[CPU.Rewind_index -1]
-						CPU.Stack	= CPU.Stack_track[CPU.Rewind_index -1]
-						CPU.SP		= CPU.SP_track[CPU.Rewind_index -1]
-						CPU.V		= CPU.V_track[CPU.Rewind_index -1]
-						CPU.I		= CPU.I_track[CPU.Rewind_index -1]
-						CPU.Graphics	= CPU.GFX_track[CPU.Rewind_index -1]
-						CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index -1]
-						CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index -1]
-						CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index -1]
-						CPU.Key		= [CPU.KeyArraySize]byte{}
-						CPU.Rewind_index	-= 1
-						CPU.Interpreter()
-						time.Sleep(keyboard_tmout * time.Millisecond)
-						fmt.Printf("\t\tForward mode - Rewind_index := %d\n\n", CPU.Rewind_index)
-					// Return to real time, forward CPU normally and UPDATE de tracks
-					} else {
-						CPU.Interpreter()
-						time.Sleep(keyboard_tmout * time.Millisecond)
-						fmt.Printf("\t\tForward mode\n\n")
-					}
-				}
-			}
-
-			// Debug
-			if index == 19 {
-				if CPU.Debug {
-					CPU.Debug = false
-					fmt.Printf("\t\tDEBUG mode Disabled\n")
-					time.Sleep(50 * keyboard_tmout * time.Millisecond)
-				} else {
-					CPU.Debug = true
-					fmt.Printf("\t\tDEBUG mode Enabled\n")
-					time.Sleep(50 * keyboard_tmout * time.Millisecond)
-				}
-			}
 
 
-			// Reset
-			if index == 20 {
-				CPU.PC			= 0x200
-				CPU.Stack		= [16]uint16{}
-				CPU.SP			= 0
-				CPU.V			= [16]byte{}
-				CPU.I			= 0
-				CPU.Graphics		= [128 * 64]byte{}
-				CPU.DrawFlag		= false
-				CPU.DelayTimer		= 0
-				CPU.SoundTimer		= 0
-				CPU.Key			= [CPU.KeyArraySize]byte{}
-				CPU.Cycle		= 0
-				CPU.Rewind_index	= 0
-				// If paused, remove the pause to continue CPU Loop
-				if CPU.Pause {
-					CPU.Pause = false
-				}
-				CPU.SCHIP = false
-				CPU.SizeX	= 64
-				CPU.SizeY	= 32
-				CPU.CPU_Clock_Speed = 500
-				CPU.Memory = CPU.MemoryCleanSnapshot
-			}
-
-
-			// Create Save State
-			if index == 24 {
-				CPU.Opcode_savestate		= CPU.Opcode
-				CPU.PC_savestate			= CPU.PC
-				CPU.Stack_savestate		= CPU.Stack
-				CPU.SP_savestate			= CPU.SP
-				CPU.V_savestate			= CPU.V
-				CPU.I_savestate			= CPU.I
-				CPU.Graphics_savestate		= CPU.Graphics
-				CPU.DelayTimer_savestate	= CPU.DelayTimer
-				CPU.SoundTimer_savestate	= CPU.SoundTimer
-				CPU.Cycle_savestate		= CPU.Cycle
-				CPU.Rewind_index_savestate	= CPU.Rewind_index
-				CPU.SCHIP_savestate		= CPU.SCHIP
-				CPU.SCHIP_LORES_savestate	= CPU.SCHIP_LORES
-				CPU.SizeX_savestate		= CPU.SizeX
-				CPU.SizeY_savestate		= CPU.SizeY
-				CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
-				CPU.Memory_savestate 		= CPU.Memory
-				fmt.Printf("\n\t\tSavestate Created\n")
-				time.Sleep(10 * keyboard_tmout * time.Millisecond)
-				// Register that have a savestate
-				CPU.Savestate_created		= 1
-			}
-
-			// Load Save State
- 			if index == 25 {
-				if CPU.Savestate_created == 1 {
-					CPU.Opcode			= CPU.Opcode_savestate
-					CPU.PC			= CPU.PC_savestate
-					CPU.Stack			= CPU.Stack_savestate
-					CPU.SP			= CPU.SP_savestate
-					CPU.V				= CPU.V_savestate
-					CPU.I				= CPU.I_savestate
-					CPU.Graphics		= CPU.Graphics_savestate
-					CPU.DelayTimer		= CPU.DelayTimer_savestate
-					CPU.SoundTimer		= CPU.SoundTimer_savestate
-					CPU.Cycle			= CPU.Cycle_savestate
-					CPU.Rewind_index		= CPU.Rewind_index_savestate
-					CPU.SCHIP			= CPU.SCHIP_savestate
-					CPU.SCHIP_LORES		= CPU.SCHIP_LORES_savestate
-					CPU.SizeX			= CPU.SizeX_savestate
-					CPU.SizeY			= CPU.SizeY_savestate
-					CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
-					CPU.Memory 			= CPU.Memory_savestate
-					CPU.DrawFlag		= true
-					fmt.Printf("\n\t\tSavestate Loaded\n")
-					time.Sleep(10 * keyboard_tmout * time.Millisecond)
-				} else {
-					fmt.Printf("\n\t\tSavestate not loaded - No Savestate created\n")
-					time.Sleep(10 * keyboard_tmout * time.Millisecond)
-				}
-
-			}
-
-
-			// Decrease CPU Clock Speed
-			if index == 21 {
-				decrease_rate := 50
-				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
-				if (CPU.CPU_Clock_Speed - time.Duration(decrease_rate)) > 0 {
-					CPU.CPU_Clock_Speed -= time.Duration(decrease_rate)
-					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
-					time.Sleep(5 * keyboard_tmout * time.Millisecond)
-				} else {
-					// Reached minimum CPU Clock Speed (1 Hz)
-					CPU.CPU_Clock_Speed = 1
-					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
-					time.Sleep(5 * keyboard_tmout * time.Millisecond)
-				}
-			}
-
-			// Increase CPU Clock Speed
-			if index == 22 {
-				increase_rate := 50
-				fmt.Printf("\n\t\tCurrent CPU Clock: %d Hz\n", CPU.CPU_Clock_Speed)
-				if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= 3000 {
-					// If Clock Speed = 1, return to multiples of 'increase_rate'
-					if CPU.CPU_Clock_Speed == 1 {
-						CPU.CPU_Clock_Speed += time.Duration(increase_rate - 1)
-						CPU.CPU_Clock.Stop()
-						CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-						fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
-						time.Sleep(5 * keyboard_tmout * time.Millisecond)
-					} else {
-						CPU.CPU_Clock_Speed += time.Duration(increase_rate)
-						CPU.CPU_Clock.Stop()
-						CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-						fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
-						time.Sleep(5 * keyboard_tmout * time.Millisecond)
-					}
-				} else {
-					// Reached Maximum CPU Clock Speed (3000 Hz)
-					CPU.CPU_Clock_Speed = 3000
-					CPU.CPU_Clock.Stop()
-					CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
-					fmt.Printf("\t\tNew CPU Clock: %d Hz\n\n", CPU.CPU_Clock_Speed)
-					time.Sleep(5 * keyboard_tmout * time.Millisecond)
-				}
-			}
-
-			// Color Theme
-			if index == 23 {
-				color_theme += 1
-
-				if color_theme > 7 {
-					color_theme = 0
-				}
-				time.Sleep(5 * keyboard_tmout * time.Millisecond)
-			}
-
-		}else {
-			CPU.Key[index] = 0
-		}
-	}
-}
 
 
 func Run() {
+
+	// Get game signature
+	CPU.Get_game_signature()
+
+	// Print Message if using SCHIP Hack
+	if CPU.SCHIP_TimerHack {
+		fmt.Printf("SCHIP DelayTimer Clock Hack ENABLED\n")
+	}
+
+	// Create a clean memory needed by some games on reset
+	CPU.MemoryCleanSnapshot = CPU.Memory
+
+	// Identify special games that needs legacy opcodes
+	CPU.Handle_legacy_opcodes()
+
+	// Remap keys to a better experience
+	Input.Remap_keys()
 
 	// Set up render system
 	renderGraphics()
 
 	// Main Infinite Loop
-	for !win.Closed() {
+	for !Global.Win.Closed() {
 
 		// Esc to quit program
-		if win.Pressed(pixelgl.KeyEscape) {
+		if Global.Win.Pressed(pixelgl.KeyEscape) {
 			break
 		}
 
 		// Handle Keys pressed
-		Keyboard()
+		Input.Keyboard()
 
-		// Every Cycle Control the clock!!!
+		// Handle Input flags
+		if Global.InputDrawFlag {
+			drawGraphics(CPU.Graphics)
+		}
+
+		// ---------- Every Cycle Control the clocks!!! ---------- //
+
+		// CPU Clock
 		select {
 			case <- CPU.CPU_Clock.C:
 
@@ -421,41 +194,49 @@ func Run() {
 				// Draw Graphics on Console
 				//drawGraphicsConsole()
 
+			// Independent of CPU CLOCK, Sound and Delay Timers runs at 60Hz
+			case <-CPU.TimersClock.C:
+				// When ticker run (60 times in a second, check de DelayTimer)
+				// SCHIP Uses a hack to decrease DT faster to gain speed
+				if !CPU.SCHIP_TimerHack {
+					if CPU.DelayTimer > 0 {
+						CPU.DelayTimer--
+					}
+				}
 
+				// When ticker run (60 times in a second, check de SoundTimer)
+				if CPU.SoundTimer > 0 {
+					if CPU.SoundTimer == 1 {
+						go Sound.PlaySound(Sound.Beep_buffer)
+					}
+					CPU.SoundTimer--
+				}
 
-			default:
-				// No timer to handle
-		}
-
-		//SCHIP Speed hack, decrease DT faster
-		if CPU.SCHIP {
-			select {
+			//SCHIP Speed hack, decrease DT faster
 			case <-CPU.SCHIP_TimerClockHack.C:
+				if CPU.SCHIP_TimerHack {
 					// Decrease faster than usual 60Hz
 					if CPU.DelayTimer > 0 {
 						CPU.DelayTimer--
 					}
+				}
 
 
-				default:
-					// No timer to handle
-			}
-		}
+			// 60 FPS Control - Update the screen
+			case <-CPU.FPS.C:
+				// Instead of draw screen every time drawflag is set, draw at 60Hz
+				drawGraphics(CPU.Graphics)
+				// Update the screen after draw
+				Global.Win.Update()
 
-		// Update Input Events
-		win.UpdateInput()
-
-		// 60 FPS Control - Update the screen
-		select {
-		case <-CPU.FPS .C:
-			// Instead of draw screen every time drawflag is set, draw at 60Hz
-			drawGraphics(CPU.Graphics)
-			// Update the screen after draw
-			win.Update()
 
 			default:
 				// No timer to handle
 		}
+
+
+		// Update Input Events
+		Global.Win.UpdateInput()
 
 	}
 
