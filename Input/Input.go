@@ -11,14 +11,12 @@ import (
 )
 
 const (
-	increase_rate = 100	// CPU Clock increase rate
-	decrease_rate = 100	// CPU Clock decrease rate
-	maxCPUClockAllowed = 5000
+	increase_rate		= 100	// CPU Clock increase rate
+	decrease_rate		= 100	// CPU Clock decrease rate
+	maxCPUClockAllowed	= 5000
 )
 
 var (
-	ResolutionCounter	int = 0
-
 
 
 	// Control the Keys Pressed (CHIP8/SCHIP 16 Keys)
@@ -51,6 +49,7 @@ var (
 		5:	pixelgl.KeyL,			// Load Savestate
 		6:	pixelgl.KeyM,			// Change video resolution
 		7:	pixelgl.KeyN,			// Fullscreen
+		8:	pixelgl.KeyJ,			// Show / Hide FPS
 	}
 
 	// Control the Keys Pressed (Emulator Features, with repetition)
@@ -244,13 +243,13 @@ func Keyboard() {
 			if index == 6 {
 
 				// If the mode is smaller than the number of resolutions available increment
-				if ResolutionCounter < len(Global.Settings) -1  {
-					ResolutionCounter ++
+				if Global.ResolutionCounter < len(Global.Settings) -1  {
+					Global.ResolutionCounter ++
 				} else {
-					ResolutionCounter = 0	// reset ResolutionCounter
+					Global.ResolutionCounter = 0	// reset Global.ResolutionCounter
 				}
 
-				Global.ActiveSetting = &Global.Settings[ResolutionCounter]
+				Global.ActiveSetting = &Global.Settings[Global.ResolutionCounter]
 
 				if Global.IsFullScreen {
 					Global.Win.SetMonitor(Global.ActiveSetting.Monitor)
@@ -260,7 +259,7 @@ func Keyboard() {
 				Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
 
 
-				fmt.Printf("\t\tResolution mode[%d]: %dx%d @ %dHz\n",ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
+				fmt.Printf("\t\tResolution mode[%d]: %dx%d @ %dHz\n",Global.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
 
 			}
 
@@ -277,6 +276,11 @@ func Keyboard() {
 				}
 				Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
 
+			}
+
+			// FPS
+			if index == 8 {
+				Global.ShowFPS = !Global.ShowFPS
 			}
 
 		}

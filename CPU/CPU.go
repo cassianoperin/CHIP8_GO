@@ -127,7 +127,7 @@ func Initialize() {
 	Graphics				= [128 * 64]byte{}
 
 	// Timers
-	FPS					= time.NewTicker(time.Second / 60)	// FPS Clock
+	FPS					= time.NewTicker(time.Second / 30)	// FPS Clock
 	FPSCounter				= time.NewTicker(time.Second)	// FPS Counter Clock
 	CPU_Clock_Speed				= 500	// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
 	CPU_Clock				= time.NewTicker(time.Second / CPU_Clock_Speed)

@@ -113,7 +113,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 	`I`: Step back (rewind) one CPU cycle **in Pause Mode**
 
-	`O`: Step forward one CPU cycle in **Pause Mode**
+	`O`: Step forward one CPU cycle in **in Pause Mode**
 
 	`K`: Create Save State
 
@@ -128,6 +128,12 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 	`9`: Enable / Disable Debug Mode
 
 	`0`: Reset
+
+	`J`: Show / Hide FPS Counter
+
+	`N`: Enter / Exit Fullscreen mode
+
+	`M`: Change resolution
 
 	`ESC`: Exit emulator
 

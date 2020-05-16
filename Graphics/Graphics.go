@@ -27,6 +27,7 @@ var (
 	drawCounter	= 0			// imd.Draw per second counter
 	updateCounter	= 0			// Win.Updates per second counter
 	textFPS		*text.Text	// On screen FPS counter
+	textFPSstr	string		// String with the FPS counter
 
 	// Video modes and Fullscreen
 	atlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
@@ -89,7 +90,7 @@ func renderGraphics() {
 	Global.ActiveSetting = &Global.Settings[0]
 
 	//Initialize FPS Text
-	textFPS = text.New(pixel.V(10, 750), atlas)
+	textFPS = text.New(pixel.V(10, 740), atlas)
 }
 
 
@@ -99,6 +100,7 @@ func drawGraphics(graphics [128 * 64]byte) {
 	Global.Win.Clear(colornames.Black)
 	imd := imdraw.New(nil)
 	imd.Color = pixel.RGB(1, 1, 1)
+	textFPS.Color = colornames.Red
 
 	//Select Color Schema
 	if Global.Color_theme != 0 {
@@ -107,6 +109,7 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 		case color_theme == 1:
 			Global.Win.Clear(colornames.White)
+
 			imd.Color = colornames.Black
 
 		case color_theme == 2:
@@ -125,10 +128,12 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 		case color_theme == 6:
 			imd.Color = colornames.Indianred
+			textFPS.Color = colornames.Steelblue
 
 		case color_theme == 7:
 			Global.Win.Clear(colornames.Darkgray)
 			imd.Color = colornames.Indianred
+			textFPS.Color = colornames.Steelblue
 		}
 
 	}
@@ -161,7 +166,12 @@ func drawGraphics(graphics [128 * 64]byte) {
 	drawCounter ++	// Increment the draws per second counter
 
 	// Draw text to the screen
-	textFPS.Draw(Global.Win, pixel.IM)
+	if Global.ShowFPS {
+		textFPS.Clear()
+		fmt.Fprintf(textFPS, textFPSstr)
+		textFPS.Draw(Global.Win, pixel.IM.Scaled(textFPS.Orig, 2))
+	}
+
 }
 
 
@@ -179,7 +189,7 @@ func Run() {
 
 	// Print initial resolution
 	// if debug {
-		fmt.Printf("Resolution mode[%d]: %dx%d @ %dHz\n",Input.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
+		fmt.Printf("Resolution mode[%d]: %dx%d @ %dHz\n",Global.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
 	// }
 
 	// Print Message if using SCHIP Hack
@@ -282,13 +292,8 @@ func Run() {
 			// Once per second count the number of draws and Win Updates
 			case <-CPU.FPSCounter.C:
 
-				// Initialize Text
-				textFPS = text.New(pixel.V(10, 750), atlas)
-				// textFPS.Color = colornames.Red
-				fmt.Fprintf(textFPS, "FPS: %d\tDraws: %d", updateCounter, drawCounter)
-
-				// fmt.Printf("Draws per second:\t%d\n", drawCounter)
-				// fmt.Printf("Win Updates per second:\t%d\n", updateCounter)
+				// Update the values to print on screen
+				textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz", updateCounter, drawCounter, CPU.CPU_Clock_Speed)
 				drawCounter = 0
 				updateCounter = 0
 
