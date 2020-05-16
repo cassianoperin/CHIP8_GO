@@ -178,12 +178,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 ## TODO LIST
 
 1. Sound glitches in Windows version
-2. Create a FPS counter on screen
-3. Review all messages and write to the screen
-4. Put the text in the front of graphics
-5. Set the text color in themes
-6. Review keyboard timers, there is a small lag
-7. Save the savestates to files
-8. Create a help menu and command line arguments (SCHIP hack mode and other options)
-9. Keyboard Timer strange because its inside another clock?
-10. Review variables to migrate to Global
+2. Review all messages and write to the screen
+3. Review keyboard timers, there is a small lag
+4. Save the savestates to files
+5. Create a help menu and command line arguments (SCHIP hack mode and other options)
