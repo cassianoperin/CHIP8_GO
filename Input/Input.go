@@ -5,6 +5,8 @@ import (
 	"time"
 	"Chip8/CPU"
 	"Chip8/Global"
+
+	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
 
@@ -15,6 +17,10 @@ const (
 )
 
 var (
+	ResolutionCounter	int = 0
+
+
+
 	// Control the Keys Pressed (CHIP8/SCHIP 16 Keys)
 	KeyPressedCHIP8 = map[uint16]pixelgl.Button{
 		0:	pixelgl.KeyX,
@@ -43,6 +49,8 @@ var (
 		3:	pixelgl.Key6,			// Change Color Theme
 		4:	pixelgl.KeyK,			// Create Savestate
 		5:	pixelgl.KeyL,			// Load Savestate
+		6:	pixelgl.KeyM,			// Change video resolution
+		7:	pixelgl.KeyN,			// Fullscreen
 	}
 
 	// Control the Keys Pressed (Emulator Features, with repetition)
@@ -232,6 +240,44 @@ func Keyboard() {
 
 			}
 
+			// Change video resolution
+			if index == 6 {
+
+				// If the mode is smaller than the number of resolutions available increment
+				if ResolutionCounter < len(Global.Settings) -1  {
+					ResolutionCounter ++
+				} else {
+					ResolutionCounter = 0	// reset ResolutionCounter
+				}
+
+				Global.ActiveSetting = &Global.Settings[ResolutionCounter]
+
+				if Global.IsFullScreen {
+					Global.Win.SetMonitor(Global.ActiveSetting.Monitor)
+				} else {
+					Global.Win.SetMonitor(nil)
+				}
+				Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
+
+
+				fmt.Printf("\t\tResolution mode[%d]: %dx%d @ %dHz\n",ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
+
+			}
+
+			// Fullscreen
+			if index == 7 {
+				if Global.IsFullScreen {
+					// Switch to windowed and backup the correct monitor.
+					Global.Win.SetMonitor(nil)
+					Global.IsFullScreen = false
+				} else {
+					// Switch to fullscreen.
+					Global.Win.SetMonitor(Global.ActiveSetting.Monitor)
+					Global.IsFullScreen = true
+				}
+				Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
+
+			}
 
 		}
 	}

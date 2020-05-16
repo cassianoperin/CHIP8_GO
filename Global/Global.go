@@ -3,7 +3,14 @@ package Global
 
 import (
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
 )
+
+// Fullscreen / Video Modes
+type Setting struct {
+	Mode    *pixelgl.VideoMode
+	Monitor *pixelgl.Monitor
+}
 
 var (
 	// Global
@@ -12,7 +19,13 @@ var (
 	// Graphics
 	Win		*pixelgl.Window
 	WindowTitle	string = "Chip-8"
-	Color_theme	= 0
+	Color_theme	= 2
+	// Fullscreen / Video Modes
+	Texts         []*text.Text
+	StaticText    *text.Text
+	Settings      []Setting
+	ActiveSetting *Setting
+	IsFullScreen  = false
 
 	//Input
 	InputDrawFlag	bool		// Force draw, necessary in some emulator rewind and forward status

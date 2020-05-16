@@ -3,19 +3,26 @@ package Graphics
 import (
 	"fmt"
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
 	"golang.org/x/image/colornames"
+	"golang.org/x/image/font/basicfont"
+	"github.com/faiface/pixel/imdraw"
+
 	"Chip8/CPU"
 	"Chip8/Sound"
 	"Chip8/Input"
 	"Chip8/Global"
 )
 
+
+
 const (
 	screenWidth	= float64(1024)
 	screenHeight	= float64(768)
 )
+
+
 
 
 // Print Graphics on Console
@@ -52,6 +59,41 @@ func renderGraphics() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Video modes and Fullscreen
+	atlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+
+	// Retrieve all monitors.
+	monitors := pixelgl.Monitors()
+
+	Global.Texts = make([]*text.Text, len(monitors))
+	index := byte('0')
+	for i := 0; i < len(monitors); i++ {
+		// Retrieve all video modes for a specific monitor.
+		modes := monitors[i].VideoModes()
+		for j := 0; j < len(modes); j++ {
+			Global.Settings = append(Global.Settings, Global.Setting{
+				Monitor: monitors[i],
+				Mode:    &modes[j],
+			})
+		}
+
+		Global.Texts[i] = text.New(pixel.V(10+250*float64(i), -20), atlas)
+		Global.Texts[i].Color = colornames.Red
+		Global.Texts[i].WriteString(fmt.Sprintf("MONITOR %s\n\n", monitors[i].Name()))
+
+		for _, v := range modes {
+			Global.Texts[i].WriteString(fmt.Sprintf("(%c) %dx%d @ %d hz\n", index, v.Width, v.Height, v.RefreshRate))
+				index++
+		}
+	}
+
+	Global.StaticText = text.New(pixel.V(10, 30), atlas)
+	Global.StaticText.Color = colornames.Black
+	Global.StaticText.WriteString("ESC to exit\nW toggles windowed/fullscreen")
+
+	Global.ActiveSetting = &Global.Settings[0]
+
 }
 
 
@@ -119,6 +161,15 @@ func drawGraphics(graphics [128 * 64]byte) {
 	}
 
 
+	// Draw Global.Texts
+	for _, txt := range Global.Texts {
+		txt.Draw(Global.Win, pixel.IM.Moved(pixel.V(0, Global.Win.Bounds().H())))
+	}
+	Global.StaticText.Draw(Global.Win, pixel.IM)
+
+
+
+
 	imd.Draw(Global.Win)
 
 }
@@ -132,6 +183,14 @@ func Run() {
 
 	// Get game signature
 	CPU.Get_game_signature()
+
+	// Set up render system
+	renderGraphics()
+
+	// Print initial resolution
+	// if debug {
+		fmt.Printf("Resolution mode[%d]: %dx%d @ %dHz\n",Input.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
+	// }
 
 	// Print Message if using SCHIP Hack
 	if CPU.SCHIP_TimerHack {
@@ -147,8 +206,7 @@ func Run() {
 	// Remap keys to a better experience
 	Input.Remap_keys()
 
-	// Set up render system
-	renderGraphics()
+
 
 	// Main Infinite Loop
 	for !Global.Win.Closed() {

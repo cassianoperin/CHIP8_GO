@@ -22,6 +22,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 * Increase and Decrease CPU Clock Speed
 * Color Themes
 * Save States
+* Fullscreen
 
 ## Compile Instructions
 
@@ -170,6 +171,11 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 ## TODO LIST
 
-1. Create graphical menus
-2. Sound glitches in Windows version
-3. Windows version is slowest than Mac version
+1. Sound glitches in Windows version
+2. Create a FPS counter on screen
+3. Review all messages and write to the screen
+4. Put the text in the front of graphics
+5. Set the text color in themes
+6. Review keyboard timers, there is a small lag
+7. Save the savestates to files
+8. Create a help menu and command line arguments (SCHIP hack mode and other options)
