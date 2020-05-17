@@ -134,6 +134,8 @@ func Initialize() {
 	SCHIP_TimerClockHack			= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 	KeyboardClock				= time.NewTicker(time.Second / 30)
 	TimersClock			= time.NewTicker(time.Second / 60)		// Decrease SoundTimer and DelayTimer
+	// MessagesClock				= time.NewTicker(time.Second * 3)		// Clock used to display messages on screen
+	MessagesClock				= time.NewTicker(time.Second * 4)		// Clock used to display messages on screen
 
 	// General Variables and flags
 	DrawFlag				= false

@@ -1,4 +1,4 @@
-// Global Variables
+// Global Variables used to to avoid circular dependencies
 package Global
 
 import (
@@ -29,6 +29,9 @@ var (
 	ResolutionCounter		int = 0		// Index of the available video resolution supported
 	// FPS
 	ShowFPS				bool			// Show or hide FPS counter flag
+	// On screen messages
+	ShowMessage			bool
+	TextMessageStr			string
 
 	//Input
 	InputDrawFlag			bool			// Force draw, necessary in some emulator rewind and forward status

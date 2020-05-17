@@ -16,24 +16,25 @@ import (
 )
 
 
-
 const (
 	screenWidth	= float64(1024)
 	screenHeight	= float64(768)
 )
 
+
 var (
 	// FPS
-	drawCounter	= 0			// imd.Draw per second counter
-	updateCounter	= 0			// Win.Updates per second counter
 	textFPS		*text.Text	// On screen FPS counter
-	textFPSstr	string		// String with the FPS counter
+	TextFPSstr			string		// String with the FPS counter
+	DrawCounter			= 0			// imd.Draw per second counter
+	UpdateCounter			= 0			// Win.Updates per second counter
+
+	// Screen messages
+	textMessage	*text.Text	// On screen Message content
 
 	// Video modes and Fullscreen
 	atlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
 )
-
-
 
 
 // Print Graphics on Console
@@ -71,7 +72,7 @@ func renderGraphics() {
 		panic(err)
 	}
 
-	// Retrieve all monitors.
+	// Fullscreeen and video resolution - Retrieve all monitors
 	monitors := pixelgl.Monitors()
 
 	// Map the video modes available
@@ -84,13 +85,14 @@ func renderGraphics() {
 				Mode:    &modes[j],
 			})
 		}
-
 	}
 
 	Global.ActiveSetting = &Global.Settings[0]
 
 	//Initialize FPS Text
-	textFPS = text.New(pixel.V(10, 740), atlas)
+	textFPS		= text.New(pixel.V(10, 740), atlas)
+	//Initialize Messages Text
+	textMessage	= text.New(pixel.V(10, 10) , atlas)
 }
 
 
@@ -101,6 +103,7 @@ func drawGraphics(graphics [128 * 64]byte) {
 	imd := imdraw.New(nil)
 	imd.Color = pixel.RGB(1, 1, 1)
 	textFPS.Color = colornames.Red
+	textMessage.Color = colornames.Red
 
 	//Select Color Schema
 	if Global.Color_theme != 0 {
@@ -129,11 +132,12 @@ func drawGraphics(graphics [128 * 64]byte) {
 		case color_theme == 6:
 			imd.Color = colornames.Indianred
 			textFPS.Color = colornames.Steelblue
-
+			textMessage.Color = colornames.Steelblue
 		case color_theme == 7:
 			Global.Win.Clear(colornames.Darkgray)
 			imd.Color = colornames.Indianred
 			textFPS.Color = colornames.Steelblue
+			textMessage.Color = colornames.Steelblue
 		}
 
 	}
@@ -163,19 +167,23 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	// Draw Graphics to the screen
 	imd.Draw(Global.Win)
-	drawCounter ++	// Increment the draws per second counter
+	DrawCounter ++	// Increment the draws per second counter
 
-	// Draw text to the screen
+	// Draw FPS into the screen
 	if Global.ShowFPS {
 		textFPS.Clear()
-		fmt.Fprintf(textFPS, textFPSstr)
+		fmt.Fprintf(textFPS, TextFPSstr)
 		textFPS.Draw(Global.Win, pixel.IM.Scaled(textFPS.Orig, 2))
 	}
 
+	// Draw messages into the screen
+	if Global.ShowMessage {
+		textMessage.Clear()
+		fmt.Fprintf(textMessage, Global.TextMessageStr)
+		textMessage.Draw(Global.Win, pixel.IM.Scaled(textMessage.Orig, 2))
+	}
+
 }
-
-
-
 
 
 
@@ -286,17 +294,24 @@ func Run() {
 				drawGraphics(CPU.Graphics)
 				// Update the screen after draw
 				Global.Win.Update()
-				updateCounter++	// Increment the updates per second counter
+				UpdateCounter++	// Increment the updates per second counter
 
 
 			// Once per second count the number of draws and Win Updates
 			case <-CPU.FPSCounter.C:
+				// Update the values to print on screenppp
+				if CPU.Pause {
+					TextFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz - PAUSE", UpdateCounter, DrawCounter, CPU.CPU_Clock_Speed)
 
-				// Update the values to print on screen
-				textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz", updateCounter, drawCounter, CPU.CPU_Clock_Speed)
-				drawCounter = 0
-				updateCounter = 0
+				} else {
+					TextFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz", UpdateCounter, DrawCounter, CPU.CPU_Clock_Speed)
+				}
+				DrawCounter = 0
+				UpdateCounter = 0
 
+			case <-CPU.MessagesClock.C:
+				// After some time, stop showing the message
+				Global.ShowMessage = false
 
 			default:
 				// No timer to handle
