@@ -12,7 +12,6 @@ import (
 const (
 	increase_rate		= 100	// CPU Clock increase rate
 	decrease_rate		= 100	// CPU Clock decrease rate
-	maxCPUClockAllowed	= 5000
 )
 
 var (
@@ -423,7 +422,7 @@ func Keyboard() {
 					// Increase CPU Clock Speed
 					if index == 3 {
 						tmp := CPU.CPU_Clock_Speed
-						if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= maxCPUClockAllowed {
+						if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= CPU.CPU_Clock_Speed_Max {
 							// If Clock Speed = 1, return to multiples of 'increase_rate'
 							if CPU.CPU_Clock_Speed == 1 {
 								CPU.CPU_Clock_Speed += time.Duration(increase_rate - 1)
@@ -448,7 +447,7 @@ func Keyboard() {
 							}
 						} else {
 							// Reached Maximum CPU Clock Speed (maxCPUClockAllowed Hz)
-							CPU.CPU_Clock_Speed = maxCPUClockAllowed
+							CPU.CPU_Clock_Speed = CPU.CPU_Clock_Speed_Max
 							CPU.CPU_Clock.Stop()
 							CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
 							// Show messages

@@ -181,4 +181,6 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 2. Review keyboard timers, there is a small lag
 3. Save the savestates to files
 4. Create a help menu and command line arguments (SCHIP hack mode and other options)
-5. Add emulator DXYn count or operations count per second
+5. Turn CPU into a function / core
+6. Global.WindowTitle is not being updated (input)
+7. Review Variable locations

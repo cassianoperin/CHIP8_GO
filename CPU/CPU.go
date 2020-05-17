@@ -37,13 +37,13 @@ var (
 	KeyboardClock		*time.Ticker		// Keyboard Timer to be used with emulator keys
 	CPU_Clock		*time.Ticker		// CPU Clock
 	CPU_Clock_Speed		time.Duration		// Value defined to CPU Clock
+	CPU_Clock_Speed_Max		time.Duration		// Max value of CPU Clock
 	SCHIP_TimerClockHack	*time.Ticker		// SCHIP used to decrease DT faster than 60HZ to gain speed
 	MessagesClock		*time.Ticker		// Clock used to display messages on screen
 
 	// General Variables and flags
 	MemoryCleanSnapshot	[4096]byte		// Some games like Single Dragon changes memory, so to reset its necessary to reload game
 	DrawFlag		bool			// True if the screen must be drawn
-	Cycle			uint16			// CPU Cycle Counter
 	sound_file		string			// Beep sound file
 	// Graphics
 	SizeX			float64			// Number of Columns in Graphics
@@ -54,6 +54,11 @@ var (
 	SCHIP_LORES		bool			// SCHIP in Low Resolution mode (00FE)
 	SCHIP_TimerHack		bool			// Enable or disable SCHIP DelayTimer Hack
 	RPL			[8]byte			// HP-48 RPL user flags
+
+	// Counters
+	Cycle			uint16			// CPU Cycle Counter
+	DxynCounter		uint16			// Graphical opcodes Counter per second
+	CyclesCounter		uint16			// CPU Cycle Counter per second
 
 	// DEBUG
 	Pause			bool			// Pause (Used to Forward and Rewind CPU Cycles)
@@ -81,6 +86,7 @@ func Initialize() {
 	FPS			= time.NewTicker(time.Second / 30)			// FPS Clock
 	FPSCounter		= time.NewTicker(time.Second)				// FPS Counter Clock
 	CPU_Clock_Speed		= 500							// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
+	CPU_Clock_Speed_Max		= 10000
 	CPU_Clock		= time.NewTicker(time.Second / CPU_Clock_Speed)
 	SCHIP_TimerClockHack	= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 	KeyboardClock		= time.NewTicker(time.Second / 30)
@@ -90,6 +96,8 @@ func Initialize() {
 	// General Variables and flags
 	DrawFlag		= false
 	Cycle			= 0
+	DxynCounter		= 0
+	CyclesCounter		= 0
 	// Keys
 	Key			= [KeyArraySize]byte{}
 	// Graphics
@@ -179,6 +187,8 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 
 		}
 	}
+
+	DxynCounter ++	// Counter to be used with FPS
 }
 
 
@@ -236,6 +246,8 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 
 		}
 	}
+
+	DxynCounter ++	// Counter to be used with FPS
 }
 
 
@@ -293,6 +305,7 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 		}
 	}
 
+	DxynCounter ++	// Counter to be used with FPS
 }
 
 
@@ -1264,7 +1277,8 @@ func Interpreter() {
 	}
 
 
-	Cycle ++
+	Cycle ++	// Increment overall cycle Counter
+	CyclesCounter ++	// Increment cycle counter to measure with FPS
 
 	// Debug time execution - Opcode Handling
 	if Debug {

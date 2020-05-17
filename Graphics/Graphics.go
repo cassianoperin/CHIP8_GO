@@ -24,9 +24,9 @@ const (
 var (
 	// FPS
 	textFPS		*text.Text	// On screen FPS counter
-	TextFPSstr			string		// String with the FPS counter
-	DrawCounter			= 0			// imd.Draw per second counter
-	UpdateCounter			= 0			// Win.Updates per second counter
+	textFPSstr			string		// String with the FPS counter
+	drawCounter			= 0			// imd.Draw per second counter
+	updateCounter			= 0			// Win.Updates per second counter
 
 	// Screen messages
 	textMessage	*text.Text	// On screen Message content
@@ -166,20 +166,20 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	// Draw Graphics to the screen
 	imd.Draw(Global.Win)
-	DrawCounter ++	// Increment the draws per second counter
+	drawCounter ++	// Increment the draws per second counter
 
 	// Draw FPS into the screen
 	if Global.ShowFPS {
 		textFPS.Clear()
-		fmt.Fprintf(textFPS, TextFPSstr)
-		textFPS.Draw(Global.Win, pixel.IM.Scaled(textFPS.Orig, 2))
+		fmt.Fprintf(textFPS, textFPSstr)
+		textFPS.Draw(Global.Win, pixel.IM.Scaled(textFPS.Orig, 1.5))
 	}
 
 	// Draw messages into the screen
 	if Global.ShowMessage {
 		textMessage.Clear()
 		fmt.Fprintf(textMessage, Global.TextMessageStr)
-		textMessage.Draw(Global.Win, pixel.IM.Scaled(textMessage.Orig, 2))
+		textMessage.Draw(Global.Win, pixel.IM.Scaled(textMessage.Orig, 1.5))
 	}
 
 }
@@ -290,20 +290,23 @@ func Run() {
 				drawGraphics(CPU.Graphics)
 				// Update the screen after draw
 				Global.Win.Update()
-				UpdateCounter++	// Increment the updates per second counter
+				updateCounter++	// Increment the updates per second counter
 
 
 			// Once per second count the number of draws and Win Updates
 			case <-CPU.FPSCounter.C:
-				// Update the values to print on screenppp
+				// Update the values to print on screen
 				if CPU.Pause {
-					TextFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz - PAUSE", UpdateCounter, DrawCounter, CPU.CPU_Clock_Speed)
+					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz\tCPU Cycles: %d\tDXYN Operations: %d - PAUSE", updateCounter, drawCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, CPU.DxynCounter)
 
 				} else {
-					TextFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz", UpdateCounter, DrawCounter, CPU.CPU_Clock_Speed)
+					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz\tCPU Cycles: %d\tDXYN Operations: %d", updateCounter, drawCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, CPU.DxynCounter)
 				}
-				DrawCounter = 0
-				UpdateCounter = 0
+				// Restart counting
+				drawCounter = 0
+				updateCounter = 0
+				CPU.CyclesCounter = 0
+				CPU.DxynCounter = 0
 
 			case <-CPU.MessagesClock.C:
 				// After some time, stop showing the message
