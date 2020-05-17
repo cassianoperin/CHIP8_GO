@@ -10,7 +10,9 @@ import (
 )
 
 const (
-	KeyArraySize	byte	= 16	// Control the number of Keys mapped in Key Array
+	KeyArraySize	byte			= 16		// Control the number of Keys mapped in Key Array
+	CPU_Clock_increase_rate		= 100	// CPU Clock increase rate
+	CPU_Clock_decrease_rate		= 100	// CPU Clock decrease rate
 )
 
 
@@ -57,7 +59,7 @@ var (
 
 	// Counters
 	Cycle			uint16			// CPU Cycle Counter
-	DxynCounter		uint16			// Graphical opcodes Counter per second
+	DrawFlagCounter		uint16			// Graphical opcodes Counter per second
 	CyclesCounter		uint16			// CPU Cycle Counter per second
 
 	// DEBUG
@@ -83,7 +85,7 @@ func Initialize() {
 	Graphics		= [128 * 64]byte{}
 
 	// Timers
-	FPS			= time.NewTicker(time.Second / 30)			// FPS Clock
+	FPS			= time.NewTicker(time.Second / 60)			// FPS Clock
 	FPSCounter		= time.NewTicker(time.Second)				// FPS Counter Clock
 	CPU_Clock_Speed		= 500							// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
 	CPU_Clock_Speed_Max		= 10000
@@ -96,7 +98,7 @@ func Initialize() {
 	// General Variables and flags
 	DrawFlag		= false
 	Cycle			= 0
-	DxynCounter		= 0
+	DrawFlagCounter		= 0
 	CyclesCounter		= 0
 	// Keys
 	Key			= [KeyArraySize]byte{}
@@ -188,7 +190,6 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 		}
 	}
 
-	DxynCounter ++	// Counter to be used with FPS
 }
 
 
@@ -247,7 +248,6 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 		}
 	}
 
-	DxynCounter ++	// Counter to be used with FPS
 }
 
 
@@ -305,7 +305,6 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 		}
 	}
 
-	DxynCounter ++	// Counter to be used with FPS
 }
 
 
@@ -488,6 +487,8 @@ func Interpreter() {
 					}
 
 					DrawFlag	= true
+					DrawFlagCounter ++
+
 					PC += 2
 					if Debug {
 						fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n")
@@ -538,6 +539,8 @@ func Interpreter() {
 						}
 
 						DrawFlag	= true
+						DrawFlagCounter ++
+
 						PC += 2
 						if Debug {
 							fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
@@ -572,6 +575,8 @@ func Interpreter() {
 					}
 
 					DrawFlag	= true
+					DrawFlagCounter ++
+
 					PC += 2
 					if Debug {
 						fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - Scroll display %d lines down.\n", int(x))
@@ -979,6 +984,7 @@ func Interpreter() {
 
 			PC += 2
 			DrawFlag = true
+			DrawFlagCounter ++
 
 
 		// ############################ 0xE000 instruction set ############################

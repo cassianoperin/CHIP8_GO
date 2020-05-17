@@ -2,6 +2,7 @@ package Graphics
 
 import (
 	"fmt"
+	// "os/exec"
 	"Chip8/CPU"
 	"Chip8/Sound"
 	"Chip8/Input"
@@ -38,6 +39,7 @@ var (
 
 // Print Graphics on Console
 func drawGraphicsConsole() {
+
 	newline := 64
 	for index := 0; index < 64*32; index++ {
 		switch index {
@@ -248,13 +250,22 @@ func Run() {
 					}
 				}
 
-				// If necessary, DRAW
-				// if CPU.DrawFlag {
-				// 	drawGraphics(CPU.Graphics)
-				// }
+				// If necessary, DRAW (every time a draw operation is executed)
+				if Global.OriginalDrawMode {
+					if CPU.DrawFlag {
+
+						// Draw every DrawFlag
+						drawGraphics(CPU.Graphics)
+
+						// Update the screen after draw
+						Global.Win.Update()
+
+						updateCounter++	// Increment the updates per second counter
+					}
+				}
 
 				// Draw Graphics on Console
-				//drawGraphicsConsole()
+				// drawGraphicsConsole()
 
 			// Independent of CPU CLOCK, Sound and Delay Timers runs at 60Hz
 			case <-CPU.TimersClock.C:
@@ -284,29 +295,40 @@ func Run() {
 				}
 
 
-			// 60 FPS Control - Update the screen
+			// OriginalDrawMode = FALSE - Draw at a regular time (FPS Hz)
 			case <-CPU.FPS.C:
-				// Instead of draw screen every time drawflag is set, draw at 60Hz
-				drawGraphics(CPU.Graphics)
-				// Update the screen after draw
-				Global.Win.Update()
-				updateCounter++	// Increment the updates per second counter
+				if  !Global.OriginalDrawMode {
 
+					// Instead of draw screen every time drawflag is set, draw at 60Hz
+					drawGraphics(CPU.Graphics)
+
+					// Update the screen after draw
+					Global.Win.Update()
+
+					updateCounter++	// Increment the updates per second counter
+				}
 
 			// Once per second count the number of draws and Win Updates
 			case <-CPU.FPSCounter.C:
 				// Update the values to print on screen
+
+				if Global.OriginalDrawMode {
+					Global.DrawModeMessage="DrawFlag"
+				} else {
+					Global.DrawModeMessage="@60Hz"
+				}
+
 				if CPU.Pause {
-					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz\tCPU Cycles: %d\tDXYN Operations: %d - PAUSE", updateCounter, drawCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, CPU.DxynCounter)
+					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz\tCPU Cycles: %d\tDrawFlags: %d\tDrawMode: %s - PAUSE", updateCounter, drawCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, CPU.DrawFlagCounter, Global.DrawModeMessage)
 
 				} else {
-					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz\tCPU Cycles: %d\tDXYN Operations: %d", updateCounter, drawCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, CPU.DxynCounter)
+					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz\tCPU Cycles: %d\tDrawFlags: %d\tDrawMode: %s", updateCounter, drawCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, CPU.DrawFlagCounter, Global.DrawModeMessage)
 				}
 				// Restart counting
 				drawCounter = 0
 				updateCounter = 0
 				CPU.CyclesCounter = 0
-				CPU.DxynCounter = 0
+				CPU.DrawFlagCounter = 0
 
 			case <-CPU.MessagesClock.C:
 				// After some time, stop showing the message

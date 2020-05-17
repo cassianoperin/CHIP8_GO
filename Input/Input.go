@@ -9,11 +9,6 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 )
 
-const (
-	increase_rate		= 100	// CPU Clock increase rate
-	decrease_rate		= 100	// CPU Clock decrease rate
-)
-
 var (
 	forward_count		int
 
@@ -49,6 +44,7 @@ var (
 		6:	pixelgl.KeyM,			// Change video resolution
 		7:	pixelgl.KeyN,			// Fullscreen
 		8:	pixelgl.KeyJ,			// Show / Hide FPS
+		9:	pixelgl.KeyH,			// Draw Mode (Drawflag or at 60Hz)
 	}
 
 	// Control the Keys Pressed (Emulator Features, with repetition)
@@ -301,6 +297,25 @@ func Keyboard() {
 				Global.ShowFPS = !Global.ShowFPS
 			}
 
+			// Draw Mode (DrawFlag OR at 60Hz)
+			if index == 9 {
+				Global.OriginalDrawMode = !Global.OriginalDrawMode
+			}
+			// Show messages
+			if Global.OriginalDrawMode {
+				if CPU.Debug {
+					fmt.Printf("\n\t\tDrawMode: DrawFlag\n")
+				}
+				Global.TextMessageStr = "DrawMode: DrawFlag"
+				Global.ShowMessage = true
+			} else {
+				if CPU.Debug {
+					fmt.Printf("\n\t\tSDrawMode: @60Hz\n")
+				}
+				Global.TextMessageStr = "@60Hz"
+				Global.ShowMessage = true
+			}
+
 		}
 	}
 
@@ -397,8 +412,8 @@ func Keyboard() {
 					// Decrease CPU Clock Speed
 					if index == 2 {
 						tmp	:= CPU.CPU_Clock_Speed
-						if (CPU.CPU_Clock_Speed - time.Duration(decrease_rate)) > 0 {
-							CPU.CPU_Clock_Speed -= time.Duration(decrease_rate)
+						if (CPU.CPU_Clock_Speed - time.Duration(CPU.CPU_Clock_decrease_rate)) > 0 {
+							CPU.CPU_Clock_Speed -= time.Duration(CPU.CPU_Clock_decrease_rate)
 							CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
 							// Show messages
 							if CPU.Debug {
@@ -422,10 +437,10 @@ func Keyboard() {
 					// Increase CPU Clock Speed
 					if index == 3 {
 						tmp := CPU.CPU_Clock_Speed
-						if (CPU.CPU_Clock_Speed + time.Duration(increase_rate)) <= CPU.CPU_Clock_Speed_Max {
-							// If Clock Speed = 1, return to multiples of 'increase_rate'
+						if (CPU.CPU_Clock_Speed + time.Duration(CPU.CPU_Clock_increase_rate)) <= CPU.CPU_Clock_Speed_Max {
+							// If Clock Speed = 1, return to multiples of 'CPU.CPU_Clock_increase_rate'
 							if CPU.CPU_Clock_Speed == 1 {
-								CPU.CPU_Clock_Speed += time.Duration(increase_rate - 1)
+								CPU.CPU_Clock_Speed += time.Duration(CPU.CPU_Clock_increase_rate - 1)
 								CPU.CPU_Clock.Stop()
 								CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
 								// Show messages
@@ -435,7 +450,7 @@ func Keyboard() {
 								Global.TextMessageStr = fmt.Sprintf("Increasing CPU Clock: %d Hz  -->  %d Hz", tmp, CPU.CPU_Clock_Speed)
 								Global.ShowMessage = true
 							} else {
-								CPU.CPU_Clock_Speed += time.Duration(increase_rate)
+								CPU.CPU_Clock_Speed += time.Duration(CPU.CPU_Clock_increase_rate)
 								CPU.CPU_Clock.Stop()
 								CPU.CPU_Clock = time.NewTicker(time.Second / CPU.CPU_Clock_Speed)
 								// Show messages
