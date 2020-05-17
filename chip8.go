@@ -5,11 +5,10 @@ import (
 	"log"
 	"os"
 	"runtime"
-
 	"Chip8/CPU"
+	"Chip8/Global"
 	"Chip8/Graphics"
 	"Chip8/Sound"
-
 	"github.com/faiface/pixel/pixelgl"
 )
 
@@ -102,6 +101,17 @@ func testFile(filename string) {
 	}
 }
 
+func get_game_signature() {
+
+	// Used to identify games that needs legacy opcodes
+	// Read the first 10 game instructions in memory
+	signature_size := 10
+	for i:=0 ; i < signature_size ; i++ {
+		Global.Game_signature += fmt.Sprintf("%X", CPU.Memory[int(CPU.PC)+i])
+	}
+	fmt.Printf("Game signature: %s\n", Global.Game_signature)
+}
+
 
 // Main function
 func main() {
@@ -124,6 +134,9 @@ func main() {
 
 	// Read ROM into Memory
 	readROM(os.Args[1])
+
+	// Get game signature
+	get_game_signature()
 
 	// Start Window System and draw Graphics
 	pixelgl.Run(Graphics.Run)

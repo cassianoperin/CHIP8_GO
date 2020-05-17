@@ -6,108 +6,59 @@ import (
 	"os"
 	"time"
 	"strconv"
-
 	"Chip8/Fontset"
-	"Chip8/Global"
 )
 
 const (
-	// Rewind Buffer Size
-	Rewind_buffer	uint16 = 100
-	// Control the number of Keys mapped in Key Array
-	KeyArraySize	byte	= 26
+	KeyArraySize	byte	= 16	// Control the number of Keys mapped in Key Array
 )
 
 
 var (
 	// Components
-	Memory					[4096]byte		// Memory
-	PC					uint16			// Program Counter
-	Opcode					uint16			// CPU Operation Code
-	Stack					[16]uint16		// Stack
-	SP					uint16			// Stack Pointer
-	V					[16]byte		// V Register
-	I					uint16			// I Register
-	DelayTimer				byte			// Delay Timer
-	SoundTimer				byte			// Sound Timer
-	Graphics				[128 * 64]byte		// Graphic Array
+	Memory			[4096]byte		// Memory
+	PC			uint16			// Program Counter
+	Opcode			uint16			// CPU Operation Code
+	Stack			[16]uint16		// Stack
+	SP			uint16			// Stack Pointer
+	V			[16]byte		// V Register
+	I			uint16			// I Register
+	DelayTimer		byte			// Delay Timer
+	SoundTimer		byte			// Sound Timer
+	Graphics		[128 * 64]byte		// Graphic Array
 
 	// Key Control
-	Key		[KeyArraySize]byte		// Control the Keys Pressed
-
+	Key			[KeyArraySize]byte	// Control the Keys Pressed
 
 	// Timers
-	FPS					*time.Ticker		// Frames per second
-	FPSCounter			*time.Ticker		// Count frames per second
-	TimersClock			*time.Ticker		// Delay and Sound Timer
-	KeyboardClock				*time.Ticker		// Keyboard Timer to be used with emulator keys
-	CPU_Clock				*time.Ticker		// CPU Clock
-	CPU_Clock_Speed				time.Duration		// Value defined to CPU Clock
-	SCHIP_TimerClockHack			*time.Ticker		// SCHIP used to decrease DT faster than 60HZ to gain speed
-	MessagesClock				*time.Ticker		// Clock used to display messages on screen
+	FPS			*time.Ticker		// Frames per second
+	FPSCounter		*time.Ticker		// Count frames per second
+	TimersClock		*time.Ticker		// Delay and Sound Timer
+	KeyboardClock		*time.Ticker		// Keyboard Timer to be used with emulator keys
+	CPU_Clock		*time.Ticker		// CPU Clock
+	CPU_Clock_Speed		time.Duration		// Value defined to CPU Clock
+	SCHIP_TimerClockHack	*time.Ticker		// SCHIP used to decrease DT faster than 60HZ to gain speed
+	MessagesClock		*time.Ticker		// Clock used to display messages on screen
 
 	// General Variables and flags
-	MemoryCleanSnapshot			[4096]byte		// Some games like Single Dragon changes memory, so to reset its necessary to reload game
-	DrawFlag				bool			// True if the screen must be drawn
-	Cycle					uint16			// CPU Cycle Counter
-	sound_file				string			// Beep sound file
-	SizeX					float64			// Number of Columns in Graphics
-	SizeY					float64			// Number of Lines in Graphics
-	TextMessage				string			// Text to be displayed on screen
-	FlagMessage				bool			// Display messages on screen
+	MemoryCleanSnapshot	[4096]byte		// Some games like Single Dragon changes memory, so to reset its necessary to reload game
+	DrawFlag		bool			// True if the screen must be drawn
+	Cycle			uint16			// CPU Cycle Counter
+	sound_file		string			// Beep sound file
+	// Graphics
+	SizeX			float64			// Number of Columns in Graphics
+	SizeY			float64			// Number of Lines in Graphics
 
 	// SCHIP Specific Variables
-	SCHIP					bool			// SCHIP MODE ENABLED OR DISABLED
-	SCHIP_LORES				bool			// SCHIP in Low Resolution mode (00FE)
-	SCHIP_TimerHack				bool			// Enable or disable SCHIP DelayTimer Hack
-	RPL					[8]byte			// HP-48 RPL user flags
-
-	// Rewind Variables
-	rewind_mode				bool			// Enable and Disable Rewind Mode to increase emulation speed
-	Rewind_index				uint16			// Rewind Index
-	PC_track				= new([Rewind_buffer]uint16)
-	SP_track				= new([Rewind_buffer]uint16)
-	I_track					= new([Rewind_buffer]uint16)
-	DT_track				= new([Rewind_buffer]byte)
-	ST_track				= new([Rewind_buffer]byte)
-	DF_track				= new([Rewind_buffer]bool)
-	V_track					= new([Rewind_buffer][16]byte)
-	Stack_track				= new([Rewind_buffer][16]uint16)
-	GFX_track				= new([Rewind_buffer][128 * 64]byte)
-
-	// Savestates
-	Savestate_created			int
-	PC_savestate				uint16
-	Stack_savestate				[16]uint16
-	SP_savestate				uint16
-	V_savestate				[16]byte
-	I_savestate				uint16
-	Graphics_savestate			[128 * 64]byte
-	DelayTimer_savestate			byte
-	SoundTimer_savestate			byte
-	Cycle_savestate				uint16
-	Rewind_index_savestate			uint16
-	SCHIP_savestate				bool
-	SCHIP_LORES_savestate			bool
-	SizeX_savestate				float64
-	SizeY_savestate				float64
-	CPU_Clock_Speed_savestate		time.Duration
-	Opcode_savestate			uint16
-	Memory_savestate			[4096]byte
-
-	// Legacy Opcodes and Quirks
-	Legacy_Fx55_Fx65			bool	// Enable original Chip-8 Fx55 and Fx65 opcodes (increases I)
-	Legacy_8xy6_8xyE			bool	// Enable original Chip-8 8xy6 and 8xyE opcodes
-	FX1E_spacefight2091			bool	// FX1E undocumented feature needed by Spacefight 2091!
-	DXYN_bowling_wrap			bool	// DXYN sprite wrap in Bowling game
-	Resize_Quirk_00FE_00FF			bool	// Resize_Quirk_00FE_00FF - Clears the screen - Must be set to True always
-	DXY0_loresWideSpriteQuirks		bool	// DXY0_loresWideSpriteQuirks - Draws a 16x16 sprite even in low-resolution (64x32) mode, row-major
-	scrollQuirks_00CN_00FB_00FC		bool	// Shift only 2 lines
+	SCHIP			bool			// SCHIP MODE ENABLED OR DISABLED
+	SCHIP_LORES		bool			// SCHIP in Low Resolution mode (00FE)
+	SCHIP_TimerHack		bool			// Enable or disable SCHIP DelayTimer Hack
+	RPL			[8]byte			// HP-48 RPL user flags
 
 	// DEBUG
-	Pause					bool	// Pause (Used to Forward and Rewind CPU Cycles)
-	Debug					bool	// DEBUG mode
-	Debug_L2				bool	// DEBUG Rewind Mode
+	Pause			bool			// Pause (Used to Forward and Rewind CPU Cycles)
+	Debug			bool			// DEBUG mode
+	Debug_L2			bool			// DEBUG Rewind Mode
 
 )
 
@@ -115,61 +66,45 @@ var (
 // Initialization
 func Initialize() {
 	// Components
-	Memory					= [4096]byte{}
-	PC					= 0x200
-	Opcode					= 0
-	Stack					= [16]uint16{}
-	SP					= 0
-	V					= [16]byte{}
-	I					= 0
-	DelayTimer				= 0
-	SoundTimer				= 0
-	Graphics				= [128 * 64]byte{}
+	Memory			= [4096]byte{}
+	PC			= 0x200
+	Opcode			= 0
+	Stack			= [16]uint16{}
+	SP			= 0
+	V			= [16]byte{}
+	I			= 0
+	DelayTimer		= 0
+	SoundTimer		= 0
+	Graphics		= [128 * 64]byte{}
 
 	// Timers
-	FPS					= time.NewTicker(time.Second / 30)	// FPS Clock
-	FPSCounter				= time.NewTicker(time.Second)	// FPS Counter Clock
-	CPU_Clock_Speed				= 500	// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
-	CPU_Clock				= time.NewTicker(time.Second / CPU_Clock_Speed)
-	SCHIP_TimerClockHack			= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
-	KeyboardClock				= time.NewTicker(time.Second / 30)
-	TimersClock			= time.NewTicker(time.Second / 60)		// Decrease SoundTimer and DelayTimer
-	// MessagesClock				= time.NewTicker(time.Second * 3)		// Clock used to display messages on screen
-	MessagesClock				= time.NewTicker(time.Second * 4)		// Clock used to display messages on screen
+	FPS			= time.NewTicker(time.Second / 30)			// FPS Clock
+	FPSCounter		= time.NewTicker(time.Second)				// FPS Counter Clock
+	CPU_Clock_Speed		= 500							// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
+	CPU_Clock		= time.NewTicker(time.Second / CPU_Clock_Speed)
+	SCHIP_TimerClockHack	= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
+	KeyboardClock		= time.NewTicker(time.Second / 30)
+	TimersClock		= time.NewTicker(time.Second / 60)			// Decrease SoundTimer and DelayTimer
+	MessagesClock		= time.NewTicker(time.Second * 4)			// Clock used to display messages on screen
 
 	// General Variables and flags
-	DrawFlag				= false
-	Cycle					= 0
-	Key					= [KeyArraySize]byte{}
-	SizeX					= 64
-	SizeY					= 32
+	DrawFlag		= false
+	Cycle			= 0
+	// Keys
+	Key			= [KeyArraySize]byte{}
+	// Graphics
+	SizeX			= 64
+	SizeY			= 32
 
 	// SCHIP Specific Variables
-	SCHIP					= false
-	SCHIP_LORES				= false
-	SCHIP_TimerHack				= false
-
-	// Rewind Variables
-	rewind_mode				= true
-	Rewind_index				= 0
-
-	// Savestates
-	Savestate_created			= 0
-
-	// LEGACY OPCODES / QUIRKS
-	Global.Game_signature			= ""
-	Legacy_Fx55_Fx65			= false
-	Legacy_8xy6_8xyE			= false
-	FX1E_spacefight2091			= false
-	DXYN_bowling_wrap			= false
-	Resize_Quirk_00FE_00FF			= true
-	DXY0_loresWideSpriteQuirks		= false
-	scrollQuirks_00CN_00FB_00FC		= false
+	SCHIP			= false
+	SCHIP_LORES		= false
+	SCHIP_TimerHack		= false
 
 	// DEBUG
-	Pause					= false
-	Debug					= false
-	Debug_L2				= false
+	Pause			= false
+	Debug			= false
+	Debug_L2		= false
 
 	// Load CHIP-8 8x5 fontset (Memory address 0-79)
 	for i := 0; i < len(Fontset.Chip8Fontset); i++ {
@@ -180,76 +115,13 @@ func Initialize() {
 	for i := 0; i < len(Fontset.SCHIPFontset); i++ {
 		Memory[i+80] = Fontset.SCHIPFontset[i]
 	}
-
-
-
 }
-
 
 
 func Show() {
 	fmt.Printf("Cycle: %d\tOpcode: %04X(%04X)\tPC: %d(0x%X)\tSP: %d\tStack: %d\tV: %d\tI: %d\tDT: %d\tST: %d\tKey: %d\n", Cycle, Opcode, Opcode & 0xF000, PC, PC,  SP, Stack, V, I, DelayTimer, SoundTimer, Key)
 }
 
-func rewind() {
-
-	// Start timer to measure procedures inside Interpreter
-	start := time.Now()
-
-	// REWIND MODE - SLICES
-	// Just update when not inside a Rewind loop
-	if Rewind_index == 0 {
-		// PC
-		copy(PC_track[1:], PC_track[0:])
-		PC_track[0]	= PC
-		// SP
-		copy(SP_track[1:], SP_track[0:])
-		SP_track[0]	= SP
-		// I
-		copy(I_track[1:], I_track[0:])
-		I_track[0]	= I
-		// DelayTimer
-		copy(DT_track[1:], DT_track[0:])
-		DT_track[0]	= DelayTimer
-		// SoundTimer
-		copy(ST_track[1:], ST_track[0:])
-		ST_track[0]	= SoundTimer
-		// DrawFlag
-		copy(DF_track[1:], DF_track[0:])
-		DF_track[0]	= DrawFlag
-		// V
-		copy(V_track[1:], V_track[0:])
-		V_track[0]	= V
-		// Stack
-		copy(Stack_track[1:], Stack_track[0:])
-		Stack_track[0]	= Stack
-		// GFX_track
-		copy(GFX_track[1:], GFX_track[0:])
-		GFX_track[0]	= Graphics
-	}
-
-
-	if Debug_L2 {
-		fmt.Printf("\tPC_track: %d\n", PC_track)
-		fmt.Printf("\tSP_Track: %d\n", SP_track)
-		fmt.Printf("\tI_Track: %d\n", I_track)
-		fmt.Printf("\tDT_Track: %d\n", DT_track)
-		fmt.Printf("\tST_Track: %d\n", ST_track)
-		fmt.Printf("\tDF_Track: %t\n", DF_track)
-		fmt.Printf("\tV_Track: %d\n", V_track)
-		fmt.Printf("\tStack_Track: %d\n", Stack_track)
-		//fmt.Printf("\tGFX_Track: %d\n", GFX_track)
-		fmt.Printf("\n")
-	}
-
-
-	// Debug time execution - Rewind Mode
-	if Debug {
-		elapsed := time.Since(start)
-		fmt.Printf("\t\tTime track - Rewind Mode took: %s\n", elapsed)
-	}
-
-}
 
 // SCHIP HI-RES MODE
 // If in SCHIP mode will draw 16x16 sprites
@@ -423,67 +295,6 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 
 }
 
-func Handle_legacy_opcodes() {
-
-	// Quirks needed by specific games
-
-	// Enable Fx55 and Fx65 legacy mode
-	// Game "Animal Race [Brian Astle]"
-	// MD5: 46497c35ce549cd7617462fe7c9fc284
-	if (Global.Game_signature == "6DA6E268E69BA5B5") {
-		Legacy_Fx55_Fx65 = true
-		fmt.Printf("Legacy mode Fx55/Fx65 enabled.\n")
-	}
-	// Enable 2nd legacy mode
-	//if (Global.Game_signature == "xxxxxxxxxxxxx") {
-	//	Legacy_8xy6_8xyE = true
-	//	fmt.Printf("Legacy mode 8xy6/8xyE enabled.\n")
-	//}
-
-	// Enable undocumented FX1E feature needed by Spacefight 2091!
-	// Game "Spacefight 2091 [Carsten Soerensen, 1992].ch8"
-	// MD5: f99d0e82a489b8aff1c7203d90f740c3
-	if (Global.Game_signature == "12245370616365466967") {
-		FX1E_spacefight2091 = true
-		fmt.Printf("FX1E undocumented feature enabled.\n")
-	}
-	// Enable undocumented FX1E feature needed by Spacefight 2091!
-	// SCHIP Test Program "sctest_12"
-	// MD5: 3ff053faaf994c051ed9b432f412b551
-	if (Global.Game_signature == "12122054726F6E697820") {
-		FX1E_spacefight2091 = true
-		fmt.Printf("FX1E undocumented feature enabled.\n")
-	}
-
-	// Enable Pixel Wrap Fix for Bowling game
-	// Game: "Bowling [Gooitzen van der Wal]"
-	// MD5: b56e0e6e3930011049fcf6cf3384e964
-	if (Global.Game_signature == "6314640255E60525B4") {
-		DXYN_bowling_wrap = true
-		fmt.Printf("DXYN pixel wrap fix enabled.\n")
-	}
-
-	// Enable Low Res 16x16 Pixel Draw in Robot.ch8 DEMO
-	// SCHIP Demo: "Robot"
-	// MD5: e2cd0812b43fb46e4b8abbb3a8d30f4b
-	if (Global.Game_signature == "0FEA23A60061062F") {
-		DXY0_loresWideSpriteQuirks = true
-		fmt.Printf("DXY0 SCHIP Low Res 16x16 Pixel fix enabled.\n")
-	}
-
-}
-
-func Get_game_signature() {
-
-	// Used to identify games that needs legacy opcodes
-	// Read the first 10 game instructions in memory
-	signature_size := 10
-	for i:=0 ; i < signature_size ; i++ {
-		Global.Game_signature += fmt.Sprintf("%X", Memory[int(PC)+i])
-	}
-	fmt.Printf("Game signature: %s\n", Global.Game_signature)
-}
-
 
 // CPU Interpreter
 func Interpreter() {
@@ -546,7 +357,7 @@ func Interpreter() {
 			// 02D8
 			// NON DOCUMENTED OPCODED, USED BY DEMO CLOCK Program
 			// LDA 02, I // Load from memory at address I into V[00] to V[02]
-		case 0x00D0:
+			case 0x00D0:
 				x := (Opcode & 0x0F00) >> 8
 
 				if x != 2 {
@@ -727,7 +538,7 @@ func Interpreter() {
 
 				// SCHIP - 00CN
 				// Scroll display N lines down
-			case 0x00C0:
+				case 0x00C0:
 					SCHIP = true
 
 					shift := int(x) * 128

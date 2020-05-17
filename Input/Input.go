@@ -5,7 +5,6 @@ import (
 	"time"
 	"Chip8/CPU"
 	"Chip8/Global"
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
@@ -64,56 +63,6 @@ var (
 )
 
 
-func Remap_keys() {
-	// Platform: SCHIP
-	// Game: "Blinky [Hans Christian Egeberg, 1991].ch8"
-	// MD5: fb3284205c90d80c3b17aeea2eedf0e4
-	if (Global.Game_signature == "121A322E303020432E20") {
-		KeyPressedCHIP8[3] = pixelgl.KeyUp
-		KeyPressedCHIP8[6] = pixelgl.KeyDown
-		KeyPressedCHIP8[7] = pixelgl.KeyLeft
-		KeyPressedCHIP8[8] = pixelgl.KeyRight
-		Global.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Up: ↑     Down: ↓"
-		fmt.Printf("Keys Remaped:\tLeft: ←\t\tRight: →\tUp: ↑\t\tDown: ↓\n\n")
-	}
-
-	// Platform: SCHIP
-	// Game: "Spacefight 2091 [Carsten Soerensen, 1992].ch8"
-	// MD5: f99d0e82a489b8aff1c7203d90f740c3
-	if (Global.Game_signature == "12245370616365466967") {
-		KeyPressedCHIP8[10] = pixelgl.KeySpace
-		KeyPressedCHIP8[3] = pixelgl.KeyLeft
-		KeyPressedCHIP8[12] = pixelgl.KeyRight
-		Global.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
-		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
-	}
-
-	// Platform: CHIP-8
-	// Game: "Space Invaders [David Winter].ch8"
-	// MD5: a67f58742cff77702cc64c64413dc37d
-	if (Global.Game_signature == "1225535041434520494E") {
-		KeyPressedCHIP8[5] = pixelgl.KeySpace
-		KeyPressedCHIP8[4] = pixelgl.KeyLeft
-		KeyPressedCHIP8[6] = pixelgl.KeyRight
-		Global.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
-		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
-	}
-
-	// Platform: SCHIP
-	// Game: "Ant - In Search of Coke [Erin S. Catto].ch8"
-	// MD5: ec7856f9db5917eb6ca14adf1f8d0df2
-	if (Global.Game_signature == "12E5B20416E74207631") {
-		KeyPressedCHIP8[10] = pixelgl.KeySpace
-		KeyPressedCHIP8[3]  = pixelgl.KeyLeft
-		KeyPressedCHIP8[12]  = pixelgl.KeyRight
-		Global.WindowTitle  = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
-		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
-	}
-
-}
-
-
-
 func Keyboard() {
 
 	// Handle 16 keys from Chip8 / Schip
@@ -138,7 +87,7 @@ func Keyboard() {
 					if CPU.Debug {
 						fmt.Printf("\t\tPAUSE mode Disabled\n")
 					}
-					Global.TextMessageStr="PAUSE mode Disabled"
+					Global.TextMessageStr = "PAUSE mode Disabled"
 					Global.ShowMessage = true
 
 				} else {
@@ -147,7 +96,7 @@ func Keyboard() {
 					if CPU.Debug {
 						fmt.Printf("\t\tPAUSE mode Enabled\n")
 					}
-					Global.TextMessageStr="PAUSE mode Enabled"
+					Global.TextMessageStr = "PAUSE mode Enabled"
 					Global.ShowMessage = true
 					forward_count = 0
 				}
@@ -163,7 +112,7 @@ func Keyboard() {
 					if CPU.Debug {
 						fmt.Printf("\t\tDEBUG mode Disabled\n")
 					}
-					Global.TextMessageStr="DEBUG mode Disabled"
+					Global.TextMessageStr = "DEBUG mode Disabled"
 					Global.ShowMessage = true
 				} else {
 					CPU.Debug = true
@@ -171,7 +120,7 @@ func Keyboard() {
 					if CPU.Debug {
 						fmt.Printf("\t\tDEBUG mode Enabled\n")
 					}
-					Global.TextMessageStr="DEBUG mode Enabled"
+					Global.TextMessageStr = "DEBUG mode Enabled"
 					Global.ShowMessage = true
 				}
 			}
@@ -195,16 +144,16 @@ func Keyboard() {
 				if CPU.Pause {
 					CPU.Pause = false
 				}
-				CPU.SCHIP = false
-				CPU.SizeX	= 64
-				CPU.SizeY	= 32
-				CPU.CPU_Clock_Speed = 500
+				CPU.SCHIP		= false
+				CPU.SizeX		= 64
+				CPU.SizeY		= 32
+				CPU.CPU_Clock_Speed	= 500
 				CPU.Memory = CPU.MemoryCleanSnapshot
 				// Show messages
 				if CPU.Debug {
 					fmt.Printf("\t\tReset\n")
 				}
-				Global.TextMessageStr="Reset"
+				Global.TextMessageStr = "Reset"
 				Global.ShowMessage = true
 			}
 
@@ -219,16 +168,16 @@ func Keyboard() {
 				if CPU.Debug {
 					fmt.Printf("\t\tColor theme: %d\n", Global.Color_theme)
 				}
-				Global.TextMessageStr=fmt.Sprintf("Color theme: %d", Global.Color_theme)
+				Global.TextMessageStr = fmt.Sprintf("Color theme: %d", Global.Color_theme)
 				Global.ShowMessage = true
 			}
 
 			// Create Save State
 			if index == 4 {
 				CPU.Opcode_savestate		= CPU.Opcode
-				CPU.PC_savestate			= CPU.PC
+				CPU.PC_savestate		= CPU.PC
 				CPU.Stack_savestate		= CPU.Stack
-				CPU.SP_savestate			= CPU.SP
+				CPU.SP_savestate		= CPU.SP
 				CPU.V_savestate			= CPU.V
 				CPU.I_savestate			= CPU.I
 				CPU.Graphics_savestate		= CPU.Graphics
@@ -241,49 +190,49 @@ func Keyboard() {
 				CPU.SizeX_savestate		= CPU.SizeX
 				CPU.SizeY_savestate		= CPU.SizeY
 				CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
-				CPU.Memory_savestate 		= CPU.Memory
+				CPU.Memory_savestate		= CPU.Memory
 				CPU.Savestate_created		= 1		// Register that have a savestate
 				// Show messages
 				if CPU.Debug {
 					fmt.Printf("\n\t\tSavestate Created\n")
 				}
-				Global.TextMessageStr="Savestate Created"
+				Global.TextMessageStr = "Savestate Created"
 				Global.ShowMessage = true
 			}
 
 			// Load Save State
- 			if index == 5 {
+			if index == 5 {
 				if CPU.Savestate_created == 1 {
-					CPU.Opcode			= CPU.Opcode_savestate
+					CPU.Opcode		= CPU.Opcode_savestate
 					CPU.PC			= CPU.PC_savestate
-					CPU.Stack			= CPU.Stack_savestate
+					CPU.Stack		= CPU.Stack_savestate
 					CPU.SP			= CPU.SP_savestate
-					CPU.V				= CPU.V_savestate
-					CPU.I				= CPU.I_savestate
+					CPU.V			= CPU.V_savestate
+					CPU.I			= CPU.I_savestate
 					CPU.Graphics		= CPU.Graphics_savestate
 					CPU.DelayTimer		= CPU.DelayTimer_savestate
 					CPU.SoundTimer		= CPU.SoundTimer_savestate
-					CPU.Cycle			= CPU.Cycle_savestate
-					CPU.Rewind_index		= CPU.Rewind_index_savestate
-					CPU.SCHIP			= CPU.SCHIP_savestate
+					CPU.Cycle		= CPU.Cycle_savestate
+					CPU.Rewind_index	= CPU.Rewind_index_savestate
+					CPU.SCHIP		= CPU.SCHIP_savestate
 					CPU.SCHIP_LORES		= CPU.SCHIP_LORES_savestate
-					CPU.SizeX			= CPU.SizeX_savestate
-					CPU.SizeY			= CPU.SizeY_savestate
+					CPU.SizeX		= CPU.SizeX_savestate
+					CPU.SizeY		= CPU.SizeY_savestate
 					CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
-					CPU.Memory 			= CPU.Memory_savestate
+					CPU.Memory		= CPU.Memory_savestate
 					CPU.DrawFlag		= true
 					// Show messages
 					if CPU.Debug {
 						fmt.Printf("\n\t\tSavestate Loaded\n")
 					}
-					Global.TextMessageStr="Savestate Loaded"
+					Global.TextMessageStr = "Savestate Loaded"
 					Global.ShowMessage = true
 				} else {
 					// Show messages
 					if CPU.Debug {
 						fmt.Printf("\n\t\tSavestate not found\n")
 					}
-					Global.TextMessageStr="Savestate not found"
+					Global.TextMessageStr = "Savestate not found"
 					Global.ShowMessage = true
 				}
 
@@ -328,7 +277,7 @@ func Keyboard() {
 					if CPU.Debug {
 						fmt.Printf("\n\t\tFullscreen Disabled\n")
 					}
-					Global.TextMessageStr="Fullscreen Disabled"
+					Global.TextMessageStr = "Fullscreen Disabled"
 					Global.ShowMessage = true
 				} else {
 					// Switch to fullscreen.
@@ -339,7 +288,7 @@ func Keyboard() {
 					if CPU.Debug {
 						fmt.Printf("\n\t\tFullscreen Enabled\n")
 					}
-					Global.TextMessageStr="Fullscreen Enabled"
+					Global.TextMessageStr = "Fullscreen Enabled"
 					Global.ShowMessage = true
 				}
 				Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
@@ -379,7 +328,7 @@ func Keyboard() {
 									Global.Win.Update()
 									// Show messages
 									fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
-									Global.TextMessageStr="Rewind mode - Nothing to rewind (Cycle 0)"
+									Global.TextMessageStr = "Rewind mode - Nothing to rewind (Cycle 0)"
 									Global.ShowMessage = true
 								} else {
 									// Update values, reading the track records
@@ -399,13 +348,13 @@ func Keyboard() {
 									CPU.Interpreter()
 									// Show messages
 									fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n", CPU.Rewind_index)
-									Global.TextMessageStr=fmt.Sprintf("Rewind mode - Rewind_index:= %d", CPU.Rewind_index)
+									Global.TextMessageStr = fmt.Sprintf("Rewind mode - Rewind_index:= %d", CPU.Rewind_index)
 									Global.ShowMessage = true
 								}
 							} else {
 								// Show messages
 								fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
-								Global.TextMessageStr=fmt.Sprintf("Rewind mode - END OF TRACK HISTORY!!!")
+								Global.TextMessageStr = fmt.Sprintf("Rewind mode - END OF TRACK HISTORY!!!")
 								Global.ShowMessage = true
 							}
 						}
@@ -431,7 +380,7 @@ func Keyboard() {
 								CPU.Interpreter()
 								// Show messages
 								fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
-								Global.TextMessageStr=fmt.Sprintf("Forward mode - Rewind_index := %d", CPU.Rewind_index)
+								Global.TextMessageStr = fmt.Sprintf("Forward mode - Rewind_index := %d", CPU.Rewind_index)
 								Global.ShowMessage = true
 							// Return to real time, forward CPU normally and UPDATE de tracks
 							} else {
@@ -439,7 +388,7 @@ func Keyboard() {
 								// Show messages
 								fmt.Printf("\t\tForward mode - Forward %d cycles\n", forward_count)
 								forward_count++
-								Global.TextMessageStr=fmt.Sprintf("Forward mode - Forward %d cycles", forward_count)
+								Global.TextMessageStr = fmt.Sprintf("Forward mode - Forward %d cycles", forward_count)
 								Global.ShowMessage = true
 							}
 						}
@@ -484,7 +433,7 @@ func Keyboard() {
 								if CPU.Debug {
 									fmt.Printf("\t\tIncreasing CPU Clock: %d Hz  -->  %d Hz\n", tmp, CPU.CPU_Clock_Speed)
 								}
-								Global.TextMessageStr=fmt.Sprintf("Increasing CPU Clock: %d Hz  -->  %d Hz", tmp, CPU.CPU_Clock_Speed)
+								Global.TextMessageStr = fmt.Sprintf("Increasing CPU Clock: %d Hz  -->  %d Hz", tmp, CPU.CPU_Clock_Speed)
 								Global.ShowMessage = true
 							} else {
 								CPU.CPU_Clock_Speed += time.Duration(increase_rate)
@@ -494,7 +443,7 @@ func Keyboard() {
 								if CPU.Debug {
 									fmt.Printf("\t\tIncreasing CPU Clock: %d Hz  -->  %d Hz\n", tmp, CPU.CPU_Clock_Speed)
 								}
-								Global.TextMessageStr=fmt.Sprintf("Increasing CPU Clock: %d Hz  -->  %d Hz", tmp, CPU.CPU_Clock_Speed)
+								Global.TextMessageStr = fmt.Sprintf("Increasing CPU Clock: %d Hz  -->  %d Hz", tmp, CPU.CPU_Clock_Speed)
 								Global.ShowMessage = true
 							}
 						} else {
@@ -506,7 +455,7 @@ func Keyboard() {
 							if CPU.Debug {
 								fmt.Printf("\t\tIncreasing CPU Clock: Maximum CPU Clock Allowed reached: %d Hz\n", CPU.CPU_Clock_Speed)
 							}
-							Global.TextMessageStr=fmt.Sprintf("Increasing CPU Clock: Maximum CPU Clock Allowed reached: %d Hz", CPU.CPU_Clock_Speed)
+							Global.TextMessageStr = fmt.Sprintf("Increasing CPU Clock: Maximum CPU Clock Allowed reached: %d Hz", CPU.CPU_Clock_Speed)
 							Global.ShowMessage = true
 						}
 					}

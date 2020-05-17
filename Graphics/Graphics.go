@@ -2,17 +2,16 @@ package Graphics
 
 import (
 	"fmt"
+	"Chip8/CPU"
+	"Chip8/Sound"
+	"Chip8/Input"
+	"Chip8/Global"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
 	"github.com/faiface/pixel/imdraw"
-
-	"Chip8/CPU"
-	"Chip8/Sound"
-	"Chip8/Input"
-	"Chip8/Global"
 )
 
 
@@ -188,9 +187,6 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 
 func Run() {
-
-	// Get game signature
-	CPU.Get_game_signature()
 
 	// Set up render system
 	renderGraphics()
