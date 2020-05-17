@@ -144,19 +144,19 @@ func drawGraphics(graphics [128 * 64]byte) {
 	}
 
 	screenWidth	:= Global.Win.Bounds().W()
-	width		:= screenWidth/CPU.SizeX
-	height		:= ((screenHeight)/CPU.SizeY)
+	width		:= screenWidth/Global.SizeX
+	height		:= ((screenHeight)/Global.SizeY)
 
 	// If in SCHIP mode, read the entire vector. If in Chip8 mode, read from 0 to 2047 only
-	for gfxindex := 0 ; gfxindex < int(CPU.SizeX) * int(CPU.SizeY) ; gfxindex++ {
+	for gfxindex := 0 ; gfxindex < int(Global.SizeX) * int(Global.SizeY) ; gfxindex++ {
 		if (CPU.Graphics[gfxindex] == 1 ) {
 
 			// Column
-			x := gfxindex % int(CPU.SizeX)
+			x := gfxindex % int(Global.SizeX)
 			// Line
-			y := gfxindex / int(CPU.SizeX)
+			y := gfxindex / int(Global.SizeX)
 			// Needs to be inverted to IMD Draw function before
-			y = (int(CPU.SizeY) - 1) - y
+			y = (int(Global.SizeY) - 1) - y
 
 			//draw_rectangle(10, 10, 50, 50, red)
 			imd.Push(pixel.V ( width * float64(x)         , height * float64(y)          ) )
@@ -192,6 +192,9 @@ func Run() {
 
 	// Set up render system
 	renderGraphics()
+
+	// Disable on screen Mouse Cursor
+	Global.Win.SetCursorVisible(false)
 
 	// Print initial resolution
 	// if debug {
@@ -252,7 +255,7 @@ func Run() {
 
 				// If necessary, DRAW (every time a draw operation is executed)
 				if Global.OriginalDrawMode {
-					if CPU.DrawFlag {
+					if Global.DrawFlag {
 
 						// Draw every DrawFlag
 						drawGraphics(CPU.Graphics)
@@ -341,6 +344,8 @@ func Run() {
 
 		// Update Input Events
 		Global.Win.UpdateInput()
+			
+		}
 
 	}
 

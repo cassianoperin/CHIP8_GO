@@ -3,6 +3,7 @@ package CPU
 import (
 	"fmt"
 	"time"
+	"Chip8/Global"
 )
 
 const (
@@ -51,7 +52,7 @@ func rewind() {
 		ST_track[0]	= SoundTimer
 		// DrawFlag
 		copy(DF_track[1:], DF_track[0:])
-		DF_track[0]	= DrawFlag
+		DF_track[0]	= Global.DrawFlag
 		// V
 		copy(V_track[1:], V_track[0:])
 		V_track[0]	= V

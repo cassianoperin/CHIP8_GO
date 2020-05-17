@@ -16,8 +16,10 @@ func Remap_keys() {
 		KeyPressedCHIP8[6] = pixelgl.KeyDown
 		KeyPressedCHIP8[7] = pixelgl.KeyLeft
 		KeyPressedCHIP8[8] = pixelgl.KeyRight
-		Global.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Up: ↑     Down: ↓"
+		// Show messages
 		fmt.Printf("Keys Remaped:\tLeft: ←\t\tRight: →\tUp: ↑\t\tDown: ↓\n\n")
+		Global.TextMessageStr = "Keys Remaped\tLeft: LEFT KEY\t\tRight: RIGHT KEY\t\tUp: UP KEY\t\tDown: DOWN KEY"
+		Global.ShowMessage = true
 	}
 
 	// Platform: SCHIP
@@ -27,8 +29,10 @@ func Remap_keys() {
 		KeyPressedCHIP8[10] = pixelgl.KeySpace
 		KeyPressedCHIP8[3] = pixelgl.KeyLeft
 		KeyPressedCHIP8[12] = pixelgl.KeyRight
-		Global.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
+		// Show messages
 		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
+		Global.TextMessageStr = "Keys Remaped\tLeft: LEFT KEY\t\tRight: RIGHT KEY\t\tShoot: SPACE"
+		Global.ShowMessage = true
 	}
 
 	// Platform: CHIP-8
@@ -38,8 +42,10 @@ func Remap_keys() {
 		KeyPressedCHIP8[5] = pixelgl.KeySpace
 		KeyPressedCHIP8[4] = pixelgl.KeyLeft
 		KeyPressedCHIP8[6] = pixelgl.KeyRight
-		Global.WindowTitle = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
+		// Show messages
 		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
+		Global.TextMessageStr = "Keys Remaped\tLeft: LEFT KEY\t\tRight: RIGHT KEY\t\tShoot: SPACE"
+		Global.ShowMessage = true
 	}
 
 	// Platform: SCHIP
@@ -49,8 +55,22 @@ func Remap_keys() {
 		KeyPressedCHIP8[10] = pixelgl.KeySpace
 		KeyPressedCHIP8[3]  = pixelgl.KeyLeft
 		KeyPressedCHIP8[12]  = pixelgl.KeyRight
-		Global.WindowTitle  = "                                         |     Chip-8     |     Keys:     Left: ←     Right: →     Shoot: Space"
+		// Show messages
 		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
+		Global.TextMessageStr = "Keys Remaped\tLeft: LEFT KEY\t\tRight: RIGHT KEY\t\tShoot: SPACE"
+		Global.ShowMessage = true
+	}
+
+	// Platform: SCHIP
+	// Game: "Car [Klaus von Sengbusch, 1994].ch8"
+	// MD5: c497bb692ea4b32a4a7b11b1373ef92f
+	if (Global.Game_signature == "121E312E3030204B2E76") {
+		KeyPressedCHIP8[7] = pixelgl.KeyLeft
+		KeyPressedCHIP8[8]  = pixelgl.KeyRight
+		// Show messages
+		fmt.Printf("Keys Remaped\tLeft: ←\t\tRight: →\tShoot: Space\n\n")
+		Global.TextMessageStr = "Keys Remaped\tLeft: LEFT KEY\t\tRight: RIGHT KEY"
+		Global.ShowMessage = true
 	}
 
 }

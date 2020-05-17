@@ -7,6 +7,7 @@ import (
 	"time"
 	"strconv"
 	"Chip8/Fontset"
+	"Chip8/Global"
 )
 
 const (
@@ -45,11 +46,6 @@ var (
 
 	// General Variables and flags
 	MemoryCleanSnapshot	[4096]byte		// Some games like Single Dragon changes memory, so to reset its necessary to reload game
-	DrawFlag		bool			// True if the screen must be drawn
-	sound_file		string			// Beep sound file
-	// Graphics
-	SizeX			float64			// Number of Columns in Graphics
-	SizeY			float64			// Number of Lines in Graphics
 
 	// SCHIP Specific Variables
 	SCHIP			bool			// SCHIP MODE ENABLED OR DISABLED
@@ -93,18 +89,17 @@ func Initialize() {
 	SCHIP_TimerClockHack	= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 	KeyboardClock		= time.NewTicker(time.Second / 30)
 	TimersClock		= time.NewTicker(time.Second / 60)			// Decrease SoundTimer and DelayTimer
-	MessagesClock		= time.NewTicker(time.Second * 4)			// Clock used to display messages on screen
+	MessagesClock		= time.NewTicker(time.Second * 5)			// Clock used to display messages on screen
 
 	// General Variables and flags
-	DrawFlag		= false
 	Cycle			= 0
 	DrawFlagCounter		= 0
 	CyclesCounter		= 0
 	// Keys
 	Key			= [KeyArraySize]byte{}
 	// Graphics
-	SizeX			= 64
-	SizeY			= 32
+	Global.SizeX			= 64
+	Global.SizeY			= 32
 
 	// SCHIP Specific Variables
 	SCHIP			= false
@@ -169,10 +164,10 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 			}
 
 			// Set the index to write the 8 bits of each pixel
-			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
+			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(Global.SizeX))
 
 			// If tryes to draw bits outside the vector size, ignore
-			if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
+			if ( gfx_index >= uint16(Global.SizeX) * uint16(Global.SizeY) ) {
 				//fmt.Printf("Bigger than 2048 or 8192\n")
 				continue
 			}
@@ -227,10 +222,10 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 			}
 
 			// Set the index to write the 8 bits of each pixel
-			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
+			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(Global.SizeX))
 
 			// If tryes to draw bits outside the vector size, ignore
-			if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
+			if ( gfx_index >= uint16(Global.SizeX) * uint16(Global.SizeY) ) {
 				//fmt.Printf("Bigger than 2048 or 8192\n")
 				continue
 			}
@@ -284,10 +279,10 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 			}
 
 			// Set the index to write the 8 bits of each pixel
-			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(SizeX))
+			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(Global.SizeX))
 
 			// If tryes to draw bits outside the vector size, ignore
-			if ( gfx_index >= uint16(SizeX) * uint16(SizeY) ) {
+			if ( gfx_index >= uint16(Global.SizeX) * uint16(Global.SizeY) ) {
 				//fmt.Printf("Bigger than 2048 or 8192\n")
 				continue
 			}
@@ -312,7 +307,7 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 func Interpreter() {
 
 	// Reset Flag every cycle
-	DrawFlag = false
+	Global.DrawFlag = false
 
 	// Read the Opcode from PC and PC+1 bytes
 	Opcode = uint16(Memory[PC])<<8 | uint16(Memory[PC+1])
@@ -402,8 +397,8 @@ func Interpreter() {
 					CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
 
 					// Set SCHIP Resolution
-					SizeX = 128
-					SizeY = 64
+					Global.SizeX = 128
+					Global.SizeY = 64
 
 					if Resize_Quirk_00FE_00FF {
 						// Clear the screen when changing graphic mode
@@ -429,8 +424,8 @@ func Interpreter() {
 					CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
 
 					// Set CHIP-8 Resolution
-					SizeX = 64
-					SizeY = 32
+					Global.SizeX = 64
+					Global.SizeY = 32
 
 					if Resize_Quirk_00FE_00FF {
 						// Clear the screen when changing graphic mode
@@ -459,7 +454,7 @@ func Interpreter() {
 						shift = 2
 					}
 
-					rowsize := int(SizeX)
+					rowsize := int(Global.SizeX)
 
 					gfx_len := 0
 					if SCHIP {
@@ -482,11 +477,11 @@ func Interpreter() {
 								Graphics[i] = 0
 							}
 							// Update index to next line
-							rowsize += int(SizeX)
+							rowsize += int(Global.SizeX)
 						}
 					}
 
-					DrawFlag	= true
+					Global.DrawFlag	= true
 					DrawFlagCounter ++
 
 					PC += 2
@@ -505,7 +500,7 @@ func Interpreter() {
 							shift = 2
 						}
 
-						rowsize := int(SizeX)
+						rowsize := int(Global.SizeX)
 						index := 0
 						gfx_len := 0
 
@@ -534,11 +529,11 @@ func Interpreter() {
 									Graphics[j] = 0
 								}
 								// Update index to next line
-								index -= int(SizeX)
+								index -= int(Global.SizeX)
 							}
 						}
 
-						DrawFlag	= true
+						Global.DrawFlag	= true
 						DrawFlagCounter ++
 
 						PC += 2
@@ -574,7 +569,7 @@ func Interpreter() {
 						Graphics[i] = 0
 					}
 
-					DrawFlag	= true
+					Global.DrawFlag	= true
 					DrawFlagCounter ++
 
 					PC += 2
@@ -947,14 +942,14 @@ func Interpreter() {
 
 			// Fix for Bowling game where the pins wrap the screen
 			if DXYN_bowling_wrap {
-				if V[x] + uint8(n) > (uint8(SizeX) +1)  {
+				if V[x] + uint8(n) > (uint8(Global.SizeX) +1)  {
 					PC += 2
 					break
 				}
 			}
 
 			// Translate the x and Y to the Graphics Vector
-			gpx_position = (uint16(V[x]) + (uint16(SizeX) * uint16(V[y])))
+			gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))
 
 			// SCHIP Dxy0
 			// When in high res mode show a 16x16 sprite at (VX, VY)
@@ -983,7 +978,7 @@ func Interpreter() {
 			}
 
 			PC += 2
-			DrawFlag = true
+			Global.DrawFlag = true
 			DrawFlagCounter ++
 
 

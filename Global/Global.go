@@ -13,10 +13,10 @@ type Setting struct {
 }
 
 var (
-	// Global
+	// ------------------------ Global Variables ------------------------ //
 	Game_signature		string	= ""	// Game Signature (identify games that needs legacy opcodes)
 
-	// Graphics
+	// ----------------------- Graphics Variables ----------------------- //
 	Win			*pixelgl.Window
 	WindowTitle		string = "Chip-8"
 	Color_theme		= 0
@@ -32,8 +32,17 @@ var (
 	// On screen messages
 	ShowMessage		bool
 	TextMessageStr		string
-
-	//Input
+	// Draw operation executed, sinalize Graphics to update the screen
+	DrawFlag		bool	= false		// True if the screen must be drawn
+	// Draw Mode
+	// True  = Refresh screen (draw) every time DrawFlag is set
+	// False = Refresh screen at 60Hz
+	OriginalDrawMode	= false
+	DrawModeMessage	string = ""
+	// Input Commands that need a Draw
 	InputDrawFlag		bool		// Force draw, necessary in some emulator rewind and forward status
+	// Screen Size
+	SizeX			float64			// Number of Columns in Graphics
+	SizeY			float64			// Number of Lines in Graphics
 
 )

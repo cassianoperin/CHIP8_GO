@@ -131,6 +131,8 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 	`J`: Show / Hide FPS Counter
 
+	`H`: Switch DrawMode (@DrawFlag OR @60Hz)
+
 	`N`: Enter / Exit Fullscreen mode
 
 	`M`: Change resolution
@@ -182,7 +184,5 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 3. Save the savestates to files
 4. Create a help menu and command line arguments (SCHIP hack mode, DrawMode, and other options)
 5. Turn CPU into a function / core
-6. Global.WindowTitle is not being updated (input)
-7. Review Variable locations
-8. Update screensize when change resolution
-9. When Fullscreen set, need to change resolution to stabilize
+6. Update screensize when change resolution
+7. When Fullscreen set, need to change resolution to stabilize

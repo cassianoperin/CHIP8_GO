@@ -129,7 +129,7 @@ func Keyboard() {
 				CPU.V			= [16]byte{}
 				CPU.I			= 0
 				CPU.Graphics		= [128 * 64]byte{}
-				CPU.DrawFlag		= false
+				Global.DrawFlag		= false
 				CPU.DelayTimer		= 0
 				CPU.SoundTimer		= 0
 				CPU.Key			= [CPU.KeyArraySize]byte{}
@@ -140,8 +140,8 @@ func Keyboard() {
 					CPU.Pause = false
 				}
 				CPU.SCHIP		= false
-				CPU.SizeX		= 64
-				CPU.SizeY		= 32
+				Global.SizeX		= 64
+				Global.SizeY		= 32
 				CPU.CPU_Clock_Speed	= 500
 				CPU.Memory = CPU.MemoryCleanSnapshot
 				// Show messages
@@ -182,8 +182,8 @@ func Keyboard() {
 				CPU.Rewind_index_savestate	= CPU.Rewind_index
 				CPU.SCHIP_savestate		= CPU.SCHIP
 				CPU.SCHIP_LORES_savestate	= CPU.SCHIP_LORES
-				CPU.SizeX_savestate		= CPU.SizeX
-				CPU.SizeY_savestate		= CPU.SizeY
+				CPU.SizeX_savestate		= Global.SizeX
+				CPU.SizeY_savestate		= Global.SizeY
 				CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
 				CPU.Memory_savestate		= CPU.Memory
 				CPU.Savestate_created		= 1		// Register that have a savestate
@@ -211,11 +211,11 @@ func Keyboard() {
 					CPU.Rewind_index	= CPU.Rewind_index_savestate
 					CPU.SCHIP		= CPU.SCHIP_savestate
 					CPU.SCHIP_LORES		= CPU.SCHIP_LORES_savestate
-					CPU.SizeX		= CPU.SizeX_savestate
-					CPU.SizeY		= CPU.SizeY_savestate
+					Global.SizeX		= CPU.SizeX_savestate
+					Global.SizeY		= CPU.SizeY_savestate
 					CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
 					CPU.Memory		= CPU.Memory_savestate
-					CPU.DrawFlag		= true
+					Global.DrawFlag		= true
 					// Show messages
 					if CPU.Debug {
 						fmt.Printf("\n\t\tSavestate Loaded\n")
@@ -288,32 +288,33 @@ func Keyboard() {
 				}
 				Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
 
-
-
 			}
+
 
 			// FPS
 			if index == 8 {
 				Global.ShowFPS = !Global.ShowFPS
 			}
 
+
 			// Draw Mode (DrawFlag OR at 60Hz)
 			if index == 9 {
 				Global.OriginalDrawMode = !Global.OriginalDrawMode
-			}
-			// Show messages
-			if Global.OriginalDrawMode {
-				if CPU.Debug {
-					fmt.Printf("\n\t\tDrawMode: DrawFlag\n")
+
+				// Show messages
+				if Global.OriginalDrawMode {
+					if CPU.Debug {
+						fmt.Printf("\n\t\tDrawMode: DrawFlag\n")
+					}
+					Global.TextMessageStr = "DrawMode: DrawFlag"
+					Global.ShowMessage = true
+				} else {
+					if CPU.Debug {
+						fmt.Printf("\n\t\tDrawMode: @60Hz\n")
+					}
+					Global.TextMessageStr = "@60Hz"
+					Global.ShowMessage = true
 				}
-				Global.TextMessageStr = "DrawMode: DrawFlag"
-				Global.ShowMessage = true
-			} else {
-				if CPU.Debug {
-					fmt.Printf("\n\t\tSDrawMode: @60Hz\n")
-				}
-				Global.TextMessageStr = "@60Hz"
-				Global.ShowMessage = true
 			}
 
 		}
@@ -352,7 +353,7 @@ func Keyboard() {
 									CPU.V		= CPU.V_track[CPU.Rewind_index +1]
 									CPU.I		= CPU.I_track[CPU.Rewind_index +1]
 									CPU.Graphics	= CPU.GFX_track[CPU.Rewind_index +1]
-									CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
+									Global.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
 									CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index +1]
 									CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index +1]
 									CPU.Key		= [CPU.KeyArraySize]byte{}
@@ -386,7 +387,7 @@ func Keyboard() {
 								CPU.V		= CPU.V_track[CPU.Rewind_index -1]
 								CPU.I		= CPU.I_track[CPU.Rewind_index -1]
 								CPU.Graphics	= CPU.GFX_track[CPU.Rewind_index -1]
-								CPU.DrawFlag	= CPU.DF_track[CPU.Rewind_index -1]
+								Global.DrawFlag	= CPU.DF_track[CPU.Rewind_index -1]
 								CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index -1]
 								CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index -1]
 								CPU.Key		= [CPU.KeyArraySize]byte{}
