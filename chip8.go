@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"io"
 	"os"
+	"crypto/md5"
 	"runtime"
 	"Chip8/CPU"
 	"Chip8/Global"
@@ -68,11 +70,8 @@ func readROM(filename string) {
 		CPU.Memory[i+512] = data[i]
 	}
 
-	// //Print Memory
-	// for i := 0; i < len(CPU.Memory); i++ {
-	// 	fmt.Printf("%X ", CPU.Memory[i])
-	// }
-	// os.Exit(2)
+
+
 }
 
 func checkArgs() {
@@ -101,14 +100,29 @@ func testFile(filename string) {
 	}
 }
 
-func get_game_signature() {
+func get_game_signature(filename string) {
 
 	// Used to identify games that needs legacy opcodes
 	// Read the first 10 game instructions in memory
-	signature_size := 10
-	for i:=0 ; i < signature_size ; i++ {
-		Global.Game_signature += fmt.Sprintf("%X", CPU.Memory[int(CPU.PC)+i])
+	// signature_size := 10
+	// for i:=0 ; i < signature_size ; i++ {
+	// 	Global.Game_signature += fmt.Sprintf("%X", CPU.Memory[int(CPU.PC)+i])
+	// }
+	// fmt.Printf("Game signature: %s\n", Global.Game_signature)
+
+
+	// Generate Game Signature (MD5)
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer f.Close()
+
+	h := md5.New()
+	if _, err := io.Copy(h, f); err != nil {
+		log.Fatal(err)
+	}
+	Global.Game_signature = fmt.Sprintf("%x", h.Sum(nil))
 	fmt.Printf("Game signature: %s\n", Global.Game_signature)
 }
 
@@ -136,7 +150,7 @@ func main() {
 	readROM(os.Args[1])
 
 	// Get game signature
-	get_game_signature()
+	get_game_signature(os.Args[1])
 
 	// Start Window System and draw Graphics
 	pixelgl.Run(Graphics.Run)

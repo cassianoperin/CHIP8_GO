@@ -23,8 +23,7 @@ func Handle_legacy_opcodes() {
 
 	// Enable Fx55 and Fx65 legacy mode
 	// Game "Animal Race [Brian Astle]"
-	// MD5: 46497c35ce549cd7617462fe7c9fc284
-	if (Global.Game_signature == "6DA6E268E69BA5B5") {
+	if (Global.Game_signature == "46497c35ce549cd7617462fe7c9fc284") {
 		Legacy_Fx55_Fx65 = true
 		fmt.Printf("Legacy mode Fx55/Fx65 enabled.\n")
 	}
@@ -36,31 +35,27 @@ func Handle_legacy_opcodes() {
 
 	// Enable undocumented FX1E feature needed by Spacefight 2091!
 	// Game "Spacefight 2091 [Carsten Soerensen, 1992].ch8"
-	// MD5: f99d0e82a489b8aff1c7203d90f740c3
-	if (Global.Game_signature == "12245370616365466967") {
+	if (Global.Game_signature == "f99d0e82a489b8aff1c7203d90f740c3") {
 		FX1E_spacefight2091 = true
 		fmt.Printf("FX1E undocumented feature enabled.\n")
 	}
 	// Enable undocumented FX1E feature needed by Spacefight 2091!
-	// SCHIP Test Program "sctest_12"
-	// MD5: 3ff053faaf994c051ed9b432f412b551
-	if (Global.Game_signature == "12122054726F6E697820") {
+	// SCHIP Test Program "sctest_12 (SC Test.ch8)"
+	if (Global.Game_signature == "3ff053faaf994c051ed9b432f412b551") {
 		FX1E_spacefight2091 = true
 		fmt.Printf("FX1E undocumented feature enabled.\n")
 	}
 
 	// Enable Pixel Wrap Fix for Bowling game
 	// Game: "Bowling [Gooitzen van der Wal]"
-	// MD5: b56e0e6e3930011049fcf6cf3384e964
-	if (Global.Game_signature == "6314640255E60525B4") {
+	if (Global.Game_signature == "b56e0e6e3930011049fcf6cf3384e964") {
 		DXYN_bowling_wrap = true
 		fmt.Printf("DXYN pixel wrap fix enabled.\n")
 	}
 
 	// Enable Low Res 16x16 Pixel Draw in Robot.ch8 DEMO
 	// SCHIP Demo: "Robot"
-	// MD5: e2cd0812b43fb46e4b8abbb3a8d30f4b
-	if (Global.Game_signature == "0FEA23A60061062F") {
+	if (Global.Game_signature == "e2cd0812b43fb46e4b8abbb3a8d30f4b") {
 		DXY0_loresWideSpriteQuirks = true
 		fmt.Printf("DXY0 SCHIP Low Res 16x16 Pixel fix enabled.\n")
 	}
