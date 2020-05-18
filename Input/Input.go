@@ -1,6 +1,7 @@
 package Input
 
 import (
+	"os"
 	"fmt"
 	"time"
 	"Chip8/CPU"
@@ -169,52 +170,30 @@ func Keyboard() {
 
 			// Create Save State
 			if index == 4 {
-				CPU.Opcode_savestate		= CPU.Opcode
-				CPU.PC_savestate		= CPU.PC
-				CPU.Stack_savestate		= CPU.Stack
-				CPU.SP_savestate		= CPU.SP
-				CPU.V_savestate			= CPU.V
-				CPU.I_savestate			= CPU.I
-				CPU.Graphics_savestate		= CPU.Graphics
-				CPU.DelayTimer_savestate	= CPU.DelayTimer
-				CPU.SoundTimer_savestate	= CPU.SoundTimer
-				CPU.Cycle_savestate		= CPU.Cycle
-				CPU.Rewind_index_savestate	= CPU.Rewind_index
-				CPU.SCHIP_savestate		= CPU.SCHIP
-				CPU.SCHIP_LORES_savestate	= CPU.SCHIP_LORES
-				CPU.SizeX_savestate		= Global.SizeX
-				CPU.SizeY_savestate		= Global.SizeY
-				CPU.CPU_Clock_Speed_savestate = CPU.CPU_Clock_Speed
-				CPU.Memory_savestate		= CPU.Memory
-				CPU.Savestate_created		= 1		// Register that have a savestate
+				// Create SaveState
+				CPU.SaveStateWrite()
+
 				// Show messages
 				if CPU.Debug {
 					fmt.Printf("\n\t\tSavestate Created\n")
 				}
 				Global.TextMessageStr = "Savestate Created"
 				Global.ShowMessage = true
+
 			}
 
 			// Load Save State
 			if index == 5 {
-				if CPU.Savestate_created == 1 {
-					CPU.Opcode		= CPU.Opcode_savestate
-					CPU.PC			= CPU.PC_savestate
-					CPU.Stack		= CPU.Stack_savestate
-					CPU.SP			= CPU.SP_savestate
-					CPU.V			= CPU.V_savestate
-					CPU.I			= CPU.I_savestate
-					CPU.Graphics		= CPU.Graphics_savestate
-					CPU.DelayTimer		= CPU.DelayTimer_savestate
-					CPU.SoundTimer		= CPU.SoundTimer_savestate
-					CPU.Cycle		= CPU.Cycle_savestate
-					CPU.Rewind_index	= CPU.Rewind_index_savestate
-					CPU.SCHIP		= CPU.SCHIP_savestate
-					CPU.SCHIP_LORES		= CPU.SCHIP_LORES_savestate
-					Global.SizeX		= CPU.SizeX_savestate
-					Global.SizeY		= CPU.SizeY_savestate
-					CPU.CPU_Clock_Speed	= CPU.CPU_Clock_Speed_savestate
-					CPU.Memory		= CPU.Memory_savestate
+
+				saveFile := Global.SavestateFolder + string(os.PathSeparator) + Global.Game_signature
+
+				if _, err := os.Stat(saveFile); err == nil {
+					// File Exist
+
+					// Read SaveState
+					CPU.SaveStateRead()
+
+					// Refresh the screen
 					Global.DrawFlag		= true
 					// Show messages
 					if CPU.Debug {
@@ -222,13 +201,22 @@ func Keyboard() {
 					}
 					Global.TextMessageStr = "Savestate Loaded"
 					Global.ShowMessage = true
-				} else {
+
+
+				} else if os.IsNotExist(err) {
+					// File does NOT exist
+
 					// Show messages
 					if CPU.Debug {
 						fmt.Printf("\n\t\tSavestate not found\n")
 					}
 					Global.TextMessageStr = "Savestate not found"
 					Global.ShowMessage = true
+
+
+				} else {
+					fmt.Println("ERROR checking Savestate file!")
+					os.Exit(1)
 				}
 
 			}

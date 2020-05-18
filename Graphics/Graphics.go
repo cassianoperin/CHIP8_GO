@@ -344,8 +344,6 @@ func Run() {
 
 		// Update Input Events
 		Global.Win.UpdateInput()
-			
-		}
 
 	}
 

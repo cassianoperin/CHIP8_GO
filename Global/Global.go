@@ -45,4 +45,7 @@ var (
 	SizeX			float64			// Number of Columns in Graphics
 	SizeY			float64			// Number of Lines in Graphics
 
+	// ----------------------- Graphics Variables ----------------------- //
+	SavestateFolder 	string = "Savestates"
+
 )
