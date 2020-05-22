@@ -48,4 +48,9 @@ var (
 	// ----------------------- Graphics Variables ----------------------- //
 	SavestateFolder 	string = "Savestates"
 
+	// ------------------------ Sound Variables ------------------------- //
+	PlaySound			bool = false
+	SpeakerPlaying		bool	= false
+	SpeakerStopped		bool = false
+
 )

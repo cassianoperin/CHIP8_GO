@@ -4,7 +4,7 @@ import (
 	"fmt"
 	// "os/exec"
 	"Chip8/CPU"
-	"Chip8/Sound"
+	// "Chip8/Sound"
 	"Chip8/Input"
 	"Chip8/Global"
 	"github.com/faiface/pixel"
@@ -282,11 +282,17 @@ func Run() {
 
 				// When ticker run (60 times in a second, check de SoundTimer)
 				if CPU.SoundTimer > 0 {
-					if CPU.SoundTimer == 1 {
-						go Sound.PlaySound(Sound.Beep_buffer)
-					}
-					CPU.SoundTimer--
+
+					// Enable the flag to play sound
+					Global.PlaySound = true
+					// Decrement SoundTimer
+					CPU.SoundTimer --
+
+				} else {
+					// Stop playing sound
+					Global.PlaySound = false
 				}
+				
 
 			//SCHIP Speed hack, decrease DT faster
 			case <-CPU.SCHIP_TimerClockHack.C:

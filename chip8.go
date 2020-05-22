@@ -144,7 +144,7 @@ func main() {
 	CPU.Initialize()
 
 	// Initialize sound buffer
-	Sound.Initialize("Sound/beep.mp3")
+	go Sound.Initialize("Sound/beep.wav")
 
 	// Read ROM into Memory
 	readROM(os.Args[1])
