@@ -13,11 +13,8 @@ import (
 	"Chip8/Global"
 )
 
-var (
-	Beep_buffer *beep.Buffer
-)
 
-func Initialize(file string) {
+func Initialize(file string) (*beep.Resampler, beep.StreamSeeker, *beep.Ctrl) {
 	f, err := os.Open(file)
 	if err != nil {
 		log.Fatal(err)
@@ -30,7 +27,7 @@ func Initialize(file string) {
 
 	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10000))
 
-	Beep_buffer = beep.NewBuffer(format)
+	Beep_buffer := beep.NewBuffer(format)
 	Beep_buffer.Append(streamer)
 
 	streamer.Close()
@@ -49,6 +46,14 @@ func Initialize(file string) {
 	}
 	// speaker.Play(volume)
 	speedy := beep.ResampleRatio(4, 1, volume)
+
+	return speedy, shot, ctrl
+
+}
+
+
+func PlaySound(speedy *beep.Resampler, shot beep.StreamSeeker, ctrl *beep.Ctrl){
+
 
 	// PLAY
 	speaker.Play(speedy)
