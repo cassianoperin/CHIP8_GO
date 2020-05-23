@@ -12,7 +12,7 @@ import (
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
 	"github.com/faiface/pixel/imdraw"
-	"github.com/faiface/beep/speaker"
+	// "github.com/faiface/beep/speaker"
 
 )
 
@@ -285,10 +285,10 @@ func Run() {
 				if CPU.SoundTimer > 0 {
 
 					// Necessary to do not hang
-					fmt.Sprint("")
+					// fmt.Sprint("")
 
 					if !Global.SpeakerPlaying {
-						speaker.Lock()
+						// speaker.Lock()
 							Sound.AudioCtrl.Paused = false
 							// Increase / Decrease Volume
 							// volume.Volume += 0.5
@@ -296,7 +296,7 @@ func Run() {
 							// Increase / Decrease Speed
 							// speedy.SetRatio(speedy.Ratio() + 0.1) // <-- right here
 							// fmt.Println(format.SampleRate.D(Shot.Position()).Round(time.Second))
-						speaker.Unlock()
+						// speaker.Unlock()
 
 
 						Global.SpeakerPlaying = true		// Avoid multiple sound starts
@@ -317,14 +317,14 @@ func Run() {
 					if !Global.SpeakerStopped {
 
 						// Necessary to do not hang
-						fmt.Sprint("")
+						// fmt.Sprint("")
 
-						speaker.Lock()
+						// speaker.Lock()
 							Sound.AudioCtrl.Paused = true
-							newPos := Sound.Shot.Position()
-							newPos = 0
-							Sound.Shot.Seek(newPos)
-						speaker.Unlock()
+							// newPos := Sound.Shot.Position()
+							// newPos = 0
+							// Sound.Shot.Seek(newPos)
+						// speaker.Unlock()
 
 						Global.SpeakerPlaying = false
 						Global.SpeakerStopped = true

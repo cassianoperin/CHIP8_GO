@@ -7,7 +7,7 @@ import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/wav"
 	"github.com/faiface/beep/speaker"
-	"github.com/faiface/beep/effects"
+	// "github.com/faiface/beep/effects"
 )
 
 var (
@@ -27,7 +27,7 @@ func AudioDaemonStart(file string) {
 		log.Fatal(err)
 	}
 
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/600))
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/120))
 
 	Beep_buffer := beep.NewBuffer(format)
 	Beep_buffer.Append(streamer)
@@ -38,23 +38,19 @@ func AudioDaemonStart(file string) {
 
 	loop := beep.Loop(-1, Shot)
 
-	AudioCtrl = &beep.Ctrl{Streamer: loop, Paused: false}
-	// speaker.Play(ctrl)
-	volume := &effects.Volume{
-		Streamer: AudioCtrl,
-		Base:     2,
-		Volume:   0,
-		Silent:   false,
-	}
-	// speaker.Play(volume)
-	speedy := beep.ResampleRatio(4, 1, volume)
+	AudioCtrl = &beep.Ctrl{Streamer: loop, Paused: true}
+	speaker.Play(AudioCtrl)
 
-	// Start Paused
-	speaker.Lock()
-	AudioCtrl.Paused = true
-	speaker.Unlock()
+	// volume := &effects.Volume{
+	// 	Streamer: AudioCtrl,
+	// 	Base:     2,
+	// 	Volume:   0,
+	// 	Silent:   false,
+	// }
+	// // speaker.Play(volume)
+	// speedy := beep.ResampleRatio(4, 1, volume)
 
 	// PLAY
-	speaker.Play(speedy)
+	// speaker.Play(speedy)
 
 }
