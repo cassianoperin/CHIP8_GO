@@ -2,17 +2,18 @@ package Graphics
 
 import (
 	"fmt"
-	// "os/exec"
 	"Chip8/CPU"
-	// "Chip8/Sound"
 	"Chip8/Input"
 	"Chip8/Global"
+	"Chip8/Sound"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
 	"github.com/faiface/pixel/imdraw"
+	"github.com/faiface/beep/speaker"
+
 )
 
 
@@ -283,16 +284,59 @@ func Run() {
 				// When ticker run (60 times in a second, check de SoundTimer)
 				if CPU.SoundTimer > 0 {
 
-					// Enable the flag to play sound
-					Global.PlaySound = true
+					// Necessary to do not hang
+					fmt.Sprint("")
+
+					if !Global.SpeakerPlaying {
+						speaker.Lock()
+							Sound.AudioCtrl.Paused = false
+							// Increase / Decrease Volume
+							// volume.Volume += 0.5
+
+							// Increase / Decrease Speed
+							// speedy.SetRatio(speedy.Ratio() + 0.1) // <-- right here
+							// fmt.Println(format.SampleRate.D(Shot.Position()).Round(time.Second))
+						speaker.Unlock()
+
+
+						Global.SpeakerPlaying = true		// Avoid multiple sound starts
+						Global.SpeakerStopped = false		// Avoid multiple sound stops
+
+						if CPU.Debug {
+							fmt.Print("Start playing sound\n")
+						}
+
+					}
+
+
 					// Decrement SoundTimer
 					CPU.SoundTimer --
 
 				} else {
-					// Stop playing sound
-					Global.PlaySound = false
+
+					if !Global.SpeakerStopped {
+
+						// Necessary to do not hang
+						fmt.Sprint("")
+
+						speaker.Lock()
+							Sound.AudioCtrl.Paused = true
+							newPos := Sound.Shot.Position()
+							newPos = 0
+							Sound.Shot.Seek(newPos)
+						speaker.Unlock()
+
+						Global.SpeakerPlaying = false
+						Global.SpeakerStopped = true
+
+						if CPU.Debug {
+							fmt.Print("Stop playing sound\n")
+						}
+
+					}
+
 				}
-				
+
 
 			//SCHIP Speed hack, decrease DT faster
 			case <-CPU.SCHIP_TimerClockHack.C:
