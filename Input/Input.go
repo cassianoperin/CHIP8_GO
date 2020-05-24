@@ -320,54 +320,63 @@ func Keyboard() {
 
 					// Rewind CPU
 					if index == 0 {
-						if CPU.Pause {
-							// Clear forward_count
-							forward_count = 0
-							// Search for track limit history
-							// Rewind_buffer size minus [0] used for current value
-							// (-2 because I use Rewind_buffer +1 to identify the last vector number)
-							if CPU.Rewind_index < CPU.Rewind_buffer -2 {
-								// Take care of the first loop
-								if (CPU.Cycle == 1) {
-									Global.InputDrawFlag = true // Sinalize Graphics to Update the screen
-									Global.Win.Update()
-									// Show messages
-									if CPU.Debug {
-										fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
+						if CPU.Rewind_mode {
+							if CPU.Pause {
+								// Clear forward_count
+								forward_count = 0
+								// Search for track limit history
+								// Rewind_buffer size minus [0] used for current value
+								// (-2 because I use Rewind_buffer +1 to identify the last vector number)
+								if CPU.Rewind_index < CPU.Rewind_buffer -2 {
+									// Take care of the first loop
+									if (CPU.Cycle == 1) {
+										Global.InputDrawFlag = true // Sinalize Graphics to Update the screen
+										Global.Win.Update()
+										// Show messages
+										if CPU.Debug {
+											fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
+										}
+										Global.TextMessageStr = "Rewind mode - Nothing to rewind (Cycle 0)"
+										Global.ShowMessage = true
+									} else {
+										// Update values, reading the track records
+										CPU.PC		= CPU.PC_track[CPU.Rewind_index +1]
+										CPU.Stack	= CPU.Stack_track[CPU.Rewind_index +1]
+										CPU.SP		= CPU.SP_track[CPU.Rewind_index +1]
+										CPU.V		= CPU.V_track[CPU.Rewind_index +1]
+										CPU.I		= CPU.I_track[CPU.Rewind_index +1]
+										CPU.Graphics	= CPU.GFX_track[CPU.Rewind_index +1]
+										Global.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
+										CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index +1]
+										CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index +1]
+										CPU.Key		= [CPU.KeyArraySize]byte{}
+										CPU.Cycle	= CPU.Cycle - 2
+										CPU.Rewind_index= CPU.Rewind_index +1
+										// Call a CPU Cycle
+										CPU.Interpreter()
+										// Show messages
+										if CPU.Debug {
+											fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n", CPU.Rewind_index)
+										}
+										Global.TextMessageStr = fmt.Sprintf("Rewind mode - Rewind_index:= %d", CPU.Rewind_index)
+										Global.ShowMessage = true
 									}
-									Global.TextMessageStr = "Rewind mode - Nothing to rewind (Cycle 0)"
-									Global.ShowMessage = true
 								} else {
-									// Update values, reading the track records
-									CPU.PC		= CPU.PC_track[CPU.Rewind_index +1]
-									CPU.Stack	= CPU.Stack_track[CPU.Rewind_index +1]
-									CPU.SP		= CPU.SP_track[CPU.Rewind_index +1]
-									CPU.V		= CPU.V_track[CPU.Rewind_index +1]
-									CPU.I		= CPU.I_track[CPU.Rewind_index +1]
-									CPU.Graphics	= CPU.GFX_track[CPU.Rewind_index +1]
-									Global.DrawFlag	= CPU.DF_track[CPU.Rewind_index +1]
-									CPU.DelayTimer	= CPU.DT_track[CPU.Rewind_index +1]
-									CPU.SoundTimer	= CPU.ST_track[CPU.Rewind_index +1]
-									CPU.Key		= [CPU.KeyArraySize]byte{}
-									CPU.Cycle	= CPU.Cycle - 2
-									CPU.Rewind_index= CPU.Rewind_index +1
-									// Call a CPU Cycle
-									CPU.Interpreter()
 									// Show messages
 									if CPU.Debug {
-										fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n", CPU.Rewind_index)
+										fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
 									}
-									Global.TextMessageStr = fmt.Sprintf("Rewind mode - Rewind_index:= %d", CPU.Rewind_index)
+									Global.TextMessageStr = fmt.Sprintf("Rewind mode - END OF TRACK HISTORY!!!")
 									Global.ShowMessage = true
 								}
-							} else {
-								// Show messages
-								if CPU.Debug {
-									fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
-								}
-								Global.TextMessageStr = fmt.Sprintf("Rewind mode - END OF TRACK HISTORY!!!")
-								Global.ShowMessage = true
 							}
+						} else {
+							// Show messages
+							if CPU.Debug {
+								fmt.Printf("\t\tRewind mode DISABLED!!!\n")
+							}
+							Global.TextMessageStr = fmt.Sprintf("Rewind mode DISABLED!!!")
+							Global.ShowMessage = true
 						}
 					}
 

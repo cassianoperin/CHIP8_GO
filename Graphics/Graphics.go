@@ -207,6 +207,11 @@ func Run() {
 		fmt.Printf("SCHIP DelayTimer Clock Hack ENABLED\n")
 	}
 
+	// Print Message if Rewind Mode is Enabled
+	if CPU.Rewind_mode {
+		fmt.Printf("Rewind Mode ENABLED\n")
+	}
+
 	//  Print Message if using Draw at DrawFlag
 	if Global.OriginalDrawMode {
 		fmt.Println("DrawMode: @DrawFlag\n")

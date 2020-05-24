@@ -183,4 +183,5 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 2. Starting with 640x480 (Mode:0) - Change to 800x600?
 3. Reduce binary size and create a new release
 4. Document GUI and that rewind mode is turned off by default
+5. Understand the speed difference in rewind and forward
 5. When Fullscreen on and off, need to change resolution to stabilize

@@ -86,6 +86,7 @@ func checkArgs() {
 	cliSchipHack	:= flag.Bool("SchipHack", false, "Enable SCHIP timer hack mode to improve speed")
 	cliDrawFlag	:= flag.Bool("DrawFlag", false, "Enable Draw Graphics on each Drawflag instead @60Hz")
 	cliDebug		:= flag.Bool("Debug", false, "Enable Debug Mode")
+	cliRewind		:= flag.Bool("Rewind", false, "Enable Rewind Mode")
 
 	// wordPtr := flag.String("word", "foo", "a string")
 	// numbPtr := flag.Int("numb", 42, "an int")
@@ -98,8 +99,12 @@ func checkArgs() {
 	flag.Parse()
 
 	if *cliHelp {
-		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -SchipHack\n    	Enable SCHIP timer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
+		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP timer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
 		os.Exit(0)
+	}
+
+	if *cliRewind {
+		CPU.Rewind_mode = true
 	}
 
 	if *cliSchipHack {

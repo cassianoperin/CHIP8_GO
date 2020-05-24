@@ -312,7 +312,7 @@ func Interpreter() {
 	}
 
 	// Enable tracking to Rewind function
-	if rewind_mode {
+	if Rewind_mode {
 		rewind()
 	}
 

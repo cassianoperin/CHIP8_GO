@@ -12,7 +12,7 @@ const (
 
 var (
 	// Rewind Variables
-	rewind_mode		bool	= false		// Enable and Disable Rewind Mode to increase emulation speed
+	Rewind_mode		bool	= false		// Enable and Disable Rewind Mode to increase emulation speed
 	Rewind_index		uint16	= 0		// Rewind Index
 	// CPU Components
 	PC_track		= new([Rewind_buffer]uint16)
