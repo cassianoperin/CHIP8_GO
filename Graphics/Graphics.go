@@ -12,16 +12,7 @@ import (
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
 	"github.com/faiface/pixel/imdraw"
-	// "github.com/faiface/beep/speaker"
-
 )
-
-
-const (
-	screenWidth	= float64(1024)
-	screenHeight	= float64(768)
-)
-
 
 var (
 	// FPS
@@ -35,6 +26,10 @@ var (
 
 	// Video modes and Fullscreen
 	atlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
+
+	// Screen Size
+	screenWidth	= float64(640)
+	screenHeight	= float64(480)
 )
 
 
@@ -144,9 +139,10 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	}
 
-	screenWidth	:= Global.Win.Bounds().W()
+	screenWidth	= Global.Win.Bounds().W()
+	screenHeight	= Global.Win.Bounds().H()
 	width		:= screenWidth/Global.SizeX
-	height		:= ((screenHeight)/Global.SizeY)
+	height		:= screenHeight/Global.SizeY
 
 	// If in SCHIP mode, read the entire vector. If in Chip8 mode, read from 0 to 2047 only
 	for gfxindex := 0 ; gfxindex < int(Global.SizeX) * int(Global.SizeY) ; gfxindex++ {

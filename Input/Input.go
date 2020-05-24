@@ -262,6 +262,7 @@ func Keyboard() {
 					}
 					Global.TextMessageStr = "Fullscreen Disabled"
 					Global.ShowMessage = true
+
 				} else {
 					// Switch to fullscreen.
 					Global.Win.SetMonitor(Global.ActiveSetting.Monitor)
@@ -275,6 +276,7 @@ func Keyboard() {
 					Global.ShowMessage = true
 				}
 				Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
+
 
 			}
 

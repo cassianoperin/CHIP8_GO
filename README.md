@@ -180,6 +180,5 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 ## TODO LIST
 
 1. Turn CPU into a function / core
-2. Update screensize when change resolution
-3. When Fullscreen set, need to change resolution to stabilize
-4. Reduce binary size
+2. When Fullscreen on and off, need to change resolution to stabilize
+3. Reduce binary size
