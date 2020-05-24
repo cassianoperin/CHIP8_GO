@@ -88,19 +88,17 @@ Optional GUI (Graphical user interface) made with fyne.io.
 	`$./chip8 [options] ROM_NAME`
 
 
-### Options:
+- Options:
 
+	`-Debug`	Enable Debug Mode
 
-   `-Debug`		Enable Debug Mode
-	
-   `-DrawFlag`		Enable Draw Graphics on each Drawflag instead @60Hz
-	
-   `-Rewind Mode`	Enable Rewind Mode
-	
-   `-SchipHack`		Enable SCHIP DelayTimer hack mode to improve speed
-	
-   `-help`		Show Command Line Interface options
+	`-DrawFlag`	Enable Draw Graphics on each Drawflag instead @60Hz
 
+	`-Rewind Mode`	Enable Rewind Mode
+
+	`-SchipHack`	Enable SCHIP DelayTimer hack mode to improve speed
+
+	`-help`		Show Command Line Interface options
 
 2. Keys
 - Original COSMAC Keyboard Layout (CHIP-8):
