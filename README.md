@@ -44,7 +44,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	`go get github.com/faiface/beep`
 
-	`go get github.com/faiface/beep/mp3`
+	`go get github.com/faiface/beep/wav`
 
 	`go get github.com/faiface/beep/speaker`
 
@@ -69,7 +69,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	`go get github.com/faiface/beep`
 
-	`go get github.com/faiface/beep/mp3`
+	`go get github.com/faiface/beep/wav`
 
 	`go get github.com/faiface/beep/speaker`
 
@@ -167,15 +167,21 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	 `brew install go`
 
-* Install library requisites:
+* Install library requisites (need fyne beta/develop 1.3):
 
-	 `go get gopkg.in/ini.v1`
+	`go get gopkg.in/ini.v1`
    
    	`go get golang.org/x/image/colornames`
 
+	cd $GOPATH/src
+
+	mkdir fyne.io && cd fyne.io
+
+	git clone https://github.com/fyne-io/fyne.git && cd fyne && git checkout develop 
+
 * Compile:
 
-	`go build chip8.go`
+	`go build -ldflags="-s -w" Chip8GUI.go`
   
 2) Windows (**NOT TESTED YET!!**)
 
@@ -189,15 +195,21 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 * Add GO and Mingw-64 bin folder in PATH variable
 
-* Install library requisites:
+* Install library requisites (need fyne beta/develop 1.3):
 
 	 `go get gopkg.in/ini.v1`
    
- 	  `go get golang.org/x/image/colornames`
+ 	 `go get golang.org/x/image/colornames`
+
+        cd $GOPATH/src
+
+        mkdir fyne.io && cd fyne.io
+
+        git clone https://github.com/fyne-io/fyne.git && cd fyne && git checkout develop 
 
 * Compile:
 
-	`go build chip8.go`
+	`go build -ldflags="-s -w" Chip8GUI.go`
 
 
 ## GUI Usage
