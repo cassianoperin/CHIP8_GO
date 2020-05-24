@@ -2,15 +2,21 @@
 
 CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied and understood.
 
+Optional GUI (Graphical user interface) made with fyne.io.
+
 
 **CHIP-8 Space Invaders Game** | **Superchip (SCHIP) Spacefight 2091!**
 :-------------------------:|:-------------------------:
-<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/invaders.gif">  |  <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/spacefight2091.gif">
+<img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP8/blob/master/images/invaders.gif">  |  <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP8/blob/master/images/spacefight2091.gif">
 
 
 **Blinky (Color theme)** | **Single Dragon (Color Theme)**
 :-------------------------:|:-------------------------:
-<img width="430" alt="blinky" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/blinky.png"> | <img width="430" alt="singledragon" src="https://github.com/cassianoperin/CHIP-8_GO/blob/master/images/singledragon.png">
+<img width="430" alt="blinky" src="https://github.com/cassianoperin/CHIP8/blob/master/images/blinky.png"> | <img width="430" alt="singledragon" src="https://github.com/cassianoperin/CHIP8/blob/master/images/singledragon.png">
+
+**Optional GUI** | **Game selector screen**
+:-------------------------:|:-------------------------:
+<img width="430" alt="MainDark" src="https://github.com/cassianoperin/CHIP8/blob/master/GUI/images/git/MainDark.png">  |  <img width="430" alt="GamesDarkSchip" src="https://github.com/cassianoperin/CHIP8/blob/master/GUI/images/git/GamesDarkSchip.png">
 
 
 ## Features
@@ -23,8 +29,9 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 * Color Themes
 * Save States
 * Fullscreen
+* Optional GUI
 
-## Compile Instructions
+## EMULATOR Build Instructions
 
 1) MAC
 * Install GO:
@@ -76,7 +83,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 ## Usage
 
 1. Run:
-	`$chip8 [options] ROM_NAME`
+	`$./chip8 [options] ROM_NAME`
 
 1.1. Options:
 	`-Debug`		Enable Debug Mode
@@ -151,6 +158,44 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 	`ESC`: Exit emulator
 
+## GUI Build Instructions
+1) MAC
+* Install GO:
+
+	 `brew install go`
+
+* Install library requisites:
+
+	 `go get gopkg.in/ini.v1`
+   
+   `go get golang.org/x/image/colornames`
+
+* Compile:
+
+	`go build chip8.go`
+  
+2) Windows (**NOT TESTED YET!!**)
+
+* Install GO:
+
+	https://golang.org/dl/
+
+* Install GCC / mingw-w64
+
+	https://mingw-w64.org/doku.php/download/mingw-builds
+
+* Add GO and Mingw-64 bin folder in PATH variable
+
+* Install library requisites:
+
+	 `go get gopkg.in/ini.v1`
+   
+   `go get golang.org/x/image/colornames`
+
+* Compile:
+
+	`go build chip8.go`
+
 
 ## Documentation
 
@@ -187,11 +232,21 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 [CHIP‐8 Extensions (Github)](https://chip-8.github.io/extensions/)
 
+### GUI
 
+[Fyne.io](https://fyne.io/)
 
-## Emulator TODO LIST
+[Go-ini](https://github.com/go-ini/ini)
+
+## Emulator TODO LIST:
 
 1. Turn CPU into a function / core
 2. Reduce binary size and create a new release
 3. When Fullscreen on and off, need to change resolution to stabilize
 4. Center Window
+
+## GUI TODO LIST:
+1. Games Tab: Show image of the games
+2. Crete an .APP to run directly from Finder on Mac
+3. Reload game list when update paths
+4. Test on Windows
