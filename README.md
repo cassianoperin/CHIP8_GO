@@ -189,8 +189,9 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 
 
-## TODO LIST
+## Emulator TODO LIST
 
 1. Turn CPU into a function / core
 2. Reduce binary size and create a new release
 3. When Fullscreen on and off, need to change resolution to stabilize
+4. Center Window
