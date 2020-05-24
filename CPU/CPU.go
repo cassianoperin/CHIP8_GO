@@ -306,6 +306,21 @@ func Interpreter() {
 	// Read the Opcode from PC and PC+1 bytes
 	Opcode = uint16(Memory[PC])<<8 | uint16(Memory[PC+1])
 
+
+	// HI-RES CHIP8 EMULATION
+	// If PC=0x200 AND Opcode=0x1260, update Opcode to 0x12C0 (Jump to address 0x2c0)
+	// Need to add Opcode 0x0230 to handle the clearscreen event for 64x64 hires
+	if PC == 0x200 && Opcode == 0x1260 {
+
+		if Debug {
+			Show()
+			fmt.Printf("\t\tOpcode 1260 WITH PC=0x200. Init 64x64 Chip8 hires mode. Opcode=0x12C0, jump to address 0x2c0\n\n")
+		}
+		Opcode=0x12C0
+		Cycle++
+	}
+
+
 	// Print Cycle and Debug Information
 	if Debug {
 		Show()
@@ -329,165 +344,119 @@ func Interpreter() {
 
 			switch Opcode & 0x00F0 {
 
-			case 0x00E0:
-				// 00E0 - CLS
-				// Clear the display.
-				if x == 0x0000 {
-					// Clear display
-					Graphics = [128 * 64]byte{}
-					PC += 2
-					if Debug {
-						fmt.Println("\t\tOpcode 00E0 executed. - Clear the display\n")
+				case 0x00E0:
+					// 00E0 - CLS
+					// Clear the display.
+					if x == 0x0000 {
+						// Clear display
+						Graphics = [128 * 64]byte{}
+						PC += 2
+						if Debug {
+							fmt.Println("\t\tOpcode 00E0 executed. - Clear the display\n")
+						}
+						break
 					}
-					break
-				}
 
-				// 00EE - RET
-				// Return from a subroutine
-				// The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
-				// MUST MOVE TO NEXT ADDRESS AFTER THIS (PC+=2)
-				if x == 0x000E {
-					PC = Stack[SP] + 2
-					SP --
-					if Debug {
-						fmt.Printf("\t\tOpcode 00EE executed. - Return from a subroutine (PC=%d)\n", PC)
+					// 00EE - RET
+					// Return from a subroutine
+					// The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
+					// MUST MOVE TO NEXT ADDRESS AFTER THIS (PC+=2)
+					if x == 0x000E {
+						PC = Stack[SP] + 2
+						SP --
+						if Debug {
+							fmt.Printf("\t\tOpcode 00EE executed. - Return from a subroutine (PC=%d)\n", PC)
+						}
+						break
 					}
-					break
-				}
 
-			// 02D8
-			// NON DOCUMENTED OPCODED, USED BY DEMO CLOCK Program
-			// LDA 02, I // Load from memory at address I into V[00] to V[02]
-			case 0x00D0:
-				x := (Opcode & 0x0F00) >> 8
+				// 02D8
+				// NON DOCUMENTED OPCODED, USED BY DEMO CLOCK Program
+				// LDA 02, I // Load from memory at address I into V[00] to V[02]
+				case 0x00D0:
+					x := (Opcode & 0x0F00) >> 8
 
-				if x != 2 {
-					//Map if this opcode can receive a different value here
-					os.Exit(2)
-				}
-
-				V[0] = byte(I)
-				V[1] = byte(I) + 1
-				V[2] = byte(I) + 2
-
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 02DB executed (NON DOCUMENTED). - Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.\n", I, I , I+1, I+2)
-				}
-				break
-
-				// SCHIP - 00FF
-				// Enable High-Res Mode (128 x 64 resolution)
-			case 0x00F0:
-				if x == 0x000F {
-					// Enable SCHIP Mode
-					SCHIP = true
-					SCHIP_LORES = false
-					scrollQuirks_00CN_00FB_00FC = false
-
-					// Set the clock to SCHIP
-					CPU_Clock_Speed = 1500
-					CPU_Clock.Stop()
-					CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
-
-					// Set SCHIP Resolution
-					Global.SizeX = 128
-					Global.SizeY = 64
-
-					if Resize_Quirk_00FE_00FF {
-						// Clear the screen when changing graphic mode
-						Graphics	= [128 * 64]byte{}
+					if x != 2 {
+						//Map if this opcode can receive a different value here
+						os.Exit(2)
 					}
+
+					V[0] = byte(I)
+					V[1] = byte(I) + 1
+					V[2] = byte(I) + 2
 
 					PC += 2
 					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n")
+						fmt.Printf("\t\tOpcode 02DB executed (NON DOCUMENTED). - Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.\n", I, I , I+1, I+2)
 					}
 					break
-				// SCHIP - 00FE
-				// Enable Low-Res Mode (64 x 32 resolution)
-				} else if x == 0x000E {
-					// Disable SCHIP Mode
-					SCHIP = false
-					SCHIP_LORES = true
-					scrollQuirks_00CN_00FB_00FC = true
 
-					// Set the clock to CHIP-8 Speed
-					CPU_Clock_Speed = 500
-					CPU_Clock.Stop()
-					CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
+					// SCHIP - 00FF
+					// Enable High-Res Mode (128 x 64 resolution)
+				case 0x00F0:
+					if x == 0x000F {
+						// Enable SCHIP Mode
+						SCHIP = true
+						SCHIP_LORES = false
+						scrollQuirks_00CN_00FB_00FC = false
 
-					// Set CHIP-8 Resolution
-					Global.SizeX = 64
-					Global.SizeY = 32
+						// Set the clock to SCHIP
+						CPU_Clock_Speed = 1500
+						CPU_Clock.Stop()
+						CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
 
-					if Resize_Quirk_00FE_00FF {
-						// Clear the screen when changing graphic mode
-						Graphics	= [128 * 64]byte{}
-					}
+						// Set SCHIP Resolution
+						Global.SizeX = 128
+						Global.SizeY = 64
 
-					PC += 2
-					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n")
-					}
-
-				// SCHIP - 00FD
-				// Exit Emulator
-				} else if x == 0x000D {
-					fmt.Printf("SCHIP - Opcode 00FD executed. - Exit emulator.\n")
-					os.Exit(0)
-
-				// SCHIP - 00FC
-				// Scroll display 4 pixels left
-				} else if x == 0x000C {
-
-					shift := 4
-
-					// If in SCHIP Low Res mode, shift 2 pixels only
-					if scrollQuirks_00CN_00FB_00FC {
-						shift = 2
-					}
-
-					rowsize := int(Global.SizeX)
-
-					gfx_len := 0
-					if SCHIP {
-						gfx_len = (128 * 64)
-					} else {
-						gfx_len = (64 * 32)
-					}
-
-					// Run all the array
-					for i := 0 ; i < gfx_len ; i++ {
-
-						// Shift values until the last shift(4) bytes for each line
-						if i < rowsize - shift{
-							Graphics[i] = Graphics[i+shift]
+						if Resize_Quirk_00FE_00FF {
+							// Clear the screen when changing graphic mode
+							Graphics	= [128 * 64]byte{}
 						}
 
-						if i == rowsize -1 {
-							//Change the last 4 bytes of each line to zero
-							for i := rowsize - shift ; i < rowsize ; i++ {
-								Graphics[i] = 0
-							}
-							// Update index to next line
-							rowsize += int(Global.SizeX)
+						PC += 2
+						if Debug {
+							fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n")
 						}
-					}
+						break
+					// SCHIP - 00FE
+					// Enable Low-Res Mode (64 x 32 resolution)
+					} else if x == 0x000E {
+						// Disable SCHIP Mode
+						SCHIP = false
+						SCHIP_LORES = true
+						scrollQuirks_00CN_00FB_00FC = true
 
-					Global.DrawFlag	= true
-					DrawFlagCounter ++
+						// Set the clock to CHIP-8 Speed
+						CPU_Clock_Speed = 500
+						CPU_Clock.Stop()
+						CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
 
-					PC += 2
-					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n")
-					}
+						// Set CHIP-8 Resolution
+						Global.SizeX = 64
+						Global.SizeY = 32
 
-					// SCHIP - 00FB
-					// Scroll display 4 pixels right
-					} else if x == 0x000B {
+						if Resize_Quirk_00FE_00FF {
+							// Clear the screen when changing graphic mode
+							Graphics	= [128 * 64]byte{}
+						}
 
-						shift := 4	// Number of bytes to be shifted
+						PC += 2
+						if Debug {
+							fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n")
+						}
+
+					// SCHIP - 00FD
+					// Exit Emulator
+					} else if x == 0x000D {
+						fmt.Printf("SCHIP - Opcode 00FD executed. - Exit emulator.\n")
+						os.Exit(0)
+
+					// SCHIP - 00FC
+					// Scroll display 4 pixels left
+					} else if x == 0x000C {
+
+						shift := 4
 
 						// If in SCHIP Low Res mode, shift 2 pixels only
 						if scrollQuirks_00CN_00FB_00FC {
@@ -495,35 +464,29 @@ func Interpreter() {
 						}
 
 						rowsize := int(Global.SizeX)
-						index := 0
-						gfx_len := 0
 
-						// Calculate the values because I'm using the same array
+						gfx_len := 0
 						if SCHIP {
-							gfx_len = 128 * 64
-							index = (128 * 64) - rowsize
+							gfx_len = (128 * 64)
 						} else {
-							gfx_len = 64 * 32
-							index = (64 * 32) - rowsize
+							gfx_len = (64 * 32)
 						}
 
 						// Run all the array
-						for i := gfx_len -1  ; i >= 0  ; i-- {
+						for i := 0 ; i < gfx_len ; i++ {
 
-							// Shift values until the last shift bytes for each line
-							if i >=  index + shift {
-								Graphics[i] = Graphics[i - shift]
+							// Shift values until the last shift(4) bytes for each line
+							if i < rowsize - shift{
+								Graphics[i] = Graphics[i+shift]
 							}
 
-							// If find the index, change the last shift(4) bytes to zero and update the index
-							// To process the next line
-							if i == index {
-								//Change the first 4 bytes of each line to zero
-								for j := index + shift - 1; j >= index  ; j-- {
-									Graphics[j] = 0
+							if i == rowsize -1 {
+								//Change the last 4 bytes of each line to zero
+								for i := rowsize - shift ; i < rowsize ; i++ {
+									Graphics[i] = 0
 								}
 								// Update index to next line
-								index -= int(Global.SizeX)
+								rowsize += int(Global.SizeX)
 							}
 						}
 
@@ -532,14 +495,66 @@ func Interpreter() {
 
 						PC += 2
 						if Debug {
-							fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
+							fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n")
 						}
 
-				} else {
-					fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n", x)
-					os.Exit(2)
+						// SCHIP - 00FB
+						// Scroll display 4 pixels right
+						} else if x == 0x000B {
 
-				}
+							shift := 4	// Number of bytes to be shifted
+
+							// If in SCHIP Low Res mode, shift 2 pixels only
+							if scrollQuirks_00CN_00FB_00FC {
+								shift = 2
+							}
+
+							rowsize := int(Global.SizeX)
+							index := 0
+							gfx_len := 0
+
+							// Calculate the values because I'm using the same array
+							if SCHIP {
+								gfx_len = 128 * 64
+								index = (128 * 64) - rowsize
+							} else {
+								gfx_len = 64 * 32
+								index = (64 * 32) - rowsize
+							}
+
+							// Run all the array
+							for i := gfx_len -1  ; i >= 0  ; i-- {
+
+								// Shift values until the last shift bytes for each line
+								if i >=  index + shift {
+									Graphics[i] = Graphics[i - shift]
+								}
+
+								// If find the index, change the last shift(4) bytes to zero and update the index
+								// To process the next line
+								if i == index {
+									//Change the first 4 bytes of each line to zero
+									for j := index + shift - 1; j >= index  ; j-- {
+										Graphics[j] = 0
+									}
+									// Update index to next line
+									index -= int(Global.SizeX)
+								}
+							}
+
+							Global.DrawFlag	= true
+							DrawFlagCounter ++
+
+							PC += 2
+							if Debug {
+								fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
+							}
+
+					} else {
+						fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n", x)
+						os.Exit(2)
+
+					}
 
 				// SCHIP - 00CN
 				// Scroll display N lines down
@@ -573,11 +588,29 @@ func Interpreter() {
 
 					break
 
-			default:
-				if Debug {
-					fmt.Printf("\t\tOpcode 0x%X NOT IMPLEMENTED!!!!\n", Opcode)
-				}
-				os.Exit(2)
+				// CHIP8 HIRES - 0230
+				// Clear screen used by Hi Resolution Chip8
+				case 0x0030:
+
+					// Clear display
+					Graphics = [128 * 64]byte{}
+
+					// Set CHIP8 HIRES Resolution
+					Global.SizeX = 64
+					Global.SizeY = 64
+
+					PC += 2
+					if Debug {
+						fmt.Println("\t\tHIRES - Opcode 0230 executed. - Clear the display\n")
+					}
+					break
+
+
+				default:
+					if Debug {
+						fmt.Printf("\t\tOpcode 0x%X NOT IMPLEMENTED!!!!\n", Opcode)
+					}
+					os.Exit(0)
 			}
 
 
