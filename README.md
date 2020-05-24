@@ -88,7 +88,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 	`$./chip8 [options] ROM_NAME`
 
 
-# Options:
+### Options:
 
 
    `-Debug`		Enable Debug Mode
