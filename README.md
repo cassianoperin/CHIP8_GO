@@ -82,22 +82,24 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 ## EMULATOR Usage
 
+
 1. Run:
+
 	`$./chip8 [options] ROM_NAME`
 
 
-1.1. Options:
+# Options:
 
 
-`-Debug`	Enable Debug Mode
+   `-Debug`		Enable Debug Mode
 	
-`-DrawFlag`	Enable Draw Graphics on each Drawflag instead @60Hz
+   `-DrawFlag`		Enable Draw Graphics on each Drawflag instead @60Hz
 	
-`-Rewind Mode`	Enable Rewind Mode
+   `-Rewind Mode`	Enable Rewind Mode
 	
-`-SchipHack`	Enable SCHIP DelayTimer hack mode to improve speed
+   `-SchipHack`		Enable SCHIP DelayTimer hack mode to improve speed
 	
-`-help`		Show Command Line Interface options
+   `-help`		Show Command Line Interface options
 
 
 2. Keys
