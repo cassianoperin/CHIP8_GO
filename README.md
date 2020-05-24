@@ -80,21 +80,24 @@ Optional GUI (Graphical user interface) made with fyne.io.
 	`go build -ldflags="-s -w" chip8.go`
 
 
-## Usage
+## EMULATOR Usage
 
 1. Run:
 	`$./chip8 [options] ROM_NAME`
 
+
 1.1. Options:
-	`-Debug`		Enable Debug Mode
 
-	`-DrawFlag`	Enable Draw Graphics on each Drawflag instead @60Hz
 
-	`-Rewind Mode`	Enable Rewind Mode
-
-	`-SchipHack`	Enable SCHIP DelayTimer hack mode to improve speed
-
-	`-help`		Show Command Line Interface options
+`-Debug`	Enable Debug Mode
+	
+`-DrawFlag`	Enable Draw Graphics on each Drawflag instead @60Hz
+	
+`-Rewind Mode`	Enable Rewind Mode
+	
+`-SchipHack`	Enable SCHIP DelayTimer hack mode to improve speed
+	
+`-help`		Show Command Line Interface options
 
 
 2. Keys
@@ -168,7 +171,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	 `go get gopkg.in/ini.v1`
    
-   `go get golang.org/x/image/colornames`
+   	`go get golang.org/x/image/colornames`
 
 * Compile:
 
@@ -190,11 +193,18 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	 `go get gopkg.in/ini.v1`
    
-   `go get golang.org/x/image/colornames`
+ 	  `go get golang.org/x/image/colornames`
 
 * Compile:
 
 	`go build chip8.go`
+
+
+## GUI Usage
+
+1. Open the program, configure emulator ROM paths
+
+2. Restart the program to update the Games Tab
 
 
 ## Documentation
