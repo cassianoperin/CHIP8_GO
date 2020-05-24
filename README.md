@@ -262,10 +262,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 ## Emulator TODO LIST:
 
-1. Turn CPU into a function / core
-2. Reduce binary size and create a new release
-3. When Fullscreen on and off, need to change resolution to stabilize
-4. Center Window
+1. When Fullscreen on and off, need to change resolution to stabilize
+2. Center Window
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games
