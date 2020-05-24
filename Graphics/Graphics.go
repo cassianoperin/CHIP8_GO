@@ -87,7 +87,7 @@ func renderGraphics() {
 	Global.ActiveSetting = &Global.Settings[0]
 
 	//Initialize FPS Text
-	textFPS		= text.New(pixel.V(10, 740), atlas)
+	textFPS	= text.New(pixel.V(10, 470), atlas)
 	//Initialize Messages Text
 	textMessage	= text.New(pixel.V(10, 10) , atlas)
 }
@@ -95,12 +95,16 @@ func renderGraphics() {
 
 func drawGraphics(graphics [128 * 64]byte) {
 
+	//Update FPS Text Position for each resolution
+	textFPS	= text.New(pixel.V(10, float64(Global.ActiveSetting.Mode.Height) - 20), atlas)
+
 	// Background color
 	Global.Win.Clear(colornames.Black)
 	imd := imdraw.New(nil)
 	imd.Color = pixel.RGB(1, 1, 1)
 	textFPS.Color = colornames.Red
 	textMessage.Color = colornames.Red
+
 
 	//Select Color Schema
 	if Global.Color_theme != 0 {
@@ -171,14 +175,14 @@ func drawGraphics(graphics [128 * 64]byte) {
 	if Global.ShowFPS {
 		textFPS.Clear()
 		fmt.Fprintf(textFPS, textFPSstr)
-		textFPS.Draw(Global.Win, pixel.IM.Scaled(textFPS.Orig, 1.5))
+		textFPS.Draw(Global.Win, pixel.IM.Scaled(textFPS.Orig, 1))
 	}
 
 	// Draw messages into the screen
 	if Global.ShowMessage {
 		textMessage.Clear()
 		fmt.Fprintf(textMessage, Global.TextMessageStr)
-		textMessage.Draw(Global.Win, pixel.IM.Scaled(textMessage.Orig, 1.5))
+		textMessage.Draw(Global.Win, pixel.IM.Scaled(textMessage.Orig, 1))
 	}
 
 }
@@ -205,8 +209,12 @@ func Run() {
 
 	//  Print Message if using Draw at DrawFlag
 	if Global.OriginalDrawMode {
-		Global.OriginalDrawMode = true
-		fmt.Println("DrawMode: @DrawFlag")
+		fmt.Println("DrawMode: @DrawFlag\n")
+	}
+
+	//  Print Message if Debug is enabled
+	if CPU.Debug {
+		fmt.Println("Debug: ON\n")
 	}
 
 	// Create a clean memory needed by some games on reset
@@ -374,10 +382,10 @@ func Run() {
 				}
 
 				if CPU.Pause {
-					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz\tCPU Cycles: %d\tDrawFlags: %d\tDrawMode: %s - PAUSE", updateCounter, drawCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, CPU.DrawFlagCounter, Global.DrawModeMessage)
+					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tDrawFlags: %d\t\t\tCPU Speed: %d Hz\tCPU Cycles: %d\n\nDrawMode: %s - PAUSE", updateCounter, drawCounter, CPU.DrawFlagCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, Global.DrawModeMessage)
 
 				} else {
-					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tCPU Speed: %d Hz\tCPU Cycles: %d\tDrawFlags: %d\tDrawMode: %s", updateCounter, drawCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, CPU.DrawFlagCounter, Global.DrawModeMessage)
+					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tDrawFlags: %d\t\t\tCPU Speed: %d Hz\tCPU Cycles: %d\n\nDrawMode: %s", updateCounter, drawCounter, CPU.DrawFlagCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, Global.DrawModeMessage)
 				}
 				// Restart counting
 				drawCounter = 0

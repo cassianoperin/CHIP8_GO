@@ -332,7 +332,9 @@ func Keyboard() {
 									Global.InputDrawFlag = true // Sinalize Graphics to Update the screen
 									Global.Win.Update()
 									// Show messages
-									fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
+									if CPU.Debug {
+										fmt.Printf("\t\tRewind mode - Nothing to rewind (Cycle 0)\n")
+									}
 									Global.TextMessageStr = "Rewind mode - Nothing to rewind (Cycle 0)"
 									Global.ShowMessage = true
 								} else {
@@ -352,13 +354,17 @@ func Keyboard() {
 									// Call a CPU Cycle
 									CPU.Interpreter()
 									// Show messages
-									fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n", CPU.Rewind_index)
+									if CPU.Debug {
+										fmt.Printf("\t\tRewind mode - Rewind_index:= %d\n", CPU.Rewind_index)
+									}
 									Global.TextMessageStr = fmt.Sprintf("Rewind mode - Rewind_index:= %d", CPU.Rewind_index)
 									Global.ShowMessage = true
 								}
 							} else {
 								// Show messages
-								fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
+								if CPU.Debug {
+									fmt.Printf("\t\tRewind mode - END OF TRACK HISTORY!!!\n")
+								}
 								Global.TextMessageStr = fmt.Sprintf("Rewind mode - END OF TRACK HISTORY!!!")
 								Global.ShowMessage = true
 							}
@@ -384,14 +390,18 @@ func Keyboard() {
 								CPU.Rewind_index	-= 1
 								CPU.Interpreter()
 								// Show messages
-								fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
+								if CPU.Debug {
+									fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
+								}
 								Global.TextMessageStr = fmt.Sprintf("Forward mode - Rewind_index := %d", CPU.Rewind_index)
 								Global.ShowMessage = true
 							// Return to real time, forward CPU normally and UPDATE de tracks
 							} else {
 								CPU.Interpreter()
 								// Show messages
-								fmt.Printf("\t\tForward mode - Forward %d cycles\n", forward_count)
+								if CPU.Debug {
+									fmt.Printf("\t\tForward mode - Forward %d cycles\n", forward_count)
+								}
 								forward_count++
 								Global.TextMessageStr = fmt.Sprintf("Forward mode - Forward %d cycles", forward_count)
 								Global.ShowMessage = true

@@ -105,11 +105,6 @@ func Initialize() {
 	SCHIP			= false
 	SCHIP_LORES		= false
 
-	// DEBUG
-	Pause			= false
-	Debug			= false
-	Debug_L2		= false
-
 	// Load CHIP-8 8x5 fontset (Memory address 0-79)
 	for i := 0; i < len(Fontset.Chip8Fontset); i++ {
 		Memory[i] = Fontset.Chip8Fontset[i]
