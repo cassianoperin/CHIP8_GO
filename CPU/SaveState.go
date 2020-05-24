@@ -98,7 +98,7 @@ func SaveStateWrite() {
 		}
 	} else {
 		fmt.Println("Directory creation failed with error: " + err.Error())
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 	data := SaveState{

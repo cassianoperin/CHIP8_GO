@@ -216,7 +216,7 @@ func Keyboard() {
 
 				} else {
 					fmt.Println("ERROR checking Savestate file!")
-					os.Exit(1)
+					os.Exit(0)
 				}
 
 			}
@@ -224,8 +224,8 @@ func Keyboard() {
 			// Change video resolution
 			if index == 6 {
 
-				// If the mode is smaller than the number of resolutions available increment
-				if Global.ResolutionCounter < len(Global.Settings) -1  {
+				// If the mode is smaller than the number of resolutions available increment (-4 to avoid the biggest ones)
+				if Global.ResolutionCounter < len(Global.Settings) -4  {
 					Global.ResolutionCounter ++
 				} else {
 					Global.ResolutionCounter = 0	// reset Global.ResolutionCounter

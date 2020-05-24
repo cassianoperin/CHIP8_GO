@@ -84,7 +84,16 @@ func renderGraphics() {
 		}
 	}
 
-	Global.ActiveSetting = &Global.Settings[0]
+	// Set Initial resolution
+	Global.ActiveSetting = &Global.Settings[3]
+
+	if Global.IsFullScreen {
+		Global.Win.SetMonitor(Global.ActiveSetting.Monitor)
+	} else {
+		Global.Win.SetMonitor(nil)
+	}
+	Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
+
 
 	//Initialize FPS Text
 	textFPS	= text.New(pixel.V(10, 470), atlas)

@@ -17,7 +17,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 * Pause and resume emulation
 * Reset emulation
 * Step Forward CPU Cycles for Debug
-* Step Back (Rewind) CPU Cycles for Debug
+* Step Back (Rewind) CPU Cycles for Debug (Need to be activated on command line with -Rewind)
 * Online Debug mode
 * Increase and Decrease CPU Clock Speed
 * Color Themes
@@ -43,7 +43,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 * Compile:
 
-	`go build chip8.go`
+	`go build -ldflags="-s -w" chip8.go`
 
 2) Windows
 * Install GO (32 bits):
@@ -70,13 +70,25 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 * Compile:
 
-	`go build chip8.go`
+	`go build -ldflags="-s -w" chip8.go`
 
 
 ## Usage
 
 1. Run:
-	`$chip8 ROM_NAME`
+	`$chip8 [options] ROM_NAME`
+
+1.1. Options:
+	`-Debug`		Enable Debug Mode
+
+	`-DrawFlag`	Enable Draw Graphics on each Drawflag instead @60Hz
+
+	`-Rewind Mode`	Enable Rewind Mode
+
+	`-SchipHack`	Enable SCHIP DelayTimer hack mode to improve speed
+
+	`-help`		Show Command Line Interface options
+
 
 2. Keys
 - Original COSMAC Keyboard Layout (CHIP-8):
@@ -180,8 +192,5 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 ## TODO LIST
 
 1. Turn CPU into a function / core
-2. Starting with 640x480 (Mode:0) - Change to 800x600?
-3. Reduce binary size and create a new release
-4. Document GUI and that rewind mode is turned off by default
-5. Understand the speed difference in rewind and forward
-5. When Fullscreen on and off, need to change resolution to stabilize
+2. Reduce binary size and create a new release
+3. When Fullscreen on and off, need to change resolution to stabilize

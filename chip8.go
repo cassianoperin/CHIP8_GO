@@ -50,7 +50,7 @@ func readROM(filename string) {
 	// Don't run with files bigger than 4KB
 	if romsize >= 4096 {
 		fmt.Printf("File bigger than 4KB, invalid ROM.\n")
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 	// Open ROM file, insert all bytes into memory
@@ -76,14 +76,12 @@ func readROM(filename string) {
 func checkArgs() {
 
 	if len(os.Args) < 2 {
-		fmt.Printf("%d\n\n", len(os.Args) )
-
-		fmt.Printf("Usage: %s [options] ROM_FILE\n%s -help for a list of available options\n\n", os.Args[0], os.Args[0] )
+		fmt.Printf("Usage: %s [options] ROM_FILE\n\n%s -help for a list of available options\n\n", os.Args[0], os.Args[0] )
 		os.Exit(0)
 	}
 
 	cliHelp		:= flag.Bool("help", false, "Show this menu")
-	cliSchipHack	:= flag.Bool("SchipHack", false, "Enable SCHIP timer hack mode to improve speed")
+	cliSchipHack	:= flag.Bool("SchipHack", false, "Enable SCHIP DelayTimer hack mode to improve speed")
 	cliDrawFlag	:= flag.Bool("DrawFlag", false, "Enable Draw Graphics on each Drawflag instead @60Hz")
 	cliDebug		:= flag.Bool("Debug", false, "Enable Debug Mode")
 	cliRewind		:= flag.Bool("Rewind", false, "Enable Rewind Mode")
@@ -99,7 +97,7 @@ func checkArgs() {
 	flag.Parse()
 
 	if *cliHelp {
-		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP timer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
+		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP DelayTimer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
 		os.Exit(0)
 	}
 
