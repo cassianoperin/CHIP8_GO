@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"io"
 	"os"
-	"crypto/md5"
+	"fmt"
+	"log"
+	"flag"
 	"runtime"
+	"crypto/md5"
 	"Chip8/CPU"
 	"Chip8/Global"
 	"Chip8/Graphics"
@@ -70,15 +71,43 @@ func readROM(filename string) {
 		CPU.Memory[i+512] = data[i]
 	}
 
-
-
 }
 
 func checkArgs() {
 
-	if len(os.Args) != 2 {
-		fmt.Printf("Usage: %s ROM_FILE\n\n", os.Args[0] )
-		os.Exit(2)
+	if len(os.Args) < 2 {
+		fmt.Printf("%d\n\n", len(os.Args) )
+
+		fmt.Printf("Usage: %s [options] ROM_FILE\n%s -help for a list of available options\n\n", os.Args[0], os.Args[0] )
+		os.Exit(0)
+	}
+
+	cliHelp		:= flag.Bool("help", false, "Show this menu")
+	cliSchipHack	:= flag.Bool("SchipHack", false, "Enable SCHIP timer hack mode to improve speed")
+	cliDrawFlag	:= flag.Bool("DrawFlag", false, "Enable Draw Graphics on each Drawflag instead @60Hz")
+
+	// wordPtr := flag.String("word", "foo", "a string")
+	// numbPtr := flag.Int("numb", 42, "an int")
+	// var svar string
+	// flag.StringVar(&svar, "ROM_FILE", "bar", "ROM_FILE")
+	// fmt.Println("word:", *wordPtr)
+	// fmt.Println("numb:", *numbPtr)
+	// fmt.Println("svar:", svar)
+	// fmt.Println("tail:", flag.Arg(0))
+	flag.Parse()
+
+	if *cliHelp {
+		fmt.Printf("Usage: %s [options] ROM_FILE\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -SchipHack\n    	Enable SCHIP timer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
+		os.Exit(0)
+	}
+
+	if *cliSchipHack {
+		CPU.SCHIP_TimerHack = true
+	}
+
+	if *cliDrawFlag {
+		// Enable Draw at DrawFlag instead of @60Hz
+		Global.OriginalDrawMode = true
 	}
 
 }
@@ -95,21 +124,12 @@ func MaxParallelism() int {
 
 func testFile(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		fmt.Printf("File '%s' not found.\n\n", os.Args[1])
-		os.Exit(2)
+		fmt.Printf("File '%s' not found.\n\n", filename)
+		os.Exit(0)
 	}
 }
 
 func get_game_signature(filename string) {
-
-	// Used to identify games that needs legacy opcodes
-	// Read the first 10 game instructions in memory
-	// signature_size := 10
-	// for i:=0 ; i < signature_size ; i++ {
-	// 	Global.Game_signature += fmt.Sprintf("%X", CPU.Memory[int(CPU.PC)+i])
-	// }
-	// fmt.Printf("Game signature: %s\n", Global.Game_signature)
-
 
 	// Generate Game Signature (MD5)
 	f, err := os.Open(filename)
@@ -134,7 +154,7 @@ func main() {
 	checkArgs()
 
 	// Check if file exist
-	testFile(os.Args[1])
+	testFile(flag.Arg(0))
 
 	// Check the number of CPUS to create threads
 	// fmt.Println("MaxParallelism: ", MaxParallelism())
@@ -147,10 +167,10 @@ func main() {
 	Sound.AudioDaemonStart("Sound/beep.wav")
 
 	// Read ROM into Memory
-	readROM(os.Args[1])
+	readROM(flag.Arg(0))
 
 	// Get game signature
-	get_game_signature(os.Args[1])
+	get_game_signature(flag.Arg(0))
 
 	// Start Window System and draw Graphics
 	pixelgl.Run(Graphics.Run)

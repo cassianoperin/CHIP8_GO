@@ -179,8 +179,7 @@ CHIP-8 / SCHIP Emulator writen in GO with simple code to be easy to be studied a
 
 ## TODO LIST
 
-1. Review keyboard timers, there is a small lag
-2. Create a help menu and command line arguments (SCHIP hack mode, DrawMode, and other options)
-3. Turn CPU into a function / core
-4. Update screensize when change resolution
-5. When Fullscreen set, need to change resolution to stabilize
+1. Turn CPU into a function / core
+2. Update screensize when change resolution
+3. When Fullscreen set, need to change resolution to stabilize
+4. Reduce binary size

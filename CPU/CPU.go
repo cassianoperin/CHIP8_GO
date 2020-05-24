@@ -1,11 +1,11 @@
 package CPU
 
 import (
-	"fmt"
-	"math/rand"
 	"os"
+	"fmt"
 	"time"
 	"strconv"
+	"math/rand"
 	"Chip8/Fontset"
 	"Chip8/Global"
 )
@@ -87,7 +87,7 @@ func Initialize() {
 	CPU_Clock_Speed_Max		= 10000
 	CPU_Clock		= time.NewTicker(time.Second / CPU_Clock_Speed)
 	SCHIP_TimerClockHack	= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
-	KeyboardClock		= time.NewTicker(time.Second / 30)
+	KeyboardClock		= time.NewTicker(time.Second / 60)
 	TimersClock		= time.NewTicker(time.Second / 60)			// Decrease SoundTimer and DelayTimer
 	MessagesClock		= time.NewTicker(time.Second * 5)			// Clock used to display messages on screen
 
@@ -104,7 +104,6 @@ func Initialize() {
 	// SCHIP Specific Variables
 	SCHIP			= false
 	SCHIP_LORES		= false
-	SCHIP_TimerHack		= false
 
 	// DEBUG
 	Pause			= false

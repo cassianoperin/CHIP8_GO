@@ -19,7 +19,7 @@ var (
 	// ----------------------- Graphics Variables ----------------------- //
 	Win			*pixelgl.Window
 	WindowTitle		string = "Chip-8"
-	Color_theme		= 0
+	Color_theme		= 2
 	// Fullscreen / Video Modes
 	Texts			[]*text.Text
 	StaticText		*text.Text

@@ -207,6 +207,12 @@ func Run() {
 		fmt.Printf("SCHIP DelayTimer Clock Hack ENABLED\n")
 	}
 
+	//  Print Message if using Draw at DrawFlag
+	if Global.OriginalDrawMode {
+		Global.OriginalDrawMode = true
+		fmt.Println("DrawMode: @DrawFlag")
+	}
+
 	// Create a clean memory needed by some games on reset
 	CPU.MemoryCleanSnapshot = CPU.Memory
 
