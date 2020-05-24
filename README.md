@@ -183,7 +183,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	`go build -ldflags="-s -w" Chip8GUI.go`
   
-2) Windows (**NOT TESTED YET!!**)
+2) Windows (**NOT WORKING WITH FYNE BETA, WILL BE FIXED ON 1.3 FINAL!**)
 
 * Install GO:
 
