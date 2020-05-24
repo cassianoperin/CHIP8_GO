@@ -254,6 +254,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 [CHIP‐8 Extensions (Github)](https://chip-8.github.io/extensions/)
 
+[Chip8 Hybrids](https://www.ngemu.com/threads/chip8-thread.114578/page-22/)
+
 ### GUI
 
 [Fyne.io](https://fyne.io/)
