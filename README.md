@@ -256,6 +256,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 [Chip8 Hybrids](https://www.ngemu.com/threads/chip8-thread.114578/page-22/)
 
+[MegaChip](https://github.com/gcsmith/gchip/blob/master/docs/megachip10.txt)
+
 ### GUI
 
 [Fyne.io](https://fyne.io/)
@@ -268,6 +270,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 2. Reduce binary size and create a new release
 3. When Fullscreen on and off, need to change resolution to stabilize
 4. Center Window
+5. Emulate CHIP-8X
+6. Emulate MEGA-CHIP
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games
