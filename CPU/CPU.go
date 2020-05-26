@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	KeyArraySize	byte			= 16		// Control the number of Keys mapped in Key Array
+	KeyArraySize	byte		= 16		// Control the number of Keys mapped in Key Array
 	CPU_Clock_increase_rate		= 100	// CPU Clock increase rate
 	CPU_Clock_decrease_rate		= 100	// CPU Clock decrease rate
 )
@@ -40,7 +40,7 @@ var (
 	KeyboardClock		*time.Ticker		// Keyboard Timer to be used with emulator keys
 	CPU_Clock		*time.Ticker		// CPU Clock
 	CPU_Clock_Speed		time.Duration		// Value defined to CPU Clock
-	CPU_Clock_Speed_Max		time.Duration		// Max value of CPU Clock
+	CPU_Clock_Speed_Max	time.Duration		// Max value of CPU Clock
 	SCHIP_TimerClockHack	*time.Ticker		// SCHIP used to decrease DT faster than 60HZ to gain speed
 	MessagesClock		*time.Ticker		// Clock used to display messages on screen
 
@@ -61,7 +61,7 @@ var (
 	// DEBUG
 	Pause			bool			// Pause (Used to Forward and Rewind CPU Cycles)
 	Debug			bool			// DEBUG mode
-	Debug_L2			bool			// DEBUG Rewind Mode
+	Debug_L2		bool			// DEBUG Rewind Mode
 
 )
 
@@ -70,7 +70,11 @@ var (
 func Initialize() {
 	// Components
 	Memory			= [4096]byte{}
-	PC			= 0x200
+	if Global.Hybrid_ETI_660_HW {
+		PC		= 0x600	// start at 0x600 for ETI-600 HW (Hybrid)
+	} else {
+		PC		= 0x200	// start at 0x200 (default CHIP8)
+	}
 	Opcode			= 0
 	Stack			= [16]uint16{}
 	SP			= 0
@@ -84,7 +88,7 @@ func Initialize() {
 	FPS			= time.NewTicker(time.Second / 60)			// FPS Clock
 	FPSCounter		= time.NewTicker(time.Second)				// FPS Counter Clock
 	CPU_Clock_Speed		= 500							// Initial CPU Clock Speed: CHIP-8=500, SCHIP=2000
-	CPU_Clock_Speed_Max		= 10000
+	CPU_Clock_Speed_Max	= 10000
 	CPU_Clock		= time.NewTicker(time.Second / CPU_Clock_Speed)
 	SCHIP_TimerClockHack	= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 	KeyboardClock		= time.NewTicker(time.Second / 60)
@@ -98,8 +102,8 @@ func Initialize() {
 	// Keys
 	Key			= [KeyArraySize]byte{}
 	// Graphics
-	Global.SizeX			= 64
-	Global.SizeY			= 32
+	Global.SizeX		= 64
+	Global.SizeY		= 32
 
 	// SCHIP Specific Variables
 	SCHIP			= false
@@ -305,21 +309,6 @@ func Interpreter() {
 
 	// Read the Opcode from PC and PC+1 bytes
 	Opcode = uint16(Memory[PC])<<8 | uint16(Memory[PC+1])
-
-
-	// HI-RES CHIP8 EMULATION
-	// If PC=0x200 AND Opcode=0x1260, update Opcode to 0x12C0 (Jump to address 0x2c0)
-	// Need to add Opcode 0x0230 to handle the clearscreen event for 64x64 hires
-	if PC == 0x200 && Opcode == 0x1260 {
-
-		if Debug {
-			Show()
-			fmt.Printf("\t\tOpcode 1260 WITH PC=0x200. Init 64x64 Chip8 hires mode. Opcode=0x12C0, jump to address 0x2c0\n\n")
-		}
-		Opcode=0x12C0
-		Cycle++
-	}
-
 
 	// Print Cycle and Debug Information
 	if Debug {
@@ -619,11 +608,27 @@ func Interpreter() {
 		// Jump to location nnn.
 		// The interpreter sets the program counter to nnn.
 		case 0x1000:
-			PC = Opcode & 0x0FFF
-			if Debug {
-				fmt.Printf("\t\tOpcode 1nnn executed: Jump to location 0x%d\n", Opcode & 0x0FFF)
+
+			// HI-RES CHIP8 EMULATION
+			// If PC=0x200 AND Opcode=0x1260, update Opcode to 0x12C0 (Jump to address 0x2c0)
+			// Need to add Opcode 0x0230 to handle the clearscreen event for 64x64 hires
+			if PC == 0x200 && Opcode == 0x1260 {
+				// Execute the operation
+				PC = 0x2C0
+
+				// After show the execution time
+				if Debug {
+					fmt.Printf("\t\tHIRES - Opcode 1260 WITH PC=0x200. Init 64x64 Chip8 hires mode. Opcode=0x12C0, jump to address 0x2c0 -> (PC=0x2c0)\n")
+				}
+				break
+			// Or start the regular code from 0x1nnn
+			} else {
+				PC = Opcode & 0x0FFF
+				if Debug {
+					fmt.Printf("\t\tOpcode 1nnn executed: Jump to location 0x%d\n", Opcode & 0x0FFF)
+				}
+				break
 			}
-			break
 
 
 		// ############################ 0x2000 instruction set ############################

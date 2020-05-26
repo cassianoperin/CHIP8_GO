@@ -270,10 +270,10 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 ## Emulator TODO LIST:
 
-1. Turn CPU into a function / core
-2. Reduce binary size and create a new release
-3. When Fullscreen on and off, need to change resolution to stabilize
-4. Center Window
+1. Turn CPU into a function / core (keep just the instructions, put debug messages and other stuff out of core?)
+2. When Fullscreen on and off, need to change resolution to stabilize
+3. Center Window
+4. Improve debug mode
 5. Emulate CHIP-8X
 6. Emulate MEGA-CHIP
 

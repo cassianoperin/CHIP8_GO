@@ -66,9 +66,13 @@ func readROM(filename string) {
 	//fmt.Printf("%d\n", data)
 	//fmt.Printf("%X\n", data)
 
-	// Load ROM from 0x200 address in memory
+	// Load ROM from 0x200 address in memory, or 0x600 for hybrid hardware ETI-600
 	for i := 0; i < len(data); i++ {
-		CPU.Memory[i+512] = data[i]
+		if Global.Hybrid_ETI_660_HW {
+			CPU.Memory[i+1536] = data[i]	// start at 0x600
+		} else {
+			CPU.Memory[i+512] = data[i]	// start at 0x200
+		}
 	}
 
 }
@@ -80,11 +84,12 @@ func checkArgs() {
 		os.Exit(0)
 	}
 
-	cliHelp		:= flag.Bool("help", false, "Show this menu")
-	cliSchipHack	:= flag.Bool("SchipHack", false, "Enable SCHIP DelayTimer hack mode to improve speed")
-	cliDrawFlag	:= flag.Bool("DrawFlag", false, "Enable Draw Graphics on each Drawflag instead @60Hz")
-	cliDebug		:= flag.Bool("Debug", false, "Enable Debug Mode")
-	cliRewind		:= flag.Bool("Rewind", false, "Enable Rewind Mode")
+	cliHelp			:= flag.Bool("help", false, "Show this menu")
+	cliSchipHack		:= flag.Bool("SchipHack", false, "Enable SCHIP DelayTimer hack mode to improve speed")
+	cliDrawFlag		:= flag.Bool("DrawFlag", false, "Enable Draw Graphics on each Drawflag instead @60Hz")
+	cliDebug			:= flag.Bool("Debug", false, "Enable Debug Mode")
+	cliRewind			:= flag.Bool("Rewind", false, "Enable Rewind Mode")
+	cliHybridETI660	:= flag.Bool("Hybrid-ETI-660", false, "Enable ETI-660 mode for hybrid games made for this hardware")
 
 	// wordPtr := flag.String("word", "foo", "a string")
 	// numbPtr := flag.Int("numb", 42, "an int")
@@ -97,7 +102,7 @@ func checkArgs() {
 	flag.Parse()
 
 	if *cliHelp {
-		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP DelayTimer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
+		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -Hybrid-ETI-660\n    	Enable ETI-660 mode for hybrid games made for this hardware\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP DelayTimer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
 		os.Exit(0)
 	}
 
@@ -116,6 +121,12 @@ func checkArgs() {
 	if *cliDrawFlag {
 		// Enable Draw at DrawFlag instead of @60Hz
 		Global.OriginalDrawMode = true
+	}
+
+	if *cliHybridETI660 {
+		// Enable ETI-660 Hardware mode (hybrid)
+		// Store rom at 0x600 instead of default 0x200
+		Global.Hybrid_ETI_660_HW = true
 	}
 
 }

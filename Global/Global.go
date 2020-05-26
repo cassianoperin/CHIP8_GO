@@ -49,7 +49,10 @@ var (
 	SavestateFolder		string = "Savestates"
 
 	// ------------------------ Sound Variables ------------------------- //
-	SpeakerPlaying		bool	= false
-	SpeakerStopped		bool	= false
+	SpeakerPlaying		bool = false
+	SpeakerStopped		bool = false
+
+	// ---------------------------- Hybrids ----------------------------- //
+	Hybrid_ETI_660_HW	bool = false
 
 )

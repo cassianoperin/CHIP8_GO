@@ -79,6 +79,12 @@
 | X-Mirror | OK | |
 | ZeroPong [zeroZshadow, 2007] | OK | |
 
+## CHIP-8 HI-RES
+| Name  | Status | Description |
+| :------------ |:----------------:| :-----|
+| Astro Dodge Hires [Revival Studios, 2008] | OK | |
+| Hires Worm V4 [RB-Revival Studios, 2007] | OK | |
+
 ## SuperChip / SCHIP
 | Name  | Status | Description |
 | :------------ |:----------------:| :-----|

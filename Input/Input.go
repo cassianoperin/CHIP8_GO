@@ -124,7 +124,11 @@ func Keyboard() {
 
 			// Reset
 			if index == 2 {
-				CPU.PC			= 0x200
+				if Global.Hybrid_ETI_660_HW {
+					CPU.PC		= 0x600	// start at 0x600 for ETI-600 HW (Hybrid)
+				} else {
+					CPU.PC		= 0x200	// start at 0x200 (default CHIP8)
+				}
 				CPU.Stack		= [16]uint16{}
 				CPU.SP			= 0
 				CPU.V			= [16]byte{}

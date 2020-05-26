@@ -17,9 +17,9 @@ import (
 var (
 	// FPS
 	textFPS		*text.Text	// On screen FPS counter
-	textFPSstr			string		// String with the FPS counter
-	drawCounter			= 0			// imd.Draw per second counter
-	updateCounter			= 0			// Win.Updates per second counter
+	textFPSstr	string		// String with the FPS counter
+	drawCounter	= 0		// imd.Draw per second counter
+	updateCounter	= 0		// Win.Updates per second counter
 
 	// Screen messages
 	textMessage	*text.Text	// On screen Message content
@@ -230,6 +230,13 @@ func Run() {
 	if CPU.Debug {
 		fmt.Println("Debug: ON\n")
 	}
+
+	//  Print Message if ETI-600 Hardware Mode is enabled (for hybrids)
+	if Global.Hybrid_ETI_660_HW {
+		fmt.Println("ETI-600 Hybrid hardware mode: ON\n")
+	}
+
+
 
 	// Create a clean memory needed by some games on reset
 	CPU.MemoryCleanSnapshot = CPU.Memory
