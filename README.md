@@ -240,6 +240,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 [Columbia University - Columbia University](http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf)
 
+[Tom Swan Documentation](https://github.com/TomSwan/pips-for-vips)
+
 
 ### Superchip (SCHIP)
 [HP48 Superchip](https://github.com/Chromatophore/HP48-Superchip)
@@ -255,6 +257,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 [CHIP‐8 Extensions (Github)](https://chip-8.github.io/extensions/)
 
 [Chip8 Hybrids](https://www.ngemu.com/threads/chip8-thread.114578/page-22/)
+
+[EMMA02 Opcodes Documentation](https://www.emma02.hobby-site.com/pseudo_chip8.html)
 
 [MegaChip](https://github.com/gcsmith/gchip/blob/master/docs/megachip10.txt)
 
