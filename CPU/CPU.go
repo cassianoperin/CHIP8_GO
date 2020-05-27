@@ -29,6 +29,8 @@ var (
 	DelayTimer		byte			// Delay Timer
 	SoundTimer		byte			// Sound Timer
 	Graphics		[128 * 64]byte		// Graphic Array
+	// ETI-660 HW
+	P			byte			// Pitch (frequency) value of the tone generator (beeper)
 
 	// Key Control
 	Key			[KeyArraySize]byte	// Control the Keys Pressed
@@ -487,63 +489,75 @@ func Interpreter() {
 							fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n")
 						}
 
-						// SCHIP - 00FB
-						// Scroll display 4 pixels right
-						} else if x == 0x000B {
+					// SCHIP - 00FB
+					// Scroll display 4 pixels right
+					} else if x == 0x000B {
 
-							shift := 4	// Number of bytes to be shifted
+						shift := 4	// Number of bytes to be shifted
 
-							// If in SCHIP Low Res mode, shift 2 pixels only
-							if scrollQuirks_00CN_00FB_00FC {
-								shift = 2
+						// If in SCHIP Low Res mode, shift 2 pixels only
+						if scrollQuirks_00CN_00FB_00FC {
+							shift = 2
+						}
+
+						rowsize := int(Global.SizeX)
+						index := 0
+						gfx_len := 0
+
+						// Calculate the values because I'm using the same array
+						if SCHIP {
+							gfx_len = 128 * 64
+							index = (128 * 64) - rowsize
+						} else {
+							gfx_len = 64 * 32
+							index = (64 * 32) - rowsize
+						}
+
+						// Run all the array
+						for i := gfx_len -1  ; i >= 0  ; i-- {
+
+							// Shift values until the last shift bytes for each line
+							if i >=  index + shift {
+								Graphics[i] = Graphics[i - shift]
 							}
 
-							rowsize := int(Global.SizeX)
-							index := 0
-							gfx_len := 0
-
-							// Calculate the values because I'm using the same array
-							if SCHIP {
-								gfx_len = 128 * 64
-								index = (128 * 64) - rowsize
-							} else {
-								gfx_len = 64 * 32
-								index = (64 * 32) - rowsize
-							}
-
-							// Run all the array
-							for i := gfx_len -1  ; i >= 0  ; i-- {
-
-								// Shift values until the last shift bytes for each line
-								if i >=  index + shift {
-									Graphics[i] = Graphics[i - shift]
+							// If find the index, change the last shift(4) bytes to zero and update the index
+							// To process the next line
+							if i == index {
+								//Change the first 4 bytes of each line to zero
+								for j := index + shift - 1; j >= index  ; j-- {
+									Graphics[j] = 0
 								}
-
-								// If find the index, change the last shift(4) bytes to zero and update the index
-								// To process the next line
-								if i == index {
-									//Change the first 4 bytes of each line to zero
-									for j := index + shift - 1; j >= index  ; j-- {
-										Graphics[j] = 0
-									}
-									// Update index to next line
-									index -= int(Global.SizeX)
-								}
+								// Update index to next line
+								index -= int(Global.SizeX)
 							}
+						}
 
-							Global.DrawFlag	= true
-							DrawFlagCounter ++
+						Global.DrawFlag	= true
+						DrawFlagCounter ++
 
-							PC += 2
-							if Debug {
-								fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
-							}
+						PC += 2
+						if Debug {
+							fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
+						}
+
+					// Two-page display for CHIP-8X (Extension of CHIP-8x) 0x0F00
+					// 00F0: Return from subroutine (replaces 00EE)
+					// Also used in some Hybrid ETI-660 programs like "Music Maker"
+					} else if x == 0x0000 {
+						PC = Stack[SP] + 2
+						SP --
+						if Debug {
+							fmt.Printf("\t\tCHIP-8X Two-page display (Extension) - Opcode 00F0 executed. - Return from subroutine (replaces 00EE in CHIP-8x).\n")
+						}
+
 
 					} else {
 						fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n", x)
 						os.Exit(2)
 
 					}
+
 
 				// SCHIP - 00CN
 				// Scroll display N lines down
@@ -1295,6 +1309,19 @@ func Interpreter() {
 				}
 
 				break
+
+			// CHIP-8 ETI-660 Hybrid - Fx00
+			// Set the pitch (frequency) of the tone generator (beeper) to Vx
+			case 0x0000:
+				P = V[x]
+				PC +=2
+
+				// if Debug {
+					fmt.Printf("\t\tHybrid ETI-660 - Opcode Fx00 executed: Set the pitch (frequency) of the tone generator (beeper) to value of V[%d]\t\tP=%d\n", x, V[x])
+				// }
+				break
+
+
 			default:
 				fmt.Printf("\t\tOpcode Family F000 - Not mapped opcode: 0x%X\n", Opcode)
 				os.Exit(2)

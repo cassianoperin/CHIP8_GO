@@ -274,6 +274,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 2. When Fullscreen on and off, need to change resolution to stabilize
 3. Center Window
 4. Improve debug mode
+5. CHIP8 Hybrid ETI-660 - Emulate the pitch (frequency) of beeps
 5. Emulate CHIP-8X
 6. Emulate MEGA-CHIP
 

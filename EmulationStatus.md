@@ -85,6 +85,13 @@
 | Astro Dodge Hires [Revival Studios, 2008] | OK | |
 | Hires Worm V4 [RB-Revival Studios, 2007] | OK | |
 
+## CHIP-8 ETI-660 (Hybrid)
+| Name  | Status | Description |
+| :------------ |:----------------:| :-----|
+| Pong (ETI660 Hybrid) | OK | |
+| Space Invaders (ETI660 Hybrid) [P. Easdown,198x] | NOT OK | Graphical issues |
+| Wipeout (ETI660 hybrid) [W.F. Kreykes, 1982].ch8 | NOT OK | Opcode 00F7 not implemented |
+
 ## SuperChip / SCHIP
 | Name  | Status | Description |
 | :------------ |:----------------:| :-----|
