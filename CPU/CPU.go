@@ -553,7 +553,7 @@ func Interpreter() {
 
 
 					} else {
-						fmt.Printf("\t\tOpcode 00F%X NOT IMPLEMENTED.\n", x)
+						fmt.Printf("\t\tOpcode %04X NOT IMPLEMENTED.\n", Opcode)
 						os.Exit(2)
 
 					}
