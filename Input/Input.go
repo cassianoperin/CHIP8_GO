@@ -124,11 +124,8 @@ func Keyboard() {
 
 			// Reset
 			if index == 2 {
-				if Global.Hybrid_ETI_660_HW {
-					CPU.PC		= 0x600	// start at 0x600 for ETI-600 HW (Hybrid)
-				} else {
-					CPU.PC		= 0x200	// start at 0x200 (default CHIP8)
-				}
+
+				CPU.PC		= 0x200	// start at 0x200 (default CHIP8)
 				CPU.Stack		= [16]uint16{}
 				CPU.SP			= 0
 				CPU.V			= [16]byte{}
@@ -149,6 +146,19 @@ func Keyboard() {
 				Global.SizeY		= 32
 				CPU.CPU_Clock_Speed	= 500
 				CPU.Memory = CPU.MemoryCleanSnapshot
+
+				// If in ETI-660 HW Mode, update some values
+				if Global.Hybrid_ETI_660_HW {
+					CPU.PC		= 0x600		// start at 0x600 for ETI-600 HW (Hybrid)
+					if CPU.ETI660_64x32_screen {		// test if 64x32 quirk is necessary
+						Global.SizeX		= 64
+						Global.SizeY		= 32
+					} else {
+						Global.SizeX		= 64	// Default ETI-660 screen size
+						Global.SizeY		= 48
+					}
+				}
+
 				// Show messages
 				if CPU.Debug {
 					fmt.Printf("\t\tReset\n")

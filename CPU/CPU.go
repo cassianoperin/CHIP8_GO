@@ -107,6 +107,13 @@ func Initialize() {
 	Global.SizeX		= 64
 	Global.SizeY		= 32
 
+	// ETI-660 Graphics
+	// Update screen size if in ETI-660 HW mode
+	if Global.Hybrid_ETI_660_HW {
+		Global.SizeX		= 64
+		Global.SizeY		= 48
+	}
+
 	// SCHIP Specific Variables
 	SCHIP			= false
 	SCHIP_LORES		= false
@@ -384,32 +391,44 @@ func Interpreter() {
 
 					// SCHIP - 00FF
 					// Enable High-Res Mode (128 x 64 resolution)
+					// In ETI-660, 00FF is a NO OP (do nothing)
 				case 0x00F0:
 					if x == 0x000F {
+						// ETI-660 Do Nothing
+						if Global.Hybrid_ETI_660_HW {
+							PC += 2
+							if Debug {
+								fmt.Printf("\t\tHybrid ETI-660 - Opcode 00FF executed: No Operation (do nothing)\tPC+=2\n")
+							}
+							break
+
 						// Enable SCHIP Mode
-						SCHIP = true
-						SCHIP_LORES = false
-						scrollQuirks_00CN_00FB_00FC = false
+						} else {
+							SCHIP = true
+							SCHIP_LORES = false
+							scrollQuirks_00CN_00FB_00FC = false
 
-						// Set the clock to SCHIP
-						CPU_Clock_Speed = 1500
-						CPU_Clock.Stop()
-						CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
+							// Set the clock to SCHIP
+							CPU_Clock_Speed = 1500
+							CPU_Clock.Stop()
+							CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
 
-						// Set SCHIP Resolution
-						Global.SizeX = 128
-						Global.SizeY = 64
+							// Set SCHIP Resolution
+							Global.SizeX = 128
+							Global.SizeY = 64
 
-						if Resize_Quirk_00FE_00FF {
-							// Clear the screen when changing graphic mode
-							Graphics	= [128 * 64]byte{}
+							if Resize_Quirk_00FE_00FF {
+								// Clear the screen when changing graphic mode
+								Graphics	= [128 * 64]byte{}
+							}
+
+							PC += 2
+							if Debug {
+								fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n")
+							}
+							break
 						}
 
-						PC += 2
-						if Debug {
-							fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n")
-						}
-						break
 					// SCHIP - 00FE
 					// Enable Low-Res Mode (64 x 32 resolution)
 					} else if x == 0x000E {
@@ -445,7 +464,21 @@ func Interpreter() {
 
 					// SCHIP - 00FC
 					// Scroll display 4 pixels left
+					// ETI-660 - Turn display off
 					} else if x == 0x000C {
+						// ETI-660 Opcode
+						if Global.Hybrid_ETI_660_HW {
+							PC+=2
+							if Debug {
+								fmt.Printf("\t\tHybrid ETI-660 - Opcode 00FC executed: Turn display off (Do nothing)\t PC+=2\n")
+								fmt.Printf("\n\nPROPOSITAL EXIT TO MAP 00FC USAGE!!!!\n\n")
+								os.Exit(2)
+							}
+
+						// SCHIP Opcode
+						} else {
+
+						}
 
 						shift := 4
 
@@ -541,7 +574,18 @@ func Interpreter() {
 							fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
 						}
 
-					// Two-page display for CHIP-8X (Extension of CHIP-8x) 0x0F00
+					// ETI-660 0x00F8
+					// Turn display on
+					} else if x == 0x0008 {
+						PC += 2
+						if Debug {
+							fmt.Printf("\t\tHybrid ETI-660 - Opcode 00F8 executed: Turn display on (Do nothing)\t PC+=2\n")
+							fmt.Printf("\n\nPROPOSITAL EXIT TO MAP 00F8 USAGE!!!!\n\n")
+							os.Exit(2)
+						}
+
+
+					// Two-page display for CHIP-8X (Extension of CHIP-8x) 0x00F0
 					// 00F0: Return from subroutine (replaces 00EE)
 					// Also used in some Hybrid ETI-660 programs like "Music Maker"
 					} else if x == 0x0000 {
@@ -555,7 +599,6 @@ func Interpreter() {
 					} else {
 						fmt.Printf("\t\tOpcode %04X NOT IMPLEMENTED.\n", Opcode)
 						os.Exit(2)
-
 					}
 
 
@@ -608,10 +651,19 @@ func Interpreter() {
 					}
 					break
 
+				// ETI-660 - 0x0000
+				// Return to monitor (exit interpreter)
+				case 0x0000:
+					if Debug {
+						fmt.Printf("\t\tHybrid ETI-660 - Opcode 0000 executed: Return to monitor (exit interpreter)\n")
+					}
+					break
+					// os.Exit(0)
+
 
 				default:
 					if Debug {
-						fmt.Printf("\t\tOpcode 0x%X NOT IMPLEMENTED!!!!\n", Opcode)
+						fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
 					}
 					os.Exit(0)
 			}
@@ -1313,12 +1365,12 @@ func Interpreter() {
 			// CHIP-8 ETI-660 Hybrid - Fx00
 			// Set the pitch (frequency) of the tone generator (beeper) to Vx
 			case 0x0000:
-				P = V[x]
+				P = V[x]	// NOT USED YET!!! Need to implement sound library to handle it
 				PC +=2
 
-				// if Debug {
+				if Debug {
 					fmt.Printf("\t\tHybrid ETI-660 - Opcode Fx00 executed: Set the pitch (frequency) of the tone generator (beeper) to value of V[%d]\t\tP=%d\n", x, V[x])
-				// }
+				}
 				break
 
 

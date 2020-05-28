@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Rewind_buffer	uint16 = 100	 // Rewind Buffer Size
+	Rewind_buffer	uint16 = 1000	 // Rewind Buffer Size
 )
 
 var (

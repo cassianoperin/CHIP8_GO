@@ -14,6 +14,7 @@ var (
 	Resize_Quirk_00FE_00FF		bool	= true		// Resize_Quirk_00FE_00FF - Clears the screen - Must be set to True always
 	DXY0_loresWideSpriteQuirks	bool	= false		// DXY0_loresWideSpriteQuirks - Draws a 16x16 sprite even in low-resolution (64x32) mode, row-major
 	scrollQuirks_00CN_00FB_00FC	bool	= false		// Shift only 2 lines
+	ETI660_64x32_screen			bool = false		// Enable screen adjustment to 64x32 instead of default 64x48 ETI-660 HW
 )
 
 
@@ -59,5 +60,15 @@ func Handle_legacy_opcodes() {
 		DXY0_loresWideSpriteQuirks = true
 		fmt.Printf("DXY0 SCHIP Low Res 16x16 Pixel fix enabled.\n")
 	}
+
+	// This game uses 64x32 screen size
+	// CHIP-8 ETI-660 Hybrid: "Pong"
+	if (Global.Game_signature == "8e835a8da5e7d713819d7d70279cf998") {
+		ETI660_64x32_screen = true
+		fmt.Printf("ETI-660 Quirk 64 x 32 resolution Enabled.\n")
+		Global.SizeX = 64
+		Global.SizeY = 32
+	}
+
 
 }

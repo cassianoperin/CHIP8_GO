@@ -88,8 +88,8 @@
 ## CHIP-8 ETI-660 (Hybrid)
 | Name  | Status | Description |
 | :------------ |:----------------:| :-----|
-| Pong (ETI660 Hybrid) | OK | Missing beep frequencies |
-| Space Invaders (ETI660 Hybrid) [P. Easdown,198x] | NOT OK | Missing beep frequencies and has Graphical issues |
+| Pong (ETI660 Hybrid) | OK | |
+| Space Invaders (ETI660 Hybrid) [P. Easdown,198x] | NOT OK | Missing beep frequencies and Collision Detection not working |
 
 ## SuperChip / SCHIP
 | Name  | Status | Description |

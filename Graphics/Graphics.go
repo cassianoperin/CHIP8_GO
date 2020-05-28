@@ -200,16 +200,28 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 func Run() {
 
+	// ----------------------- Pre Loop Stuff -----------------------//
+
 	// Set up render system
 	renderGraphics()
 
 	// Disable on screen Mouse Cursor
 	Global.Win.SetCursorVisible(false)
 
+	// Create a clean memory needed by some games on reset
+	CPU.MemoryCleanSnapshot = CPU.Memory
+
+	// Identify special games that needs legacy opcodes
+	CPU.Handle_legacy_opcodes()
+
+	// Remap keys to a better experience
+	Input.Remap_keys()
+
 	// Print initial resolution
-	// if debug {
-		fmt.Printf("Resolution mode[%d]: %dx%d @ %dHz\n",Global.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
-	// }
+	fmt.Printf("Resolution mode[%d]: %dx%d @ %dHz\n",Global.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
+
+
+	// ------------------------- CLI Messages -------------------------//
 
 	// Print Message if using SCHIP Hack
 	if CPU.SCHIP_TimerHack {
@@ -237,19 +249,7 @@ func Run() {
 	}
 
 
-
-	// Create a clean memory needed by some games on reset
-	CPU.MemoryCleanSnapshot = CPU.Memory
-
-	// Identify special games that needs legacy opcodes
-	CPU.Handle_legacy_opcodes()
-
-	// Remap keys to a better experience
-	Input.Remap_keys()
-
-
-
-	// Main Infinite Loop
+	// --------------------- Main Infinite Loop ---------------------//
 	for !Global.Win.Closed() {
 
 		// Esc to quit program

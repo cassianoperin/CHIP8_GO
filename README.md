@@ -242,8 +242,6 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 [Tom Swan Documentation](https://github.com/TomSwan/pips-for-vips)
 
-[Viper Newsletter](http://mattmik.com/retro.html)
-
 
 ### Superchip (SCHIP)
 [HP48 Superchip](https://github.com/Chromatophore/HP48-Superchip)

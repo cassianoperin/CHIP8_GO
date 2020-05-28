@@ -126,6 +126,7 @@ func checkArgs() {
 	if *cliHybridETI660 {
 		// Enable ETI-660 Hardware mode (hybrid)
 		// Store rom at 0x600 instead of default 0x200
+		// The ETI 660 had 64 x 48 OR 64 x 64 with a modification
 		Global.Hybrid_ETI_660_HW = true
 	}
 
