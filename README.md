@@ -275,8 +275,12 @@ Optional GUI (Graphical user interface) made with fyne.io.
 3. Center Window
 4. Improve debug mode
 5. CHIP8 Hybrid ETI-660 - Emulate the pitch (frequency) of beeps
-5. Emulate CHIP-8X
-6. Emulate MEGA-CHIP
+6. Migrate Draw functions to use bitwise operations
+7. Migrate ETI-660 opcodes to a new core
+8. Migrate CHIP-8 HIRES opcodes to a new core
+9. Implement automatic detection draw mode (if Draw > 60 use @60hz, otherwise just draw on drawflag)
+10. Emulate CHIP-8X
+11. Emulate MEGA-CHIP
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games

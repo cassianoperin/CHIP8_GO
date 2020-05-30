@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 	"strconv"
-	"math/rand"
 	"Chip8/Fontset"
 	"Chip8/Global"
 )
@@ -75,7 +74,7 @@ func Initialize() {
 	if Global.Hybrid_ETI_660_HW {
 		PC		= 0x600	// start at 0x600 for ETI-600 HW (Hybrid)
 	} else {
-		PC		= 0x200	// start at 0x200 (default CHIP8)
+		PC		= 0x200	// start at 0x200 (default CHIP-8)
 	}
 	Opcode			= 0
 	Stack			= [16]uint16{}
@@ -294,7 +293,7 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 				continue
 			}
 
-			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
+			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (collision)
 			if (bit_binary  == 1){
 				// Set colision case graphics[index] is already 1
 				if (Graphics[gfx_index] == 1){
@@ -335,7 +334,7 @@ func Interpreter() {
 	// Map Opcode Family
 	switch Opcode & 0xF000 {
 
-		// ############################ 0x0000 instruction set ############################
+		// ---------------------------- CHIP-8 0xxx instruction set ---------------------------- //
 		case 0x0000: //0NNN
 
 			x := Opcode & 0x000F
@@ -343,55 +342,26 @@ func Interpreter() {
 			switch Opcode & 0x00F0 {
 
 				case 0x00E0:
-					// 00E0 - CLS
-					// Clear the display.
+
+					// 00E0 (CHIP-8)
 					if x == 0x0000 {
-						// Clear display
-						Graphics = [128 * 64]byte{}
-						PC += 2
-						if Debug {
-							fmt.Println("\t\tOpcode 00E0 executed. - Clear the display\n")
-						}
+						opc_chip8_00E0()
 						break
 					}
 
-					// 00EE - RET
-					// Return from a subroutine
-					// The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
-					// MUST MOVE TO NEXT ADDRESS AFTER THIS (PC+=2)
+					// 00EE (CHIP-8)
 					if x == 0x000E {
-						PC = Stack[SP] + 2
-						SP --
-						if Debug {
-							fmt.Printf("\t\tOpcode 00EE executed. - Return from a subroutine (PC=%d)\n", PC)
-						}
+						opc_chip8_00EE()
 						break
 					}
 
-				// 02D8
-				// NON DOCUMENTED OPCODED, USED BY DEMO CLOCK Program
-				// LDA 02, I // Load from memory at address I into V[00] to V[02]
+				// 02D8 (CHIP-8 NON DOCUMENTED)
 				case 0x00D0:
-					x := (Opcode & 0x0F00) >> 8
-
-					if x != 2 {
-						//Map if this opcode can receive a different value here
-						os.Exit(2)
-					}
-
-					V[0] = byte(I)
-					V[1] = byte(I) + 1
-					V[2] = byte(I) + 2
-
-					PC += 2
-					if Debug {
-						fmt.Printf("\t\tOpcode 02DB executed (NON DOCUMENTED). - Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.\n", I, I , I+1, I+2)
-					}
+					opc_chip8_ND_02D8()
 					break
 
-					// SCHIP - 00FF
-					// Enable High-Res Mode (128 x 64 resolution)
-					// In ETI-660, 00FF is a NO OP (do nothing)
+					// 00FF (SCHIP)
+					// 00FF - In ETI-660, 00FF is a NO OP (do nothing)
 				case 0x00F0:
 					if x == 0x000F {
 						// ETI-660 Do Nothing
@@ -404,67 +374,20 @@ func Interpreter() {
 
 						// Enable SCHIP Mode
 						} else {
-							SCHIP = true
-							SCHIP_LORES = false
-							scrollQuirks_00CN_00FB_00FC = false
-
-							// Set the clock to SCHIP
-							CPU_Clock_Speed = 1500
-							CPU_Clock.Stop()
-							CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
-
-							// Set SCHIP Resolution
-							Global.SizeX = 128
-							Global.SizeY = 64
-
-							if Resize_Quirk_00FE_00FF {
-								// Clear the screen when changing graphic mode
-								Graphics	= [128 * 64]byte{}
-							}
-
-							PC += 2
-							if Debug {
-								fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n")
-							}
+							opc_schip_00FF()
 							break
 						}
 
-					// SCHIP - 00FE
-					// Enable Low-Res Mode (64 x 32 resolution)
+					// 00FE (SCHIP)
 					} else if x == 0x000E {
-						// Disable SCHIP Mode
-						SCHIP = false
-						SCHIP_LORES = true
-						scrollQuirks_00CN_00FB_00FC = true
+						opc_schip_00FE()
 
-						// Set the clock to CHIP-8 Speed
-						CPU_Clock_Speed = 500
-						CPU_Clock.Stop()
-						CPU_Clock = time.NewTicker(time.Second / CPU_Clock_Speed)
-
-						// Set CHIP-8 Resolution
-						Global.SizeX = 64
-						Global.SizeY = 32
-
-						if Resize_Quirk_00FE_00FF {
-							// Clear the screen when changing graphic mode
-							Graphics	= [128 * 64]byte{}
-						}
-
-						PC += 2
-						if Debug {
-							fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n")
-						}
-
-					// SCHIP - 00FD
-					// Exit Emulator
+					// 00FD (SCHIP)
 					} else if x == 0x000D {
-						fmt.Printf("SCHIP - Opcode 00FD executed. - Exit emulator.\n")
-						os.Exit(0)
+						opc_schip_00FD()
 
-					// SCHIP - 00FC
-					// Scroll display 4 pixels left
-					// ETI-660 - Turn display off
+					// 00FC (SCHIP)
+					// 00FC (ETI-660) - Turn display off
 					} else if x == 0x000C {
 						// ETI-660 Opcode
 						if Global.Hybrid_ETI_660_HW {
@@ -477,102 +400,13 @@ func Interpreter() {
 
 						// SCHIP Opcode
 						} else {
-
+							opc_schip_00FC()
 						}
 
-						shift := 4
-
-						// If in SCHIP Low Res mode, shift 2 pixels only
-						if scrollQuirks_00CN_00FB_00FC {
-							shift = 2
-						}
-
-						rowsize := int(Global.SizeX)
-
-						gfx_len := 0
-						if SCHIP {
-							gfx_len = (128 * 64)
-						} else {
-							gfx_len = (64 * 32)
-						}
-
-						// Run all the array
-						for i := 0 ; i < gfx_len ; i++ {
-
-							// Shift values until the last shift(4) bytes for each line
-							if i < rowsize - shift{
-								Graphics[i] = Graphics[i+shift]
-							}
-
-							if i == rowsize -1 {
-								//Change the last 4 bytes of each line to zero
-								for i := rowsize - shift ; i < rowsize ; i++ {
-									Graphics[i] = 0
-								}
-								// Update index to next line
-								rowsize += int(Global.SizeX)
-							}
-						}
-
-						Global.DrawFlag	= true
-						DrawFlagCounter ++
-
-						PC += 2
-						if Debug {
-							fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n")
-						}
-
-					// SCHIP - 00FB
-					// Scroll display 4 pixels right
+					// 00FB (SCHIP)
 					} else if x == 0x000B {
+						opc_schip_00FB()
 
-						shift := 4	// Number of bytes to be shifted
-
-						// If in SCHIP Low Res mode, shift 2 pixels only
-						if scrollQuirks_00CN_00FB_00FC {
-							shift = 2
-						}
-
-						rowsize := int(Global.SizeX)
-						index := 0
-						gfx_len := 0
-
-						// Calculate the values because I'm using the same array
-						if SCHIP {
-							gfx_len = 128 * 64
-							index = (128 * 64) - rowsize
-						} else {
-							gfx_len = 64 * 32
-							index = (64 * 32) - rowsize
-						}
-
-						// Run all the array
-						for i := gfx_len -1  ; i >= 0  ; i-- {
-
-							// Shift values until the last shift bytes for each line
-							if i >=  index + shift {
-								Graphics[i] = Graphics[i - shift]
-							}
-
-							// If find the index, change the last shift(4) bytes to zero and update the index
-							// To process the next line
-							if i == index {
-								//Change the first 4 bytes of each line to zero
-								for j := index + shift - 1; j >= index  ; j-- {
-									Graphics[j] = 0
-								}
-								// Update index to next line
-								index -= int(Global.SizeX)
-							}
-						}
-
-						Global.DrawFlag	= true
-						DrawFlagCounter ++
-
-						PC += 2
-						if Debug {
-							fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
-						}
 
 					// ETI-660 0x00F8
 					// Turn display on
@@ -602,46 +436,19 @@ func Interpreter() {
 					}
 
 
-				// SCHIP - 00CN
-				// Scroll display N lines down
+				// 00CN (SCHIP)
 				case 0x00C0:
-					SCHIP = true
-
-					shift := int(x) * 128
-
-					// If in SCHIP Low Res mode, scroll N/2 lines only
-					if scrollQuirks_00CN_00FB_00FC {
-						shift = (int(x) * 128 ) / 2
-					}
-
-					// Shift Right N lines on Graphics Array
-					for i:=len(Graphics) -1 ; i >= shift ; i-- {
-						Graphics[i] = Graphics[i - shift]
-					}
-
-					// Clean the shifted display bytes
-					for i:=0 ; i < shift ; i++ {
-						Graphics[i] = 0
-					}
-
-					Global.DrawFlag	= true
-					DrawFlagCounter ++
-
-					PC += 2
-					if Debug {
-						fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - Scroll display %d lines down.\n", int(x))
-					}
-
+					opc_schip_00CN(x)
 					break
 
-				// CHIP8 HIRES - 0230
+				// CHIP-8 HIRES - 0230
 				// Clear screen used by Hi Resolution Chip8
 				case 0x0030:
 
 					// Clear display
 					Graphics = [128 * 64]byte{}
 
-					// Set CHIP8 HIRES Resolution
+					// Set CHIP-8 HIRES Resolution
 					Global.SizeX = 64
 					Global.SizeY = 64
 
@@ -658,8 +465,6 @@ func Interpreter() {
 						fmt.Printf("\t\tHybrid ETI-660 - Opcode 0000 executed: Return to monitor (exit interpreter)\n")
 					}
 					break
-					// os.Exit(0)
-
 
 				default:
 					if Debug {
@@ -669,13 +474,11 @@ func Interpreter() {
 			}
 
 
-		// ############################ 0x1000 instruction set ############################
-		// 1nnn - JP addr
-		// Jump to location nnn.
-		// The interpreter sets the program counter to nnn.
+		// ---------------------------- CHIP-8 1xxx instruction set ---------------------------- //
+		// 1nnn (CHIP-8)
 		case 0x1000:
 
-			// HI-RES CHIP8 EMULATION
+			// HI-RES CHIP-8 EMULATION
 			// If PC=0x200 AND Opcode=0x1260, update Opcode to 0x12C0 (Jump to address 0x2c0)
 			// Need to add Opcode 0x0230 to handle the clearscreen event for 64x64 hires
 			if PC == 0x200 && Opcode == 0x1260 {
@@ -687,345 +490,137 @@ func Interpreter() {
 					fmt.Printf("\t\tHIRES - Opcode 1260 WITH PC=0x200. Init 64x64 Chip8 hires mode. Opcode=0x12C0, jump to address 0x2c0 -> (PC=0x2c0)\n")
 				}
 				break
-			// Or start the regular code from 0x1nnn
+
+			// Or start the regular code from 1nnn
 			} else {
-				PC = Opcode & 0x0FFF
-				if Debug {
-					fmt.Printf("\t\tOpcode 1nnn executed: Jump to location 0x%d\n", Opcode & 0x0FFF)
-				}
+				opc_chip8_1NNN()
 				break
 			}
 
 
-		// ############################ 0x2000 instruction set ############################
-		// 2nnn - CALL addr
-		// Call subroutine at nnn.
-		// The interpreter increments the stack pointer, then puts the current PC on the top of the stack. The PC is then set to nnn.
+		// ---------------------------- CHIP-8 2xxx instruction set ---------------------------- //
+		// 2nnn (CHIP-8)
 		case 0x2000:
-			SP++
-			Stack[SP] = PC
-			PC = Opcode & 0x0FFF
-			if Debug {
-				fmt.Printf("\t\tOpcode 2nnn executed: Call Subroutine at 0x%d\n", PC)
-			}
+			opc_chip8_2NNN()
 			break
 
-		// ############################ 0x3000 instruction set ############################
-		// 3xkk - SE Vx, byte
-		// Skip next instruction if Vx = kk.
-		// The interpreter compares register Vx to kk, and if they are equal, increments the program counter by 2.
+		// ---------------------------- CHIP-8 3xxx instruction set ---------------------------- //
+		// 3xnn (CHIP-8)
 		case 0x3000:
-			x := (Opcode & 0x0F00) >> 8
-			kk := byte(Opcode & 0x00FF)
-			if V[x] == kk {
-				PC += 4
-				if Debug {
-					fmt.Printf("\t\tOpcode 3xk executed: V[x(%d)]:(%d) = kk(%d), skip one instruction.\n", x, V[x], kk)
-				}
-			} else {
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 3xk executed: V[x(%d)]:(%d) != kk(%d), do NOT skip one instruction.\n", x, V[x], kk)
-				}
-			}
+			opc_chip8_3XNN()
 			break
 
-
-		// ############################ 0x4000 instruction set ############################
-		// 4xkk - SNE Vx, byte
-		// Skip next instruction if Vx != kk.
-		// The interpreter compares register Vx to kk, and if they are not equal, increments the program counter by 2.
+		// ---------------------------- CHIP-8 4xxx instruction set ---------------------------- //
+		// 4xnn (CHIP-8)
 		case 0x4000:
-			x := (Opcode & 0x0F00) >> 8
-			kk := byte(Opcode & 0x00FF)
-			if V[x] != kk {
-				PC += 4
-				if Debug {
-					fmt.Printf("\t\tOpcode 4xkk executed: V[x(%d)]:%d != kk(%d), skip one instruction\n", x, V[x], kk)
-				}
-			} else {
-				if Debug {
-					fmt.Printf("\t\tOpcode 4xkk executed: V[x(%d)]:%d = kk(%d), NOT skip one instruction\n", x, V[x], kk)
-				}
-				PC += 2
-			}
+			opc_chip8_4XNN()
 			break
 
-
-		// ############################ 0x5000 instruction set ############################
-		// 5xy0 - SE Vx, Vy
-		// Skip next instruction if Vx = Vy.
-		// The interpreter compares register Vx to register Vy, and if they are equal, increments the program counter by 2.
+		// ---------------------------- CHIP-8 5xxx instruction set ---------------------------- //
+		// 5xy0 (CHIP-8)
 		case 0x5000:
-			x := (Opcode & 0x0F00) >> 8
-			y := (Opcode & 0x00F0) >> 4
-
-			if (V[x] == V[y]){
-				PC += 4
-				if Debug {
-					fmt.Printf("\t\tOpcode 5xy0 executed: V[x(%d)]:%d EQUAL V[y(%d)]:%d, SKIP one instruction\n", x, V[x], y, V[y])
-				}
-			} else {
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 5xy0 executed: V[x(%d)]:%d NOT EQUAL V[y(%d)]:%d, DO NOT SKIP one instruction\n", x, V[x], y, V[y])
-				}
-			}
+			opc_chip8_5XY0()
 			break
 
-
-		// ############################ 0x6000 instruction set ############################
-		// 6xkk - LD Vx, byte
-		// Set Vx = kk.
-		// The interpreter puts the value kk into register Vx.
+		// ---------------------------- CHIP-8 6xxx instruction set ---------------------------- //
+		// 6xnn (CHIP-8)
 		case 0x6000:
-			x := (Opcode & 0x0F00) >> 8
-			kk := byte(Opcode)
-
-			V[x] = kk
-			PC += 2
-			if Debug {
-				fmt.Printf("\t\tOpcode 6xkk executed: Set V[x(%d)] = %d\n", x, kk)
-			}
+			opc_chip8_6XNN()
 			break
 
-
-		// ############################ 0x7000 instruction set ############################
-		// 7xkk - ADD Vx, byte
-		// Set Vx = Vx + kk.
-		// Adds the value kk to the value of register Vx, then stores the result in Vx.
+		// ---------------------------- CHIP-8 7xxx instruction set ---------------------------- //
+		// 7xnn (CHIP-8)
 		case 0x7000:
-			x := (Opcode & 0x0F00) >> 8
-			kk := byte(Opcode)
-
-			V[x] += kk
-
-			PC += 2
-			if Debug {
-				fmt.Printf("\t\tOpcode 7xkk executed: Add the value kk(%d) to V[x(%d)]\n", kk, x)
-			}
+			opc_chip8_7XNN()
 			break
 
-
-		//############################ 0x8000 instruction set ############################
+		// ---------------------------- CHIP-8 8xxx instruction set ---------------------------- //
 		// 0x8000 instruction set
 		case 0x8000:
 			x := (Opcode & 0x0F00) >> 8
 			y := (Opcode & 0x00F0) >> 4
+
 			switch Opcode & 0x000F {
 
-			// 8xy0 - LD Vx, Vy
-			// Set Vx = Vy.
-			// Stores the value of register Vy in register Vx.
+			// 8xy0 (CHIP-8)
 			case 0x0000:
-				V[x] = V[y]
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xy0 executed: Set V[x(%d)] = V[y(%d)]:%d\n", x, y, V[y])
-				}
+				opc_chip8_8XY0(x, y)
 				break
 
-			// Set Vx = Vx OR Vy.
-			// Performs a bitwise OR on the values of Vx and Vy, then stores the result in Vx. A bitwise OR compares the corrseponding bits from two values,
-			// and if either bit is 1, then the same bit in the result is also 1. Otherwise, it is 0.
+			// 8xy1 (CHIP-8)
 			case 0x0001:
-				V[x] |= V[y]
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xy1 executed: Set V[x(%d)]:%d OR V[y(%d)]:%d\n", x, V[x], y, V[y])
-				}
+				opc_chip8_8XY1(x, y)
 				break
 
-			// 8xy2 - AND Vx, Vy
-			// Set Vx = Vx AND Vy.
-			// Performs a bitwise AND on the values of Vx and Vy, then stores the result in Vx. A bitwise AND compares the corrseponding bits from two values, and if both bits are 1, then the same bit in the result is also 1. Otherwise, it is 0.
+			// 8xy2 (CHIP-8)
 			case 0x0002:
-				V[x] &= V[y]
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xy2 executed: Set V[x(%d)] = V[x(%d)] AND V[y(%d)]\n", x, x, y)
-				}
+				opc_chip8_8XY2(x, y)
 				break
 
-			// 8xy3 - XOR Vx, Vy
-			// Set Vx = Vx XOR Vy.
-			// Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx. An exclusive OR compares the corrseponding bits from two values,
-			// and if the bits are not both the same, then the corresponding bit in the result is set to 1. Otherwise, it is 0.
+			// 8xy3 (CHIP-8)
 			case 0x0003:
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xy3 executed:  V[x(%d)]:%d XOR V[y(%d)]:%d \n", x, V[x], y, V[y])
-				}
-				V[x] ^= V[y]
-				PC += 2
+				opc_chip8_8XY3(x, y)
 				break
 
-			// 8xy4 - ADD Vx, Vy
-			// Set Vx = Vx + Vy, set VF = carry.
-			// The values of Vx and Vy are added together. If the result is greater than 8 bits (i.e., > 255,) VF is set to 1, otherwise 0.
-			// Only the lowest 8 bits of the result are kept, and stored in Vx.
+			// 8xy4 (CHIP-8)
 			case 0x0004:
-				if ( V[x] + V[y] < V[x]) {
-					V[0xF] = 1
-				} else {
-					V[0xF] = 0
-				}
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xy4 executed: Set V[x(%d)] = V[x(%d)] + V[y(%d)]\n", x, x, y)
-				}
-				// Old implementation, sum values, READ THE DOCS IN CASE OF PROBLEMS
-				V[x] += V[y]
-
-				PC += 2
+				opc_chip8_8XY4(x, y)
 				break
 
-
-			// 8xy5 - SUB Vx, Vy
-			// Set Vx = Vx - Vy, set VF = NOT borrow.
-			// If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+			// 8xy5 (CHIP-8)
 			case 0x0005:
-				if V[x] >= V[y] {
-					V[0xF] = 1
-				} else {
-					V[0xF] = 0
-				}
-
-				V[x] -= V[y]
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xy5 executed: Set V[x(%d)] = V[x(%d)]:%d - V[y(%d)]:%d\n", x, x, V[x], y, V[y])
-				}
+				opc_chip8_8XY5(x, y)
 				break
 
-
-			// 8xy6 - SHR Vx {, Vy}
-			// Set Vx = Vx SHR 1.
-			// If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2 (SHR).
+			// 8xy6 (CHIP-8)
 			case 0x0006:
-				V[0xF] = V[x] & 0x01
-
-				if Legacy_8xy6_8xyE {
-					V[x] = V[y] >> 1
-				} else {
-					V[x] = V[x] >> 1
-				}
-
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xy6 executed: Set V[x(%d)]:%d SHIFT RIGHT 1\n", x, V[x])
-				}
-				// Original Chip8 INCREMENT I in this instruction ###
+				opc_chip8_8XY6(x, y)
 				break
 
 
-			// 8xy7 - SUBN Vx, Vy
-			// Set Vx = Vy - Vx, set VF = NOT borrow.
-			// If Vy > Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
+			// 8xy7 (CHIP-8)
 			case 0x0007:
-				if V[x] > V[y] {
-					V[0xF] = 0
-				} else {
-					V[0xF] = 1
-				}
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xy7 executed: Set V[x(%d)]:%d = V[y(%d)]:%d - V[x(%d)]:%d\t\t = %d \n", x, V[x], y, V[y], x, V[x], V[y] - V[x])
-				}
-				V[x] = V[y] - V[x]
-
-				PC += 2
+				opc_chip8_8XY7(x, y)
 				break
 
-
-			// 8xyE - SHL Vx {, Vy}
-			// Set Vx = Vx SHL 1.
-			// If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
+			// 8xyE (CHIP-8)
 			case 0x000E:
-				V[0xF] = V[x] >> 7 // Set V[F] to the Most Important Bit
-
-				if Legacy_8xy6_8xyE {
-					V[x] = V[y] << 1
-				} else {
-					V[x] = V[x] << 1
-				}
-
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 8xyE executed: Set V[x(%d)]:%d SHIFT LEFT 1\n", x, V[x])
-				}
+				opc_chip8_8XYE(x, y)
 				break
 
 			default:
 				if Debug {
 					fmt.Printf("\t\tOpcode 0x8000 NOT IMPLEMENTED!!!!\n")
 				}
-				os.Exit(2)
+				os.Exit(0)
 			}
 
-
-		// ############################ 0x9000 instruction set ############################
-		// 9xy0 - SNE Vx, Vy
-		// Skip next instruction if Vx != Vy.
-		// The values of Vx and Vy are compared, and if they are not equal, the program counter is increased by 2.
+		// ---------------------------- CHIP-8 9xxx instruction set ---------------------------- //
+		// 9xy0 (CHIP-8)
 		case 0x9000:
-			x := (Opcode & 0x0F00) >> 8
-			y := (Opcode & 0x00F0) >> 4
-
-			if ( V[x] != V[y] ) {
-				PC += 4
-				if Debug {
-					fmt.Printf("\t\tOpcode 9xy0 executed: V[x(%d)]:%d != V[y(%d)]:%d, SKIP one instruction\n", x, V[x], y, V[y])
-				}
-			} else {
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode 9xy0 executed: V[x(%d)]:%d = V[y(%d)]:%d, DO NOT SKIP one instruction\n", x, V[x], y, V[y])
-				}
-			}
+			opc_chip8_9XY0()
 			break
 
-		// ############################ 0xA000 instruction set ############################
-		// Annn - LD I, addr
-		// Set I = nnn.
-		// The value of register I is set to nnn.
+		// ---------------------------- CHIP-8 Axxx instruction set ---------------------------- //
+		// Annn (CHIP-8)
 		case 0xA000:
-			I = Opcode & 0x0FFF
-			PC += 2
-			if Debug {
-				fmt.Printf("\t\tOpcode Annn executed: Set I = %d\n", I)
-			}
+			opc_chip8_ANNN()
 			break
 
-
-		// ############################ 0xB000 instruction set ############################
-		// Bnnn - JP V0, addr
-		// Jump to location nnn + V0.
-		// The program counter is set to nnn plus the value of V0.
+		// ---------------------------- CHIP-8 Bxxx instruction set ---------------------------- //
+		// Bnnn (CHIP-8)
 		case 0xB000:
-
-			nnn := Opcode & 0x0FFF
-			PC = nnn + uint16(V[0])
-			if Debug {
-				print ("\t\tOpcode Bnnn executed: Jump to location nnn(%d) + V[0(%d)]\n", nnn, V[0])
-			}
+			opc_chip8_BNNN()
 			break
 
-
-		// ############################ 0xC000 instruction set ############################
-		// Cxkk - RND Vx, byte
-		// Set Vx = random byte AND kk.
-		// The interpreter generates a random number from 0 to 255, which is then ANDed with the value kk. The results are stored in Vx. See instruction 8xy2 for more information on AND.
-		case 0xC000: // CNNN
-			x := uint16(Opcode&0x0F00) >> 8
-			kk := Opcode & 0x00FF
-			V[x] = byte(rand.Float32()*255) & byte(kk)
-			PC += 2
-			if Debug {
-				fmt.Printf("\t\tOpcode Cxkk executed: V[x(%d)] = %d (random byte AND kk(%d)) = %d\n", x, V[x], kk, V[x])
-			}
+		// ---------------------------- CHIP-8 Cxxx instruction set ---------------------------- //
+		// Cxnn (CHIP-8)
+		case 0xC000:
+			opc_chip8_CXNN()
 			break
 
-
-		// ############################ 0xD000 instruction set ############################
-		case 0xD000: // DXYN
+		// ---------------------------- CHIP-8 Dxxx instruction set ---------------------------- //
+		case 0xD000:
 
 			var (
 				x		uint16 = (Opcode & 0x0F00) >> 8
@@ -1066,7 +661,6 @@ func Interpreter() {
 						DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position)
 					} else {
 						DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position)
-						//os.Exit(2)
 					}
 				}
 			// Dxyn - DRW Vx, Vy, nibble
@@ -1080,70 +674,38 @@ func Interpreter() {
 			DrawFlagCounter ++
 
 
-		// ############################ 0xE000 instruction set ############################
+		// ---------------------------- CHIP-8 Exxx instruction set ---------------------------- //
 		// 0xE000 instruction set
 		case 0xE000:
 
 			x := (Opcode & 0x0F00) >> 8
 			switch Opcode & 0x00FF {
 
-
-			// Ex9E - SKP Vx
-			// Skip next instruction if key with the value of Vx is pressed.
-			// Checks the keyboard, and if the key corresponding to the value of Vx is currently in the down position, PC is increased by 2.
+			// Ex9E (CHIP-8)
 			case 0x009E:
-				if Key[V[x]] == 1 {
-					PC += 4
-					if Debug {
-						fmt.Printf("\t\tOpcode Ex9E executed: Key[%d] pressed, skip one instruction\n",V[x])
-					}
-				} else {
-					PC += 2
-					if Debug {
-						fmt.Printf("\t\tOpcode Ex9E executed: Key[%d] NOT pressed, continue\n",V[x])
-					}
-				}
+				opc_chip8_EX9E(x)
 				break
 
-			// ExA1 - SKNP Vx
-			// Skip next instruction if key with the value of Vx is not pressed.
-			// Checks the keyboard, and if the key corresponding to the value of Vx is currently in the up position, PC is increased by 2.
+			// ExA1 (CHIP-8)
 			case 0x00A1:
-				if Key[V[x]] == 0 {
-					PC += 4
-					if Debug {
-						fmt.Printf("\t\tOpcode ExA1 executed: Key[%d] NOT pressed, skip one instruction\n",V[x])
-					}
-				} else {
-					Key[V[x]] = 0
-					PC += 2
-					if Debug {
-						fmt.Printf("\t\tOpcode ExA1 executed: Key[%d] pressed, continue\n",V[x])
-					}
-				}
+				opc_chip8_EXA1(x)
 				break
 			default:
 				fmt.Printf("Opcode Family E000 - Not mapped opcote: E000\n")
-				os.Exit(2)
+				os.Exit(0)
 			}
 
 
-		// ############################ 0xF000 instruction set ############################
+		// ---------------------------- CHIP-8 Fxxx instruction set ---------------------------- //
 		case 0xF000:
 
 			x := (Opcode & 0x0F00) >> 8
 
 			switch Opcode & 0x00FF {
 
-			// Fx07 - LD Vx, DT
-			// Set Vx = delay timer value.
-			// The value of DT is placed into Vx.
+			// Fx07 (CHIP-8)
 			case 0x0007:
-				V[x] = DelayTimer
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode Fx07 executed: Set V[x(%d)] with value of DelayTimer(%d)\n", x, DelayTimer)
-				}
+				opc_chip8_FX07(x)
 				break
 
 			// Fx0A - LD Vx, K
@@ -1161,7 +723,6 @@ func Interpreter() {
 						}
 						// Stop after find the first key pressed
 						break
-
 					}
 				}
 				if pressed == 0 {
@@ -1171,106 +732,34 @@ func Interpreter() {
 				}
 				break
 
-
-			// Fx15 - LD DT, Vx
-			// Set delay timer = Vx.
-			// DT is set equal to the value of Vx.
+			// Fx15 (CHIP-8)
 			case 0x0015:
-				DelayTimer = V[x]
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode Fx15 executed: Set delay timer = V[x(%d):%d]\n", x, V[x])
-				}
+				opc_chip8_FX15(x)
 				break
 
-			// Fx18 - LD ST, Vx
-			// Set sound timer = Vx.
-			// ST is set equal to the value of Vx.
+			// Fx18 (CHIP-8)
 			case 0x0018:
-				SoundTimer = V[x]
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode Fx18 executed: Set sound timer = V[x(%d)]:%d\n",x, V[x])
-				}
+				opc_chip8_FX18(x)
 				break
 
-			// Fx1E - ADD I, Vx
-			// Set I = I + Vx.
-			// The values of I and Vx are added, and the results are stored in I.
-			// ***
-			// Check FX1E (I = I + VX) buffer overflow. If buffer overflow, register
-			// VF must be set to 1, otherwise 0. As a result, register VF not set to 1.
-			// This undocumented feature of the Chip-8 and used by Spacefight 2091!
+			// Fx1E (CHIP-8)
 			case 0x001E:
-				if Debug {
-					fmt.Printf("\t\tOpcode Fx1E executed: Add the value of V[x(%d)]:%d to I(%d)\n",x, V[x], I)
-				}
-
-				// *** Implement the undocumented feature used by Spacefight 2091
-				if FX1E_spacefight2091 {
-					if ( I + uint16(V[x]) > 0xFFF ) { //4095 - Buffer overflow
-						V[0xF] = 1
-						I = ( I + uint16(V[x]) ) - 4095
-						fmt.Printf("\n\t\tPAUSE mode ENABLED\n\t\tProposital Pause to map when FX1E fix is used in Spacefight 2091!\n")
-						fmt.Printf("\n\t\tPress \"P\" to continue.\n")
-						Pause = true	// Put here to try to identify usage in the game
-					} else {
-						V[0xF] = 0
-						I += uint16(V[x])
-					}
-				// Normal opcode pattern
-				} else {
-					I += uint16(V[x])
-				}
-
-				PC += 2
+				opc_chip8_FX1E(x)
 				break
 
-			// Fx29 - LD F, Vx
-			// Set I = location of sprite for digit Vx.
-			// The value of I is set to the location for the hexadecimal sprite corresponding to the value of Vx.
+			// Fx29 (CHIP-8)
 			case 0x0029:
-				// Load CHIP-8 font. Start from Memory[0]
-				I = uint16(V[x]) * 5
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode Fx29 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*5)\n", I, x, V[x])
-				}
+				opc_chip8_FX29(x)
 				break
 
-
-			// SCHIP Fx30 - LD F, Vx
-			// Set I = location of sprite for digit Vx.
-			// The value of I is set to the location for the hexadecimal sprite corresponding to the value of Vx.
+			// Fx30 (SCHIP)
 			case 0x0030:
-				// Load SCHIP font. Start from Memory[80]
-				I = 80 + uint16(V[x]) * 10
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tSCHIP Opcode Fx30 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*10)\n", I, x, V[x])
-				}
+				opc_schip_FX30(x)
 				break
 
-
-			// Fx33 - LD B, Vx
-			// BCD - Binary Code hexadecimal
-			// Store BCD representation of Vx in memory locations I, I+1, and I+2.
-			// set_BCD(Vx);
-			// Ex. V[x] = ff (maximum value) = 255
-			// memory[i+0] = 2
-			// memory[i+1] = 5
-			// memory[i+2] = 5
-			// % = modulus operator:
-			// 3 % 1 would equal zero (since 3 divides evenly by 1)
-			// 3 % 2 would equal 1 (since dividing 3 by 2 results in a remainder of 1).
+			// Fx33 (CHIP-8)
 			case 0x0033:
-				Memory[I]   = V[x] / 100
-				Memory[I+1] = (V[x] / 10) % 10
-				Memory[I+2] = (V[x] % 100) % 10
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tOpcode Fx33 executed: Store BCD representation of V[x(%d)]:%d in memory locations I(%X):%d, I+1(%X):%d, and I+2(%X):%d\n", x, V[x], I, Memory[I], I+1, Memory[I+1], I+2, Memory[I+2])
-				}
+				opc_chip8_FX33(x)
 				break
 
 			// Fx55 - LD [I], Vx
@@ -1301,65 +790,18 @@ func Interpreter() {
 			//// I is set to I + X + 1 after operation²
 			//// ² Erik Bryntse’s S-CHIP documentation incorrectly implies this instruction does not modify
 			//// the I register. Certain S-CHIP-compatible emulators may implement this instruction in this manner.
-			//// MAYBE NEED TO IMPLEMENT NO S-CHIP8 ***
 			case 0x0065:
-
-				for i := uint16(0); i <= x; i++ {
-					V[i] = Memory[I+i]
-				}
-
-				PC += 2
-
-				// If needed, run the original Chip-8 opcode (not used in recent games)
-				if Legacy_Fx55_Fx65 {
-					I = I + x + 1
-				}
-
-				if Debug {
-					fmt.Printf("\t\tOpcode Fx65 executed: Read registers V[0] through V[x(%d)] from memory starting at location I(%X)\n",x, I)
-				}
+				opc_chip8_FX65(x)
 				break
 
-			// SCHIP FX75
-			// Store V0 through VX to HP-48 RPL user flags (X <= 7).
+			// FX75 (SCHIP)
 			case 0x0075:
-
-				// Temporary, to check
-				if x >= 8 {
-					fmt.Printf("FX75 X VALUE CONTROL!!!")
-					os.Exit(2)
-				}
-
-				for i := 0; i <= int(x); i++ {
-					RPL[i] = V[i]
-				}
-
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tSCHIP - Opcode Fx75 executed: Read RPL user flags from 0 to %d and store in V[0] through V[x(%d)]\n",x,x)
-				}
-
+				opc_schip_FX75(x)
 				break
 
-			// SCHIP FX85
-			// Read V0 through VX to HP-48 RPL user flags (X <= 7).
+			// FX85 (SCHIP)
 			case 0x0085:
-
-				// Temporary, to check
-				if x >= 8 {
-					fmt.Printf("FX85 X VALUE CONTROL!!!")
-					os.Exit(2)
-				}
-
-				for i := 0; i <= int(x); i++ {
-					V[i] = RPL[i]
-				}
-
-				PC += 2
-				if Debug {
-					fmt.Printf("\t\tSCHIP - Opcode Fx85 executed: Read registers V[0] through V[x(%d)] and store in RPL user flags\n",x)
-				}
-
+				opc_schip_FX85(x)
 				break
 
 			// CHIP-8 ETI-660 Hybrid - Fx00
