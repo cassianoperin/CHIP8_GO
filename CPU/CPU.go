@@ -441,21 +441,10 @@ func Interpreter() {
 					opc_schip_00CN(x)
 					break
 
-				// CHIP-8 HIRES - 0230
-				// Clear screen used by Hi Resolution Chip8
+				// 0230 (CHIP-8 HIRES)
+				// Clear screen used by HiRes Chip8
 				case 0x0030:
-
-					// Clear display
-					Graphics = [128 * 64]byte{}
-
-					// Set CHIP-8 HIRES Resolution
-					Global.SizeX = 64
-					Global.SizeY = 64
-
-					PC += 2
-					if Debug {
-						fmt.Println("\t\tHIRES - Opcode 0230 executed. - Clear the display\n")
-					}
+					opc_chip8HiRes_0230()
 					break
 
 				// ETI-660 - 0x0000
@@ -478,17 +467,11 @@ func Interpreter() {
 		// 1nnn (CHIP-8)
 		case 0x1000:
 
-			// HI-RES CHIP-8 EMULATION
+			// 1nnn (CHIP-8 HIRES)
 			// If PC=0x200 AND Opcode=0x1260, update Opcode to 0x12C0 (Jump to address 0x2c0)
 			// Need to add Opcode 0x0230 to handle the clearscreen event for 64x64 hires
 			if PC == 0x200 && Opcode == 0x1260 {
-				// Execute the operation
-				PC = 0x2C0
-
-				// After show the execution time
-				if Debug {
-					fmt.Printf("\t\tHIRES - Opcode 1260 WITH PC=0x200. Init 64x64 Chip8 hires mode. Opcode=0x12C0, jump to address 0x2c0 -> (PC=0x2c0)\n")
-				}
+				opc_chip8HiRes_1NNN()
 				break
 
 			// Or start the regular code from 1nnn
