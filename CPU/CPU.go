@@ -366,10 +366,7 @@ func Interpreter() {
 					if x == 0x000F {
 						// ETI-660 Do Nothing
 						if Global.Hybrid_ETI_660_HW {
-							PC += 2
-							if Debug {
-								fmt.Printf("\t\tHybrid ETI-660 - Opcode 00FF executed: No Operation (do nothing)\tPC+=2\n")
-							}
+							opc_chip8_ETI660_00FF()
 							break
 
 						// Enable SCHIP Mode
@@ -391,12 +388,7 @@ func Interpreter() {
 					} else if x == 0x000C {
 						// ETI-660 Opcode
 						if Global.Hybrid_ETI_660_HW {
-							PC+=2
-							if Debug {
-								fmt.Printf("\t\tHybrid ETI-660 - Opcode 00FC executed: Turn display off (Do nothing)\t PC+=2\n")
-								fmt.Printf("\n\nPROPOSITAL EXIT TO MAP 00FC USAGE!!!!\n\n")
-								os.Exit(2)
-							}
+							opc_chip8_ETI660_00FC()
 
 						// SCHIP Opcode
 						} else {
@@ -407,27 +399,13 @@ func Interpreter() {
 					} else if x == 0x000B {
 						opc_schip_00FB()
 
-
-					// ETI-660 0x00F8
-					// Turn display on
+					// 00F8 (ETI-660)
 					} else if x == 0x0008 {
-						PC += 2
-						if Debug {
-							fmt.Printf("\t\tHybrid ETI-660 - Opcode 00F8 executed: Turn display on (Do nothing)\t PC+=2\n")
-							fmt.Printf("\n\nPROPOSITAL EXIT TO MAP 00F8 USAGE!!!!\n\n")
-							os.Exit(2)
-						}
+						opc_chip8_ETI660_00F8()
 
-
-					// Two-page display for CHIP-8X (Extension of CHIP-8x) 0x00F0
-					// 00F0: Return from subroutine (replaces 00EE)
-					// Also used in some Hybrid ETI-660 programs like "Music Maker"
+					// 00F0 (CHIP-8x HiRes)
 					} else if x == 0x0000 {
-						PC = Stack[SP] + 2
-						SP --
-						if Debug {
-							fmt.Printf("\t\tCHIP-8X Two-page display (Extension) - Opcode 00F0 executed. - Return from subroutine (replaces 00EE in CHIP-8x).\n")
-						}
+						opc_chip8HiRes_00F0()
 
 
 					} else {
@@ -442,17 +420,13 @@ func Interpreter() {
 					break
 
 				// 0230 (CHIP-8 HIRES)
-				// Clear screen used by HiRes Chip8
 				case 0x0030:
 					opc_chip8HiRes_0230()
 					break
 
-				// ETI-660 - 0x0000
-				// Return to monitor (exit interpreter)
+				// 0000 (ETI-660)
 				case 0x0000:
-					if Debug {
-						fmt.Printf("\t\tHybrid ETI-660 - Opcode 0000 executed: Return to monitor (exit interpreter)\n")
-					}
+					opc_chip8_ETI660_0000()
 					break
 
 				default:
@@ -673,6 +647,7 @@ func Interpreter() {
 			case 0x00A1:
 				opc_chip8_EXA1(x)
 				break
+
 			default:
 				fmt.Printf("Opcode Family E000 - Not mapped opcote: E000\n")
 				os.Exit(0)
@@ -787,17 +762,10 @@ func Interpreter() {
 				opc_schip_FX85(x)
 				break
 
-			// CHIP-8 ETI-660 Hybrid - Fx00
-			// Set the pitch (frequency) of the tone generator (beeper) to Vx
+			// Fx00 (ETI-660)
 			case 0x0000:
-				P = V[x]	// NOT USED YET!!! Need to implement sound library to handle it
-				PC +=2
-
-				if Debug {
-					fmt.Printf("\t\tHybrid ETI-660 - Opcode Fx00 executed: Set the pitch (frequency) of the tone generator (beeper) to value of V[%d]\t\tP=%d\n", x, V[x])
-				}
+				opc_chip8_ETI660_FX00(x)
 				break
-
 
 			default:
 				fmt.Printf("\t\tOpcode Family F000 - Not mapped opcode: 0x%X\n", Opcode)
