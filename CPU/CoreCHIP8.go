@@ -457,9 +457,25 @@ func opc_chip8_FX07(x uint16) {
 // Wait for a key press, store the value of the key in Vx.
 // All execution stops until a key is pressed, then the value of that key is stored in Vx.
 func opc_chip8_FX0A(x uint16) {
-	// TEST KEY BEHAVIOR FIRST
+	pressed := 0
+	for i := 0 ; i < len(Key) ; i++ {
+		if (Key[i] == 1){
+			V[x] = byte(i)
+			pressed = 1
+			PC +=2
+			if Debug {
+				fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key (Key[%d]) press -  (PRESSED)\n", i)
+			}
+			// Stop after find the first key pressed
+			break
+		}
+	}
+	if pressed == 0 {
+		if Debug {
+			fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key press - (NOT PRESSED)\n")
+		}
+	}
 }
-
 
 // Fx15 - LD DT, Vx
 // Set delay timer = Vx.

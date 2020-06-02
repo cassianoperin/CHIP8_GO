@@ -337,103 +337,113 @@ func Interpreter() {
 		// ---------------------------- CHIP-8 0xxx instruction set ---------------------------- //
 		case 0x0000: //0NNN
 
-			x := Opcode & 0x000F
+			switch Opcode & 0x0F00 {
 
-			switch Opcode & 0x00F0 {
+				case 0x0000: //00NN
 
-				case 0x00E0:
+					switch Opcode & 0x00FF { //00NN
 
-					// 00E0 (CHIP-8)
-					if x == 0x0000 {
-						opc_chip8_00E0()
-						break
-					}
-
-					// 00EE (CHIP-8)
-					if x == 0x000E {
-						opc_chip8_00EE()
-						break
-					}
-
-				// 02D8 (CHIP-8 NON DOCUMENTED)
-				case 0x00D0:
-					opc_chip8_ND_02D8()
-					break
-
-					// 00FF (SCHIP)
-					// 00FF - In ETI-660, 00FF is a NO OP (do nothing)
-				case 0x00F0:
-					if x == 0x000F {
-						// ETI-660 Do Nothing
-						if Global.Hybrid_ETI_660_HW {
-							opc_chip8_ETI660_00FF()
+						// 0000 (ETI-660)
+						case 0x0000:
+							opc_chip8_ETI660_0000()
 							break
 
-						// Enable SCHIP Mode
-						} else {
-							opc_schip_00FF()
+						// 00E0 (CHIP-8)
+						case 0x00E0:
+							opc_chip8_00E0()
 							break
-						}
 
-					// 00FE (SCHIP)
-					} else if x == 0x000E {
-						opc_schip_00FE()
+						// 00EE (CHIP-8)
+						case 0x00EE:
+							opc_chip8_00EE()
+							break
 
-					// 00FD (SCHIP)
-					} else if x == 0x000D {
-						opc_schip_00FD()
+						// 00F0 (CHIP-8x HiRes)
+						case 0x00F0:
+							opc_chip8HiRes_00F0()
+							break
 
-					// 00FC (SCHIP)
-					// 00FC (ETI-660) - Turn display off
-					} else if x == 0x000C {
-						// ETI-660 Opcode
-						if Global.Hybrid_ETI_660_HW {
-							opc_chip8_ETI660_00FC()
+						// 00F8 (ETI-660)
+						case 0x00F8:
+							opc_chip8_ETI660_00F8()
+							break
 
-						// SCHIP Opcode
-						} else {
-							opc_schip_00FC()
-						}
+						// 00FB (SCHIP)
+						case 0x00FB:
+							opc_schip_00FB()
+							break
 
-					// 00FB (SCHIP)
-					} else if x == 0x000B {
-						opc_schip_00FB()
+						// 00FC (SCHIP)
+						// 00FC (ETI-660) - Turn display off
+						case 0x00FC:
+							// ETI-660 Opcode
+							if Global.Hybrid_ETI_660_HW {
+								opc_chip8_ETI660_00FC()
+								break
 
-					// 00F8 (ETI-660)
-					} else if x == 0x0008 {
-						opc_chip8_ETI660_00F8()
+							// SCHIP Opcode
+							} else {
+								opc_schip_00FC()
+								break
+							}
 
-					// 00F0 (CHIP-8x HiRes)
-					} else if x == 0x0000 {
-						opc_chip8HiRes_00F0()
+						// 00FD (SCHIP)
+						case 0x00FD:
+							opc_schip_00FD()
+							break
 
+						// 00FE (SCHIP)
+						case 0x00FE:
+							opc_schip_00FE()
+							break
 
-					} else {
-						fmt.Printf("\t\tOpcode %04X NOT IMPLEMENTED.\n", Opcode)
-						os.Exit(2)
+						// 00FF (SCHIP)
+						// 00FF - In ETI-660, 00FF is a NO OP (do nothing)
+						case 0x00FF:
+							// 00FF - ETI-660
+							if Global.Hybrid_ETI_660_HW {
+								opc_chip8_ETI660_00FF()
+								break
+
+							// 00FF - SCHIP
+							} else {
+								opc_schip_00FF()
+								break
+							}
 					}
 
+					switch Opcode & 0x00F0 { //00N0
+						// 00CN (SCHIP)
+						case 0x00C0:
+							n := Opcode & 0x000F
+							opc_schip_00CN(n)
+							break
+					}
 
-				// 00CN (SCHIP)
-				case 0x00C0:
-					opc_schip_00CN(x)
-					break
+				case 0x0200: //02NN
 
-				// 0230 (CHIP-8 HIRES)
-				case 0x0030:
-					opc_chip8HiRes_0230()
-					break
+					switch Opcode & 0x0FFF {
 
-				// 0000 (ETI-660)
-				case 0x0000:
-					opc_chip8_ETI660_0000()
-					break
+						// 0230 (CHIP-8 HIRES)
+						case 0x0230:
+							opc_chip8HiRes_0230()
+							break
+
+						// 02D8 (CHIP-8 NON DOCUMENTED)
+						case 0x02D8:
+							opc_chip8_ND_02D8()
+							break
+
+						default:
+							fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
+							os.Exit(0)
+					}
+
 
 				default:
-					if Debug {
-						fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
-					}
+					fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
 					os.Exit(0)
+
 			}
 
 
@@ -443,12 +453,11 @@ func Interpreter() {
 
 			// 1nnn (CHIP-8 HIRES)
 			// If PC=0x200 AND Opcode=0x1260, update Opcode to 0x12C0 (Jump to address 0x2c0)
-			// Need to add Opcode 0x0230 to handle the clearscreen event for 64x64 hires
 			if PC == 0x200 && Opcode == 0x1260 {
 				opc_chip8HiRes_1NNN()
 				break
 
-			// Or start the regular code from 1nnn
+			// 1nnn (CHIP-8)
 			} else {
 				opc_chip8_1NNN()
 				break
@@ -499,57 +508,55 @@ func Interpreter() {
 
 			switch Opcode & 0x000F {
 
-			// 8xy0 (CHIP-8)
-			case 0x0000:
-				opc_chip8_8XY0(x, y)
-				break
+				// 8xy0 (CHIP-8)
+				case 0x0000:
+					opc_chip8_8XY0(x, y)
+					break
 
-			// 8xy1 (CHIP-8)
-			case 0x0001:
-				opc_chip8_8XY1(x, y)
-				break
+				// 8xy1 (CHIP-8)
+				case 0x0001:
+					opc_chip8_8XY1(x, y)
+					break
 
-			// 8xy2 (CHIP-8)
-			case 0x0002:
-				opc_chip8_8XY2(x, y)
-				break
+				// 8xy2 (CHIP-8)
+				case 0x0002:
+					opc_chip8_8XY2(x, y)
+					break
 
-			// 8xy3 (CHIP-8)
-			case 0x0003:
-				opc_chip8_8XY3(x, y)
-				break
+				// 8xy3 (CHIP-8)
+				case 0x0003:
+					opc_chip8_8XY3(x, y)
+					break
 
-			// 8xy4 (CHIP-8)
-			case 0x0004:
-				opc_chip8_8XY4(x, y)
-				break
+				// 8xy4 (CHIP-8)
+				case 0x0004:
+					opc_chip8_8XY4(x, y)
+					break
 
-			// 8xy5 (CHIP-8)
-			case 0x0005:
-				opc_chip8_8XY5(x, y)
-				break
+				// 8xy5 (CHIP-8)
+				case 0x0005:
+					opc_chip8_8XY5(x, y)
+					break
 
-			// 8xy6 (CHIP-8)
-			case 0x0006:
-				opc_chip8_8XY6(x, y)
-				break
+				// 8xy6 (CHIP-8)
+				case 0x0006:
+					opc_chip8_8XY6(x, y)
+					break
 
 
-			// 8xy7 (CHIP-8)
-			case 0x0007:
-				opc_chip8_8XY7(x, y)
-				break
+				// 8xy7 (CHIP-8)
+				case 0x0007:
+					opc_chip8_8XY7(x, y)
+					break
 
-			// 8xyE (CHIP-8)
-			case 0x000E:
-				opc_chip8_8XYE(x, y)
-				break
+				// 8xyE (CHIP-8)
+				case 0x000E:
+					opc_chip8_8XYE(x, y)
+					break
 
-			default:
-				if Debug {
-					fmt.Printf("\t\tOpcode 0x8000 NOT IMPLEMENTED!!!!\n")
-				}
-				os.Exit(0)
+				default:
+					fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
+					os.Exit(0)
 			}
 
 		// ---------------------------- CHIP-8 9xxx instruction set ---------------------------- //
@@ -636,21 +643,22 @@ func Interpreter() {
 		case 0xE000:
 
 			x := (Opcode & 0x0F00) >> 8
+
 			switch Opcode & 0x00FF {
 
-			// Ex9E (CHIP-8)
-			case 0x009E:
-				opc_chip8_EX9E(x)
-				break
+				// Ex9E (CHIP-8)
+				case 0x009E:
+					opc_chip8_EX9E(x)
+					break
 
-			// ExA1 (CHIP-8)
-			case 0x00A1:
-				opc_chip8_EXA1(x)
-				break
+				// ExA1 (CHIP-8)
+				case 0x00A1:
+					opc_chip8_EXA1(x)
+					break
 
-			default:
-				fmt.Printf("Opcode Family E000 - Not mapped opcote: E000\n")
-				os.Exit(0)
+				default:
+					fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
+					os.Exit(0)
 			}
 
 
@@ -661,124 +669,82 @@ func Interpreter() {
 
 			switch Opcode & 0x00FF {
 
-			// Fx07 (CHIP-8)
-			case 0x0007:
-				opc_chip8_FX07(x)
-				break
+				// Fx07 (CHIP-8)
+				case 0x0007:
+					opc_chip8_FX07(x)
+					break
 
-			// Fx0A - LD Vx, K
-			// Wait for a key press, store the value of the key in Vx.
-			// All execution stops until a key is pressed, then the value of that key is stored in Vx.
-			case 0x000A:
-				pressed := 0
-				for i := 0 ; i < len(Key) ; i++ {
-					if (Key[i] == 1){
-						V[x] = byte(i)
-						pressed = 1
-						PC +=2
-						if Debug {
-							fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key (Key[%d]) press -  (PRESSED)\n", i)
-						}
-						// Stop after find the first key pressed
-						break
-					}
-				}
-				if pressed == 0 {
-					if Debug {
-						fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key press - (NOT PRESSED)\n")
-					}
-				}
-				break
+				// Fx0A (CHIP-*)
+				case 0x000A:
+					opc_chip8_FX0A(x)
+					break
 
-			// Fx15 (CHIP-8)
-			case 0x0015:
-				opc_chip8_FX15(x)
-				break
+				// Fx15 (CHIP-8)
+				case 0x0015:
+					opc_chip8_FX15(x)
+					break
 
-			// Fx18 (CHIP-8)
-			case 0x0018:
-				opc_chip8_FX18(x)
-				break
+				// Fx18 (CHIP-8)
+				case 0x0018:
+					opc_chip8_FX18(x)
+					break
 
-			// Fx1E (CHIP-8)
-			case 0x001E:
-				opc_chip8_FX1E(x)
-				break
+				// Fx1E (CHIP-8)
+				case 0x001E:
+					opc_chip8_FX1E(x)
+					break
 
-			// Fx29 (CHIP-8)
-			case 0x0029:
-				opc_chip8_FX29(x)
-				break
+				// Fx29 (CHIP-8)
+				case 0x0029:
+					opc_chip8_FX29(x)
+					break
 
-			// Fx30 (SCHIP)
-			case 0x0030:
-				opc_schip_FX30(x)
-				break
+				// Fx30 (SCHIP)
+				case 0x0030:
+					opc_schip_FX30(x)
+					break
 
-			// Fx33 (CHIP-8)
-			case 0x0033:
-				opc_chip8_FX33(x)
-				break
+				// Fx33 (CHIP-8)
+				case 0x0033:
+					opc_chip8_FX33(x)
+					break
 
-			// Fx55 - LD [I], Vx
-			// Store registers V0 through Vx in memory starting at location I.
-			// The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
-			//
-			// Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.[d]
-			// In the original CHIP-8 implementation, and also in CHIP-48, I is left incremented after this instruction had been executed. In SCHIP, I is left unmodified.
-			case 0x0055:
-				for i := uint16(0); i <= x; i++ {
-					Memory[I+i] = V[i]
-				}
-				PC += 2
+				// Fx55 (CHIP-8)
+				case 0x0055:
+					opc_chip8_FX55(x)
+					break
 
-				// If needed, run the original Chip-8 opcode (not used in recent games)
-				if Legacy_Fx55_Fx65 {
-					I = I + x + 1
-				}
+				// Fx65 (CHIP-8)
+				case 0x0065:
+					opc_chip8_FX65(x)
+					break
 
-				if Debug {
-					fmt.Printf("\t\tOpcode Fx55 executed: Registers V[0] through V[x(%d)] in memory starting at location I(%d)\n",x, I)
+				// FX75 (SCHIP)
+				case 0x0075:
+					opc_schip_FX75(x)
+					break
+
+				// FX85 (SCHIP)
+				case 0x0085:
+					opc_schip_FX85(x)
+					break
+
+				// Fx00 (ETI-660)
+				case 0x0000:
+					opc_chip8_ETI660_FX00(x)
+					break
+
+				default:
+					fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
+					os.Exit(0)
 				}
 				break
 
-			// Fx65 - LD Vx, [I]
-			// Read registers V0 through Vx from memory starting at location I.
-			// The interpreter reads values from memory starting at location I into registers V0 through Vx.
-			//// I is set to I + X + 1 after operation²
-			//// ² Erik Bryntse’s S-CHIP documentation incorrectly implies this instruction does not modify
-			//// the I register. Certain S-CHIP-compatible emulators may implement this instruction in this manner.
-			case 0x0065:
-				opc_chip8_FX65(x)
-				break
 
-			// FX75 (SCHIP)
-			case 0x0075:
-				opc_schip_FX75(x)
-				break
-
-			// FX85 (SCHIP)
-			case 0x0085:
-				opc_schip_FX85(x)
-				break
-
-			// Fx00 (ETI-660)
-			case 0x0000:
-				opc_chip8_ETI660_FX00(x)
-				break
-
-			default:
-				fmt.Printf("\t\tOpcode Family F000 - Not mapped opcode: 0x%X\n", Opcode)
-				os.Exit(2)
-
-			}
-			break
-
-
-
+		// End of main switch (0xN000)
 		default:
-			fmt.Printf("\t\tOPCODE FAMILY %X NOT IMPLEMENTED!\n", Opcode & 0xF000)
-			os.Exit(3)
+			fmt.Printf("\t\tOpcode Family %X not implemented!\n", Opcode & 0xF000)
+			os.Exit(0)
 	}
 
 

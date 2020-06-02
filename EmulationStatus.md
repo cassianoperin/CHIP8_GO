@@ -5,9 +5,9 @@
 | :------------ |:----------------:| :-----|
 | 15 Puzzle [Roger Ivie] | OK | |
 | 15 Puzzle [Roger Ivie] (alt) | OK        | |
-| Addition Problems [Paul C. Moews] | OK | |
+| Addition Problems [Paul C. Moews] | OK | Keyboard too fast |
 | Airplane | OK | |
-| Animal Race [Brian Astle] | OK | |
+| Animal Race [Brian Astle] | Almost OK | Graphical glitch after first race |
 | Astro Dodge [Revival Studios, 2008] | OK | |
 | Biorhythm [Jef Winsor] | OK | |
 | Blinky [Hans Christian Egeberg, 1991] | OK | |
@@ -31,7 +31,7 @@
 | Hidden [David Winter, 1996] | OK | |
 | Kaleidoscope [Joseph Weisbecker, 1978] | OK | |
 | Landing | OK | |
-| Lunar Lander (Udo Pernisz, 1979) | OK | |
+| Lunar Lander (Udo Pernisz, 1979) | Almost OK | Scroll problems |
 | Mastermind FourRow (Robert Lindley, 1978) | OK | |
 | Merlin [David Winter] | OK | |
 | Missile [David Winter] | OK | |
@@ -65,7 +65,7 @@
 | Sum Fun [Joyce Weisbecker] | OK | |
 | Syzygy [Roy Trevino, 1990] | OK | |
 | Tank | OK | |
-| Tapeworm [JDR, 1999] | OK | |
+| Tapeworm [JDR, 1999] | Almost OK | Scroll problems |
 | Tetris [Fran Dachille, 1991] | OK | |
 | Tic-Tac-Toe [David Winter] | OK | |
 | Timebomb | OK | |
@@ -75,7 +75,7 @@
 | Vertical Brix [Paul Robson, 1996] | OK | |
 | Wall [David Winter] | OK | |
 | Wipe Off [Joseph Weisbecker] | OK | |
-| Worm V4 [RB-Revival Studios, 2007] | OK | |
+| Worm V4 [RB-Revival Studios, 2007] | Almost OK | Scroll problems |
 | X-Mirror | OK | |
 | ZeroPong [zeroZshadow, 2007] | OK | |
 
