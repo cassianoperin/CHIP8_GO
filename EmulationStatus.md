@@ -83,7 +83,7 @@
 | Name  | Status | Description |
 | :------------ |:----------------:| :-----|
 | Astro Dodge Hires [Revival Studios, 2008] | OK | |
-| Hires Worm V4 [RB-Revival Studios, 2007] | OK | |
+| Hires Worm V4 [RB-Revival Studios, 2007] | Almost OK | Collision doesn't work on up bar|
 
 ## CHIP-8 ETI-660 (Hybrid)
 | Name  | Status | Description |
@@ -104,14 +104,14 @@
 | Joust [Erin S. Catto, 1993] | OK | |
 | Laser | OK | |
 | Loopz (with difficulty select) [Hap, 2006] | OK | |
-| Loopz [Andreas Daumann] | OK | |
+| Loopz [Andreas Daumann] | OK | Don't run in emulators, just on HP48 |
 | Magic Square [David Winter, 1997] | OK | |
 | Matches | OK | |
 | Mines! - The minehunter [David Winter, 1997] | OK | |
 | Single Dragon (Bomber Section) [David Nurser, 1993] | OK | |
 | Single Dragon (Stages 1-2) [David Nurser, 1993] | OK | |
-| Sokoban [Hap, 2006] (alt) | OK | |
-| Sokoban [Hap, 2006] | OK | |
+| Sokoban [Hap, 2006] (alt) | Almost OK | Glitches in advanced stages |
+| Sokoban [Hap, 2006] | Almost OK | Glitches in advanced stages |
 | Spacefight 2091 [Carsten Soerensen, 1992] | OK | |
 | Super Astro Dodge [Revival Studios, 2008] | OK | |
 | SuperWorm V3 [RB, 1992] | OK | |

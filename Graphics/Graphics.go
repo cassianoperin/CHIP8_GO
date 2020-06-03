@@ -248,6 +248,10 @@ func Run() {
 		fmt.Println("ETI-600 Hybrid hardware mode: ON\n")
 	}
 
+	//  Print Message if Pause is enabled
+	if CPU.Pause {
+		fmt.Println("Pause Enabled\n")
+	}
 
 	// --------------------- Main Infinite Loop ---------------------//
 	for !Global.Win.Closed() {
