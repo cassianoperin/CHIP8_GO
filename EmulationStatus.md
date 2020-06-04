@@ -31,7 +31,7 @@
 | Hidden [David Winter, 1996] | OK | |
 | Kaleidoscope [Joseph Weisbecker, 1978] | OK | |
 | Landing | OK | |
-| Lunar Lander (Udo Pernisz, 1979) | Almost OK | Scroll problems |
+| Lunar Lander (Udo Pernisz, 1979) | OK | |
 | Mastermind FourRow (Robert Lindley, 1978) | OK | |
 | Merlin [David Winter] | OK | |
 | Missile [David Winter] | OK | |
@@ -65,7 +65,7 @@
 | Sum Fun [Joyce Weisbecker] | OK | |
 | Syzygy [Roy Trevino, 1990] | OK | |
 | Tank | OK | |
-| Tapeworm [JDR, 1999] | Almost OK | Scroll problems |
+| Tapeworm [JDR, 1999] | OK | |
 | Tetris [Fran Dachille, 1991] | OK | |
 | Tic-Tac-Toe [David Winter] | OK | |
 | Timebomb | OK | |
@@ -75,7 +75,7 @@
 | Vertical Brix [Paul Robson, 1996] | OK | |
 | Wall [David Winter] | OK | |
 | Wipe Off [Joseph Weisbecker] | OK | |
-| Worm V4 [RB-Revival Studios, 2007] | Almost OK | Scroll problems |
+| Worm V4 [RB-Revival Studios, 2007] | OK | |
 | X-Mirror | OK | |
 | ZeroPong [zeroZshadow, 2007] | OK | |
 

@@ -257,7 +257,7 @@ func opc_chip8_8XY4(x, y uint16) {
 		V[0xF] = 0
 	}
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy4 executed: Set V[x(%d)] = V[x(%d)] + V[y(%d)]\n", x, x, y)
+		fmt.Printf("\t\tOpcode 8xy4 executed: Set V[x(%d)] = V[x(%d)]:(%d) + V[y(%d)]:(%d)\n", x, x, V[x], y, V[y])
 	}
 	// Old implementation, sum values, READ THE DOCS IN CASE OF PROBLEMS
 	V[x] += V[y]
@@ -602,7 +602,10 @@ func opc_chip8_FX65(x uint16) {
 	}
 
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx65 executed: Read registers V[0] through V[x(%d)] from memory starting at location I(%X)\n",x, I)
+		fmt.Printf("\t\tOpcode Fx65 executed: Read registers V[0] through V[x(%d)] from memory starting at location I(%d)\n",x, I)
+		for i := 0 ; i <= int(x) ; i ++ {
+			fmt.Printf("\t\tV[%d]= %d\n",i, V[i])
+		}
 	}
 }
 

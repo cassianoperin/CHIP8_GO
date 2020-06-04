@@ -597,6 +597,22 @@ func Interpreter() {
 			// Clean the colision flag
 			V[0xF] = 0
 
+			// Check if y is out of range and apply module to fit in screen
+			if (V[y] >= uint8(Global.SizeY)) {
+				V[y] = V[y] % uint8(Global.SizeY)
+				if Debug {
+					fmt.Printf("\t\tV[y] >= %d, modulus applied", Global.SizeY)
+				}
+			}
+
+			// Check if y is out of range and apply module to fit in screen
+			if (V[x] >= uint8(Global.SizeX)) {
+				V[x] = V[x] % uint8(Global.SizeX)
+				if Debug {
+					fmt.Printf("\t\tV[x] >= %d, modulus applied", Global.SizeX)
+				}
+			}
+
 			// Fix for Bowling game where the pins wrap the screen
 			if DXYN_bowling_wrap {
 				if V[x] + uint8(n) > (uint8(Global.SizeX) +1)  {
