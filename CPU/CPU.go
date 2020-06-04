@@ -4,7 +4,6 @@ import (
 	"os"
 	"fmt"
 	"time"
-	"strconv"
 	"Chip8/Fontset"
 	"Chip8/Global"
 )
@@ -136,38 +135,57 @@ func Show() {
 
 // SCHIP HI-RES MODE
 // If in SCHIP mode will draw 16x16 sprites
-func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
+func DXY0_SCHIP_HiRes(Opcode uint16) {
 
-	// Turn n in 16 (pixel size in SCHIP Mode)
-	n = 16
+	var (
+		x		uint16 = (Opcode & 0x0F00) >> 8
+		y		uint16 = (Opcode & 0x00F0) >> 4
+		n		uint16 = (Opcode & 0x000F)
+		byte		uint16 = 0
+		gpx_position	uint16 = 0
+	)
+
 	if Debug {
 		fmt.Printf("\t\tSCHIP - Opcode Dxy0 HI-RES MODE (%X) DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
 	}
 
+	// Turn n in 16 (pixel size in SCHIP Mode)
+	n = 16
+
+	// Clean the colision flag
+	V[0xF] = 0
+
+	// Check if y is out of range and apply module to fit in screen
+	if (V[y] >= uint8(Global.SizeY)) {
+		V[y] = V[y] % uint8(Global.SizeY)
+		if Debug {
+			fmt.Printf("\t\tV[y] >= %d, modulus applied", Global.SizeY)
+		}
+	}
+
+	// Check if y is out of range and apply module to fit in screen
+	if (V[x] >= uint8(Global.SizeX)) {
+		V[x] = V[x] % uint8(Global.SizeX)
+		if Debug {
+			fmt.Printf("\t\tV[x] >= %d, modulus applied", Global.SizeX)
+		}
+	}
+
+	// Translate the x and Y to the Graphics Vector
+	gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))
+
 	// Print N Bytes from address I in V[x]V[y] position of the screen
 	for byte = 0 ; byte < n ; byte++ {
 
-		var (
-			binary	string = ""
-			sprite	uint8  = 0
-			sprite2	uint8  = 0
-		)
+		// Set sprites
+		sprite  := Memory[I + (byte * 2)]
+		sprite2 := Memory[I + (byte * 2) + 1]
 
-		// DOCUMENT SPRITES
-		sprite  = Memory[I + (byte * 2)]
-		sprite2 = Memory[I + (byte * 2) + 1]
+		// Print 8 bits from FIRST SPRITE
+		for bit := 0; bit < 8 ; bit++ {
 
-		// Sprite in binary format
-		binary = fmt.Sprintf("%.8b%.8b", sprite,sprite2)
-
-		// Always print 8 bits
-		for bit := 0; bit < 16 ; bit++ {
-
-			// Convert the binary[bit] variable into an INT using Atoi method
-			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
-			if err == nil {
-
-			}
+			// Get the value of the byte
+			bit_value := int(sprite) >> (7 - bit) & 1
 
 			// Set the index to write the 8 bits of each pixel
 			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(Global.SizeX))
@@ -179,7 +197,7 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 			}
 
 			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
-			if (bit_binary  == 1){
+			if (bit_value  == 1){
 				// Set colision case graphics[index] is already 1
 				if (Graphics[gfx_index] == 1){
 					V[0xF] = 1
@@ -189,43 +207,96 @@ func DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position uint16) {
 			}
 
 		}
+
+		// Print 8 bits from SECOND SPRITE
+		for bit := 0; bit < 8 ; bit++ {
+
+			// Get the value of the byte
+			bit_value := int(sprite2) >> (7 - bit) & 1
+
+			// Set the index to write the 8 bits of each pixel
+			gfx_index := uint16(gpx_position) + uint16(8+bit) + (byte*uint16(Global.SizeX))
+
+			// If tryes to draw bits outside the vector size, ignore
+			if ( gfx_index >= uint16(Global.SizeX) * uint16(Global.SizeY) ) {
+				//fmt.Printf("Bigger than 2048 or 8192\n")
+				continue
+			}
+
+			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
+			if (bit_value  == 1){
+				// Set colision case graphics[index] is already 1
+				if (Graphics[gfx_index] == 1){
+					V[0xF] = 1
+				}
+				// After, XOR the graphics[index] (DRAW)
+				Graphics[gfx_index] ^= 1
+			}
+
+		}
+
+
 	}
+
+	PC += 2
+	Global.DrawFlag = true
+	DrawFlagCounter ++
 
 }
 
 
 // SCHIP LOW-RES MODE
 // If NOT in SCHIP mode will draw 16x8 sprites
-func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
+func DXY0_SCHIP_LoRes(Opcode uint16) {
 
-	n = 16
+	var (
+		x		uint16 = (Opcode & 0x0F00) >> 8
+		y		uint16 = (Opcode & 0x00F0) >> 4
+		n		uint16 = (Opcode & 0x000F)
+		byte		uint16 = 0
+		gpx_position	uint16 = 0
+	)
+	// os.Exit(2)
 	if Debug {
 		fmt.Printf("\t\tSCHIP - Opcode Dxy0 LOW-RES MODE (%X DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
 	}
 
+	// Turn n in 16 (pixel size in SCHIP Mode)
+	n = 16
+
+	// Clean the colision flag
+	V[0xF] = 0
+
+	// Check if y is out of range and apply module to fit in screen
+	if (V[y] >= uint8(Global.SizeY)) {
+		V[y] = V[y] % uint8(Global.SizeY)
+		if Debug {
+			fmt.Printf("\t\tV[y] >= %d, modulus applied", Global.SizeY)
+		}
+	}
+
+	// Check if y is out of range and apply module to fit in screen
+	if (V[x] >= uint8(Global.SizeX)) {
+		V[x] = V[x] % uint8(Global.SizeX)
+		if Debug {
+			fmt.Printf("\t\tV[x] >= %d, modulus applied", Global.SizeX)
+		}
+	}
+
+	// Translate the x and Y to the Graphics Vector
+	gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))
+
 	// Print N Bytes from address I in V[x]V[y] position of the screen
 	for byte = 0 ; byte < n ; byte++ {
 
-		var (
-			binary string = ""
-			sprite uint8 = 0
-			//sprite2 uint8 = 0
-		)
+		// Set the Sprite
+		sprite := Memory[I + byte]
 
-		// DOCUMENT SPRITES
-		sprite = Memory[I + byte]
-
-		// Sprite in binary format
-		binary = fmt.Sprintf("%.8b", sprite)
-
-		// Always print 8 bits
+		// Always print 8 bits from the Sprite
 		for bit := 0; bit < 8 ; bit++ {
 
-			// Convert the binary[bit] variable into an INT using Atoi method
-			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
-			if err == nil {
-
-			}
+			// Get the value of the byte
+			bit_value := int(sprite) >> (7 - bit) & 1
 
 			// Set the index to write the 8 bits of each pixel
 			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(Global.SizeX))
@@ -237,7 +308,7 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 			}
 
 			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
-			if (bit_binary  == 1){
+			if (bit_value  == 1){
 				// Set colision case graphics[index] is already 1
 				if (Graphics[gfx_index] == 1){
 					V[0xF] = 1
@@ -249,40 +320,70 @@ func DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position uint16) {
 		}
 	}
 
+	PC += 2
+	Global.DrawFlag = true
+	DrawFlagCounter ++
+
 }
 
 
 // Dxyn - DRW Vx, Vy, nibble
 // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
+func DXYN_CHIP8(opcode uint16) {
 	// Draw in Chip-8 Low Resolution mode
+
+	var (
+		x		uint16 = (Opcode & 0x0F00) >> 8
+		y		uint16 = (Opcode & 0x00F0) >> 4
+		n		uint16 = (Opcode & 0x000F)
+		byte		uint16 = 0
+		gpx_position	uint16 = 0
+	)
 
 	if Debug {
 		fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
 	}
 
+	// Clean the colision flag
+	V[0xF] = 0
+
+	// Check if y is out of range and apply module to fit in screen
+	if (V[y] >= uint8(Global.SizeY)) {
+		V[y] = V[y] % uint8(Global.SizeY)
+		if Debug {
+			fmt.Printf("\t\tV[y] >= %d, modulus applied", Global.SizeY)
+		}
+	}
+
+	// Check if y is out of range and apply module to fit in screen
+	if (V[x] >= uint8(Global.SizeX)) {
+		V[x] = V[x] % uint8(Global.SizeX)
+		if Debug {
+			fmt.Printf("\t\tV[x] >= %d, modulus applied", Global.SizeX)
+		}
+	}
+
+	// Fix for Bowling game where the pins wrap the screen
+	// if DXYN_bowling_wrap {
+	// 	if V[x] + uint8(n) > (uint8(Global.SizeX) +1)  {
+	// 		PC += 2
+	// 		break
+	// 	}
+	// }
+
+	// Translate the x and Y to the Graphics Vector
+	gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))
+
 	// Print N Bytes from address I in V[x]V[y] position of the screen
 	for byte = 0 ; byte < n ; byte++ {
 
-		var (
-			binary string = ""
-			sprite uint8 = 0
-		)
-
 		// Set the sprite
-		sprite = Memory[I + byte]
-
-		// Sprite in binary format
-		binary = fmt.Sprintf("%.8b", sprite)
+		sprite := Memory[I + byte]
 
 		// Always print 8 bits
 		for bit := 0; bit < 8 ; bit++ {
-
-			// Convert the binary[bit] variable into an INT using Atoi method
-			bit_binary, err := strconv.Atoi(fmt.Sprintf("%c", binary[bit]))
-			if err == nil {
-
-			}
+			// Get the value of the byte
+			bit_value := int(sprite) >> (7 - bit) & 1
 
 			// Set the index to write the 8 bits of each pixel
 			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(Global.SizeX))
@@ -294,7 +395,7 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 			}
 
 			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (collision)
-			if (bit_binary  == 1){
+			if (bit_value  == 1){
 				// Set colision case graphics[index] is already 1
 				if (Graphics[gfx_index] == 1){
 					V[0xF] = 1
@@ -304,7 +405,12 @@ func DXYN_CHIP8(x, y, n, byte, gpx_position uint16) {
 			}
 
 		}
+
 	}
+
+	PC += 2
+	Global.DrawFlag = true
+	DrawFlagCounter ++
 
 }
 
@@ -586,72 +692,93 @@ func Interpreter() {
 		// ---------------------------- CHIP-8 Dxxx instruction set ---------------------------- //
 		case 0xD000:
 
-			var (
-				x		uint16 = (Opcode & 0x0F00) >> 8
-				y		uint16 = (Opcode & 0x00F0) >> 4
-				n		uint16 = (Opcode & 0x000F)
-				byte		uint16 = 0
-				gpx_position	uint16 = 0
-			)
+			switch Opcode & 0x000F {
 
-			// Clean the colision flag
-			V[0xF] = 0
+				// DXY0 (SCHIP)
+				case 0x0000:
+					// SCHIP HI-RES MODE
+					// If in SCHIP mode will draw 16x16 sprites
+					if SCHIP {
+						DXY0_SCHIP_HiRes(Opcode)
+					// SCHIP LOW-RES MODE
+					// If NOT in SCHIP mode will draw 16x8 sprites
+					} else {
+						// Quirk to SCHIP Robot DEM)
+						// Even in SCHIP Mode this game needs to draw 16x16 Pixels
+						if DXY0_loresWideSpriteQuirks {
+							DXY0_SCHIP_HiRes(Opcode)
+						} else {
+							DXY0_SCHIP_LoRes(Opcode)
+						}
+					}
 
-			// Check if y is out of range and apply module to fit in screen
-			if (V[y] >= uint8(Global.SizeY)) {
-				V[y] = V[y] % uint8(Global.SizeY)
-				if Debug {
-					fmt.Printf("\t\tV[y] >= %d, modulus applied", Global.SizeY)
-				}
-			}
-
-			// Check if y is out of range and apply module to fit in screen
-			if (V[x] >= uint8(Global.SizeX)) {
-				V[x] = V[x] % uint8(Global.SizeX)
-				if Debug {
-					fmt.Printf("\t\tV[x] >= %d, modulus applied", Global.SizeX)
-				}
-			}
-
-			// Fix for Bowling game where the pins wrap the screen
-			if DXYN_bowling_wrap {
-				if V[x] + uint8(n) > (uint8(Global.SizeX) +1)  {
-					PC += 2
+				// DXYN (CHIP-8)
+				default:
+					DXYN_CHIP8(Opcode)
 					break
-				}
 			}
 
-			// Translate the x and Y to the Graphics Vector
-			gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))
+
+
+
+			// // Clean the colision flag
+			// V[0xF] = 0
+			//
+			// // Check if y is out of range and apply module to fit in screen
+			// if (V[y] >= uint8(Global.SizeY)) {
+			// 	V[y] = V[y] % uint8(Global.SizeY)
+			// 	if Debug {
+			// 		fmt.Printf("\t\tV[y] >= %d, modulus applied", Global.SizeY)
+			// 	}
+			// }
+			//
+			// // Check if y is out of range and apply module to fit in screen
+			// if (V[x] >= uint8(Global.SizeX)) {
+			// 	V[x] = V[x] % uint8(Global.SizeX)
+			// 	if Debug {
+			// 		fmt.Printf("\t\tV[x] >= %d, modulus applied", Global.SizeX)
+			// 	}
+			// }
+			//
+			// // Fix for Bowling game where the pins wrap the screen
+			// if DXYN_bowling_wrap {
+			// 	if V[x] + uint8(n) > (uint8(Global.SizeX) +1)  {
+			// 		PC += 2
+			// 		break
+			// 	}
+			// }
+			//
+			// // Translate the x and Y to the Graphics Vector
+			// gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))
 
 			// SCHIP Dxy0
 			// When in high res mode show a 16x16 sprite at (VX, VY)
 			// If N=0, Draw in SCHIP High Resolution mode
-			if n == 0 {
-				// SCHIP HI-RES MODE
-				// If in SCHIP mode will draw 16x16 sprites
-				if SCHIP {
-					DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position)
-				// SCHIP LOW-RES MODE
-				// If NOT in SCHIP mode will draw 16x8 sprites
-				} else {
-					// Quirk to SCHIP Robot DEM)
-					// Even in SCHIP Mode this game needs to draw 16x16 Pixels
-					if DXY0_loresWideSpriteQuirks {
-						DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position)
-					} else {
-						DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position)
-					}
-				}
-			// Dxyn - DRW Vx, Vy, nibble
-			// Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-			} else {
-				DXYN_CHIP8(x, y, n, byte, gpx_position)
-			}
+			// if n == 0 {
+			// 	// SCHIP HI-RES MODE
+			// 	// If in SCHIP mode will draw 16x16 sprites
+			// 	if SCHIP {
+			// 		DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position)
+			// 	// SCHIP LOW-RES MODE
+			// 	// If NOT in SCHIP mode will draw 16x8 sprites
+			// 	} else {
+			// 		// Quirk to SCHIP Robot DEM)
+			// 		// Even in SCHIP Mode this game needs to draw 16x16 Pixels
+			// 		if DXY0_loresWideSpriteQuirks {
+			// 			DXY0_SCHIP_HiRes(x, y, n, byte, gpx_position)
+			// 		} else {
+			// 			DXY0_SCHIP_LoRes(x, y, n, byte, gpx_position)
+			// 		}
+			// 	}
+			// // Dxyn - DRW Vx, Vy, nibble
+			// // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+			// } else {
+			// 	DXYN_CHIP8(x, y, n, byte, gpx_position)
+			// }
 
-			PC += 2
-			Global.DrawFlag = true
-			DrawFlagCounter ++
+			// PC += 2
+			// Global.DrawFlag = true
+			// DrawFlagCounter ++
 
 
 		// ---------------------------- CHIP-8 Exxx instruction set ---------------------------- //

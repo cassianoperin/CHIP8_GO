@@ -83,7 +83,7 @@
 | Name  | Status | Description |
 | :------------ |:----------------:| :-----|
 | Astro Dodge Hires [Revival Studios, 2008] | OK | |
-| Hires Worm V4 [RB-Revival Studios, 2007] | Almost OK | Collision doesn't work on up bar|
+| Hires Worm V4 [RB-Revival Studios, 2007] | OK | |
 
 ## CHIP-8 ETI-660 (Hybrid)
 | Name  | Status | Description |
@@ -104,7 +104,6 @@
 | Joust [Erin S. Catto, 1993] | OK | |
 | Laser | OK | |
 | Loopz (with difficulty select) [Hap, 2006] | OK | |
-| Loopz [Andreas Daumann] | OK | Don't run in emulators, just on HP48 |
 | Magic Square [David Winter, 1997] | OK | |
 | Matches | OK | |
 | Mines! - The minehunter [David Winter, 1997] | OK | |
