@@ -440,12 +440,11 @@ func opc_chip8_DXYN(opcode uint16) {
 	}
 
 	// Fix for Bowling game where the pins wrap the screen
-	// if DXYN_bowling_wrap {
-	// 	if V[x] + uint8(n) > (uint8(Global.SizeX) +1)  {
-	// 		PC += 2
-	// 		break
-	// 	}
-	// }
+	if DXYN_bowling_wrap {
+		if V[x] + uint8(n) > (uint8(Global.SizeX) +1)  {
+			n = uint16(Global.SizeX - 1) - uint16(V[x])
+		}
+	}
 
 	// Translate the x and Y to the Graphics Vector
 	gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))

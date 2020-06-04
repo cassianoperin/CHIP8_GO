@@ -14,7 +14,6 @@ const (
 	CPU_Clock_decrease_rate		= 100	// CPU Clock decrease rate
 )
 
-
 var (
 	// Components
 	Memory			[4096]byte		// Memory
@@ -263,13 +262,10 @@ func Interpreter() {
 							os.Exit(0)
 					}
 
-
 				default:
 					fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
 					os.Exit(0)
-
 			}
-
 
 		// ---------------------------- CHIP-8 1xxx instruction set ---------------------------- //
 		// 1nnn (CHIP-8)
@@ -286,7 +282,6 @@ func Interpreter() {
 				opc_chip8_1NNN()
 				break
 			}
-
 
 		// ---------------------------- CHIP-8 2xxx instruction set ---------------------------- //
 		// 2nnn (CHIP-8)
@@ -366,7 +361,6 @@ func Interpreter() {
 				case 0x0006:
 					opc_chip8_8XY6(x, y)
 					break
-
 
 				// 8xy7 (CHIP-8)
 				case 0x0007:
@@ -456,7 +450,6 @@ func Interpreter() {
 					fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
 					os.Exit(0)
 			}
-
 
 		// ---------------------------- CHIP-8 Fxxx instruction set ---------------------------- //
 		case 0xF000:

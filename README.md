@@ -279,7 +279,6 @@ Optional GUI (Graphical user interface) made with fyne.io.
 7. Improve Fx0A (Keyboard)
 8. Emulate CHIP-8X
 9. Emulate MEGA-CHIP
-10. Return Chip8 bowling quirk
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games
