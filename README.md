@@ -276,12 +276,10 @@ Optional GUI (Graphical user interface) made with fyne.io.
 4. Improve debug mode
 5. Handle games in hex mode
 6. Implement automatic detection draw mode (if Draw > 60 use @60hz, otherwise just draw on drawflag)
-7. Finish interpreter improvements in DXYN and DXY0
-8. Improve Fx0A (Keyboard)
-9. Emulate CHIP-8X
-10. Emulate MEGA-CHIP
-11. Return Chip8 bowling quirk
-12. Unify schip draw functions (Hi and Lo mode)
+7. Improve Fx0A (Keyboard)
+8. Emulate CHIP-8X
+9. Emulate MEGA-CHIP
+10. Return Chip8 bowling quirk
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games

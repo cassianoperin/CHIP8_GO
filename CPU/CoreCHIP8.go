@@ -43,6 +43,7 @@ import (
 	"os"
 	"fmt"
 	"math/rand"
+	"Chip8/Global"
 )
 
 // ---------------------------- CHIP-8 0xxx instruction set ---------------------------- //
@@ -401,7 +402,93 @@ func opc_chip8_CXNN() {
 
 // ---------------------------- CHIP-8 Dxxx instruction set ---------------------------- //
 
-	//LATER
+// Dxyn - DRW Vx, Vy, nibble
+// Draw n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+func opc_chip8_DXYN(opcode uint16) {
+	// Draw in Chip-8 Low Resolution mode
+
+	var (
+		x		uint16 = (Opcode & 0x0F00) >> 8
+		y		uint16 = (Opcode & 0x00F0) >> 4
+		n		uint16 = (Opcode & 0x000F)
+		byte		uint16 = 0
+		gpx_position	uint16 = 0
+		sprite		uint8 = 0
+	)
+
+	if Debug {
+		fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
+	}
+
+	// Clean the colision flag
+	V[0xF] = 0
+
+	// Check if y is out of range and apply module to fit in screen
+	if (V[y] >= uint8(Global.SizeY)) {
+		V[y] = V[y] % uint8(Global.SizeY)
+		if Debug {
+			fmt.Printf("\t\tV[y] >= %d, modulus applied", Global.SizeY)
+		}
+	}
+
+	// Check if y is out of range and apply module to fit in screen
+	if (V[x] >= uint8(Global.SizeX)) {
+		V[x] = V[x] % uint8(Global.SizeX)
+		if Debug {
+			fmt.Printf("\t\tV[x] >= %d, modulus applied", Global.SizeX)
+		}
+	}
+
+	// Fix for Bowling game where the pins wrap the screen
+	// if DXYN_bowling_wrap {
+	// 	if V[x] + uint8(n) > (uint8(Global.SizeX) +1)  {
+	// 		PC += 2
+	// 		break
+	// 	}
+	// }
+
+	// Translate the x and Y to the Graphics Vector
+	gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))
+
+	// Print N Bytes from address I in V[x]V[y] position of the screen
+	for byte = 0 ; byte < n ; byte++ {
+
+		// Set the sprite
+		sprite = Memory[I + byte]
+
+		// Always print 8 bits
+		for bit := 0; bit < 8 ; bit++ {
+			// Get the value of the byte
+			bit_value := int(sprite) >> (7 - bit) & 1
+
+			// Set the index to write the 8 bits of each pixel
+			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(Global.SizeX))
+
+			// If tryes to draw bits outside the vector size, ignore
+			if ( gfx_index >= uint16(Global.SizeX) * uint16(Global.SizeY) ) {
+				//fmt.Printf("Bigger than 2048 or 8192\n")
+				continue
+			}
+
+			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (collision)
+			if (bit_value  == 1){
+				// Set colision case graphics[index] is already 1
+				if (Graphics[gfx_index] == 1){
+					V[0xF] = 1
+				}
+				// After, XOR the graphics[index] (DRAW)
+				Graphics[gfx_index] ^= 1
+			}
+
+		}
+
+	}
+
+	PC += 2
+	Global.DrawFlag = true
+	DrawFlagCounter ++
+
+}
 
 // ---------------------------- CHIP-8 Exxx instruction set ---------------------------- //
 
