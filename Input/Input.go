@@ -103,7 +103,7 @@ func Keyboard() {
 			if index == 1 {
 				if CPU.Debug {
 					CPU.Debug = false
-
+					Global.SizeYused = 1.0
 					// Show messages
 					if CPU.Debug {
 						fmt.Printf("\t\tDEBUG mode Disabled\n")
@@ -112,6 +112,7 @@ func Keyboard() {
 					Global.ShowMessage = true
 				} else {
 					CPU.Debug = true
+					Global.SizeYused = 0.7
 					// Show messages
 					if CPU.Debug {
 						fmt.Printf("\t\tDEBUG mode Enabled\n")

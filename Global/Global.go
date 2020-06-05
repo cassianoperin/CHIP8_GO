@@ -44,6 +44,7 @@ var (
 	// Screen Size
 	SizeX			float64		// Number of Columns in Graphics
 	SizeY			float64		// Number of Lines in Graphics
+	SizeYused		float64	= 1.0	// Percentage of the Screen Heigh used by the emulator // 1.0 = 100%, 0.0 = 0%
 
 	// ----------------------- SaveStates Variables ----------------------- //
 	SavestateFolder		string = "Savestates"

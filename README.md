@@ -279,6 +279,10 @@ Optional GUI (Graphical user interface) made with fyne.io.
 7. Improve Fx0A (Keyboard)
 8. Emulate CHIP-8X
 9. Emulate MEGA-CHIP
+10. Review and test new games
+11. Create a file for debug draw functions
+12. Core save the opcode message or return it
+13. Add the time track on debug screen (core also return?)
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games
