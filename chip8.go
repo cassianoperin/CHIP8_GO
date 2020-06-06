@@ -89,7 +89,7 @@ func checkArgs() {
 	cliDrawFlag		:= flag.Bool("DrawFlag", false, "Enable Draw Graphics on each Drawflag instead @60Hz")
 	cliDebug			:= flag.Bool("Debug", false, "Enable Debug Mode")
 	cliRewind			:= flag.Bool("Rewind", false, "Enable Rewind Mode")
-	cliHybridETI660	:= flag.Bool("Hybrid-ETI-660", false, "Enable ETI-660 mode for hybrid games made for this hardware")
+	cliHybridETI660	:= flag.Bool("ETI660", false, "Enable ETI-660 mode for hybrid games made for this hardware")
 	cliPause			:= flag.Bool("Pause", false, "Start emulation Paused")
 
 	// wordPtr := flag.String("word", "foo", "a string")
@@ -103,7 +103,7 @@ func checkArgs() {
 	flag.Parse()
 
 	if *cliHelp {
-		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -Hybrid-ETI-660\n    	Enable ETI-660 mode for hybrid games made for this hardware\n  -Pause\n    	Start emulation Paused\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP DelayTimer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
+		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -ETI660\n    	Enable ETI-660 mode for hybrid games made for this hardware\n  -Pause\n    	Start emulation Paused\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP DelayTimer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
 		os.Exit(0)
 	}
 
@@ -117,6 +117,7 @@ func checkArgs() {
 
 	if *cliDebug {
 		CPU.Debug = true
+		Global.SizeYused = 0.7 //Reserve debug screen area
 	}
 
 	if *cliDrawFlag {

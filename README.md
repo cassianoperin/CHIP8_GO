@@ -270,19 +270,14 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 ## Emulator TODO LIST:
 
-1. Turn CPU into a function / core (keep just the instructions, put debug messages and other stuff out of core?)
-2. When Fullscreen on and off, need to change resolution to stabilize
-3. Center Window
-4. Improve debug mode
-5. Handle games in hex mode
-6. Implement automatic detection draw mode (if Draw > 60 use @60hz, otherwise just draw on drawflag)
+1. When Fullscreen on and off, need to change resolution to stabilize
+2. Center Window
+3. Emulate CHIP-8X
+4. Emulate MEGA-CHIP
+5. Review and test new games
+6. Handle games in hex mode
 7. Improve Fx0A (Keyboard)
-8. Emulate CHIP-8X
-9. Emulate MEGA-CHIP
-10. Review and test new games
-11. Create a file for debug draw functions
-12. Core save the opcode message or return it
-13. Add the time track on debug screen (core also return?)
+
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games

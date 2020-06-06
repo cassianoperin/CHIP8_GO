@@ -18,7 +18,8 @@ import (
 // Return to monitor (exit interpreter)
 func opc_chip8_ETI660_0000() {
 	if Debug {
-		fmt.Printf("\t\tHybrid ETI-660 - Opcode 0000 executed: Return to monitor (exit interpreter)\n")
+		OpcMessage = fmt.Sprintf("ETI-660 Hybrid 0000: Return to monitor (exit interpreter)")
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -27,7 +28,9 @@ func opc_chip8_ETI660_0000() {
 func opc_chip8_ETI660_00F8() {
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tHybrid ETI-660 - Opcode 00F8 executed: Turn display on (Do nothing)\t PC+=2\n")
+		OpcMessage = fmt.Sprintf("ETI-660 Hybrid 00F8: Turn display on (Do nothing)\tPC+=2")
+		fmt.Printf("\t\t%s\n" , OpcMessage)
+
 		fmt.Printf("\n\nPROPOSITAL EXIT TO MAP 00F8 USAGE!!!!\n\n")
 		os.Exit(2)
 	}
@@ -38,7 +41,9 @@ func opc_chip8_ETI660_00F8() {
 func opc_chip8_ETI660_00FC() {
 	PC+=2
 	if Debug {
-		fmt.Printf("\t\tHybrid ETI-660 - Opcode 00FC executed: Turn display off (Do nothing)\t PC+=2\n")
+		OpcMessage = fmt.Sprintf("ETI-660 Hybrid 00FC: Turn display off (Do nothing)\tPC+=2")
+		fmt.Printf("\t\t%s\n" , OpcMessage)
+
 		fmt.Printf("\n\nPROPOSITAL EXIT TO MAP 00FC USAGE!!!!\n\n")
 		os.Exit(2)
 	}
@@ -49,7 +54,8 @@ func opc_chip8_ETI660_00FC() {
 func opc_chip8_ETI660_00FF() {
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tHybrid ETI-660 - Opcode 00FF executed: No Operation (do nothing)\tPC+=2\n")
+		OpcMessage = fmt.Sprintf("ETI-660 Hybrid 00FF: No Operation (do nothing)\tPC+=2")
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -62,6 +68,7 @@ func opc_chip8_ETI660_FX00(x uint16) {
 	PC +=2
 
 	if Debug {
-		fmt.Printf("\t\tHybrid ETI-660 - Opcode Fx00 executed: Set the pitch (frequency) of the tone generator (beeper) to value of V[%d]\t\tP=%d\n", x, V[x])
+		OpcMessage = fmt.Sprintf("ETI-660 Hybrid Fx00: Set the pitch of the tone generator to value of V[%d]\tP=%d", x, V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }

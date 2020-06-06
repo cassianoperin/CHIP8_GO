@@ -61,6 +61,7 @@ var (
 	Pause			bool			// Pause (Used to Forward and Rewind CPU Cycles)
 	Debug			bool			// DEBUG mode
 	Debug_L2		bool			// DEBUG Rewind Mode
+	OpcMessage		string			// Debug Message returned after Opcodes
 
 )
 

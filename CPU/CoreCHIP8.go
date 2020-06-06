@@ -60,7 +60,8 @@ func opc_chip8_00E0() {
 	Graphics = [128 * 64]byte{}
 	PC += 2
 	if Debug {
-		fmt.Println("\t\tOpcode 00E0 executed. - Clear the display\n")
+		OpcMessage = fmt.Sprintf("CHIP-8 00E0: Clear the display")
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -72,7 +73,8 @@ func opc_chip8_00EE() {
 	PC = Stack[SP] + 2
 	SP --
 	if Debug {
-		fmt.Printf("\t\tOpcode 00EE executed. - Return from a subroutine (PC=%d)\n", PC)
+		OpcMessage = fmt.Sprintf("CHIP-8 00EE: Return from a subroutine (PC=%d)", PC)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -84,7 +86,8 @@ func opc_chip8_00EE() {
 func opc_chip8_1NNN() {
 	PC = Opcode & 0x0FFF
 	if Debug {
-		fmt.Printf("\t\tOpcode 1nnn executed: Jump to location 0x%d\n", Opcode & 0x0FFF)
+		OpcMessage = fmt.Sprintf("CHIP-8 1nnn: Jump to location 0x%d", Opcode & 0x0FFF)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -98,7 +101,7 @@ func opc_chip8_2NNN() {
 	Stack[SP] = PC
 	PC = Opcode & 0x0FFF
 	if Debug {
-		fmt.Printf("\t\tOpcode 2nnn executed: Call Subroutine at 0x%d\n", PC)
+		fmt.Printf("\t\tOpcode 2nnn executed: Call Subroutine at 0x%d", PC)
 	}
 }
 
@@ -113,12 +116,14 @@ func opc_chip8_3XNN() {
 	if V[x] == nn {
 		PC += 4
 		if Debug {
-			fmt.Printf("\t\tOpcode 3xnn executed: V[x(%d)]:(%d) = nn(%d), skip one instruction.\n", x, V[x], nn)
+			OpcMessage = fmt.Sprintf("CHIP-8 3xnn: V[x(%d)]:(%d) = nn(%d), skip one instruction", x, V[x], nn)
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	} else {
 		PC += 2
 		if Debug {
-			fmt.Printf("\t\tOpcode 3xnn executed: V[x(%d)]:(%d) != nn(%d), do NOT skip one instruction.\n", x, V[x], nn)
+			OpcMessage = fmt.Sprintf("CHIP-8 3xnn: V[x(%d)]:(%d) != nn(%d), do NOT skip one instruction", x, V[x], nn)
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	}
 }
@@ -134,11 +139,13 @@ func opc_chip8_4XNN() {
 	if V[x] != nn {
 		PC += 4
 		if Debug {
-			fmt.Printf("\t\tOpcode 4xnn executed: V[x(%d)]:%d != nn(%d), skip one instruction\n", x, V[x], nn)
+			OpcMessage = fmt.Sprintf("CHIP-8 4xnn: V[x(%d)]:%d != nn(%d), skip one instruction", x, V[x], nn)
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	} else {
 		if Debug {
-			fmt.Printf("\t\tOpcode 4xnn executed: V[x(%d)]:%d = nn(%d), NOT skip one instruction\n", x, V[x], nn)
+			OpcMessage = fmt.Sprintf("CHIP-8 4xnn: V[x(%d)]:%d = nn(%d), DO NOT skip one instruction", x, V[x], nn)
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 		PC += 2
 	}
@@ -156,12 +163,14 @@ func opc_chip8_5XY0() {
 	if (V[x] == V[y]){
 		PC += 4
 		if Debug {
-			fmt.Printf("\t\tOpcode 5xy0 executed: V[x(%d)]:%d EQUAL V[y(%d)]:%d, SKIP one instruction\n", x, V[x], y, V[y])
+			OpcMessage = fmt.Sprintf("CHIP-8 5xy0: V[x(%d)]:%d EQUAL V[y(%d)]:%d, SKIP one instruction", x, V[x], y, V[y])
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	} else {
 		PC += 2
 		if Debug {
-			fmt.Printf("\t\tOpcode 5xy0 executed: V[x(%d)]:%d NOT EQUAL V[y(%d)]:%d, DO NOT SKIP one instruction\n", x, V[x], y, V[y])
+			OpcMessage = fmt.Sprintf("CHIP-8 5xy0: V[x(%d)]:%d NOT EQUAL V[y(%d)]:%d, DO NOT SKIP one instruction", x, V[x], y, V[y])
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	}
 }
@@ -178,7 +187,8 @@ func opc_chip8_6XNN() {
 	V[x] = nn
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 6xnn executed: Set V[x(%d)] = %d\n", x, nn)
+		OpcMessage = fmt.Sprintf("CHIP-8 6xnn: Set V[x(%d)] = %d", x, nn)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -195,7 +205,8 @@ func opc_chip8_7XNN() {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 7xnn executed: Add the value nn(%d) to V[x(%d)]\n", nn, x)
+		OpcMessage = fmt.Sprintf("CHIP-8 7xnn: Add the value nn(%d) to V[x(%d)]", nn, x)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -209,7 +220,8 @@ func opc_chip8_8XY0(x, y uint16) {
 	V[x] = V[y]
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy0 executed: Set V[x(%d)] = V[y(%d)]:%d\n", x, y, V[y])
+		OpcMessage = fmt.Sprintf("CHIP-8 8xy0: Set V[x(%d)] = V[y(%d)]:%d", x, y, V[y])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -220,7 +232,8 @@ func opc_chip8_8XY1(x, y uint16) {
 	V[x] |= V[y]
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy1 executed: Set V[x(%d)]:%d OR V[y(%d)]:%d\n", x, V[x], y, V[y])
+		OpcMessage = fmt.Sprintf("CHIP-8 8xy1: Set V[x(%d)]:%d OR V[y(%d)]:%d", x, V[x], y, V[y])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -231,7 +244,8 @@ func opc_chip8_8XY2(x, y uint16) {
 	V[x] &= V[y]
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy2 executed: Set V[x(%d)] = V[x(%d)] AND V[y(%d)]\n", x, x, y)
+		OpcMessage = fmt.Sprintf("CHIP-8 8xy2: Set V[x(%d)] = V[x(%d)] AND V[y(%d)]", x, x, y)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -241,7 +255,8 @@ func opc_chip8_8XY2(x, y uint16) {
 // and if the bits are not both the same, then the corresponding bit in the result is set to 1. Otherwise, it is 0.
 func opc_chip8_8XY3(x, y uint16) {
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy3 executed:  V[x(%d)]:%d XOR V[y(%d)]:%d \n", x, V[x], y, V[y])
+		OpcMessage = fmt.Sprintf("CHIP-8 8xy3: Set V[x(%d)]:%d XOR V[y(%d)]:%d", x, V[x], y, V[y])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 	V[x] ^= V[y]
 	PC += 2
@@ -258,7 +273,8 @@ func opc_chip8_8XY4(x, y uint16) {
 		V[0xF] = 0
 	}
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy4 executed: Set V[x(%d)] = V[x(%d)]:(%d) + V[y(%d)]:(%d)\n", x, x, V[x], y, V[y])
+		OpcMessage = fmt.Sprintf("CHIP-8 8xy4: Set V[x(%d)] = V[x(%d)]:(%d) + V[y(%d)]:(%d)", x, x, V[x], y, V[y])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 	// Old implementation, sum values, READ THE DOCS IN CASE OF PROBLEMS
 	V[x] += V[y]
@@ -279,7 +295,8 @@ func opc_chip8_8XY5(x, y uint16) {
 	V[x] -= V[y]
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy5 executed: Set V[x(%d)] = V[x(%d)]:%d - V[y(%d)]:%d\n", x, x, V[x], y, V[y])
+		OpcMessage = fmt.Sprintf("CHIP-8 8xy5: Set V[x(%d)] = V[x(%d)]:%d - V[y(%d)]:%d", x, x, V[x], y, V[y])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -298,7 +315,8 @@ func opc_chip8_8XY6(x, y uint16) {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy6 executed: Set V[x(%d)]:%d SHIFT RIGHT 1\n", x, V[x])
+		OpcMessage = fmt.Sprintf("CHIP-8 8xy6: Set V[x(%d)]:%d SHIFT RIGHT 1", x, V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -312,7 +330,8 @@ func opc_chip8_8XY7(x, y uint16) {
 		V[0xF] = 1
 	}
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xy7 executed: Set V[x(%d)]:%d = V[y(%d)]:%d - V[x(%d)]:%d\t\t = %d \n", x, V[x], y, V[y], x, V[x], V[y] - V[x])
+		OpcMessage = fmt.Sprintf("CHIP-8 8xy7: Set V[x(%d)]:%d = V[y(%d)]:%d - V[x(%d)]:%d\t\t = %d", x, V[x], y, V[y], x, V[x], V[y] - V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 	V[x] = V[y] - V[x]
 
@@ -333,7 +352,8 @@ func opc_chip8_8XYE(x, y uint16) {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 8xyE executed: Set V[x(%d)]:%d SHIFT LEFT 1\n", x, V[x])
+		OpcMessage = fmt.Sprintf("CHIP-8 8xyE: Set V[x(%d)]:%d SHIFT LEFT 1", x, V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -349,12 +369,14 @@ func opc_chip8_9XY0() {
 	if ( V[x] != V[y] ) {
 		PC += 4
 		if Debug {
-			fmt.Printf("\t\tOpcode 9xy0 executed: V[x(%d)]:%d != V[y(%d)]:%d, SKIP one instruction\n", x, V[x], y, V[y])
+			OpcMessage = fmt.Sprintf("CHIP-8 9xy0: V[x(%d)]:%d != V[y(%d)]:%d, SKIP one instruction", x, V[x], y, V[y])
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	} else {
 		PC += 2
 		if Debug {
-			fmt.Printf("\t\tOpcode 9xy0 executed: V[x(%d)]:%d = V[y(%d)]:%d, DO NOT SKIP one instruction\n", x, V[x], y, V[y])
+			OpcMessage = fmt.Sprintf("CHIP-8 9xy0: V[x(%d)]:%d = V[y(%d)]:%d, DO NOT SKIP one instruction", x, V[x], y, V[y])
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	}
 }
@@ -368,7 +390,8 @@ func opc_chip8_ANNN() {
 	I = Opcode & 0x0FFF
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode Annn executed: Set I = %d\n", I)
+		OpcMessage = fmt.Sprintf("CHIP-8 Annn: Set I = %d", I)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -381,7 +404,8 @@ func opc_chip8_BNNN() {
 	nnn := Opcode & 0x0FFF
 	PC = nnn + uint16(V[0])
 	if Debug {
-		print ("\t\tOpcode Bnnn executed: Jump to location nnn(%d) + V[0(%d)]\n", nnn, V[0])
+		OpcMessage = fmt.Sprintf("CHIP-8 Bnnn: Jump to location nnn(%d) + V[0(%d)]", nnn, V[0])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -396,7 +420,8 @@ func opc_chip8_CXNN() {
 	V[x] = byte(rand.Float32()*255) & byte(nn)
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode Cxnn executed: V[x(%d)] = %d (random byte AND nn(%d)) = %d\n", x, V[x], nn, V[x])
+		OpcMessage = fmt.Sprintf("CHIP-8 Cxnn: V[x(%d)] = %d (random byte AND nn(%d)) = %d", x, V[x], nn, V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -417,8 +442,11 @@ func opc_chip8_DXYN(opcode uint16) {
 	)
 
 	if Debug {
-		fmt.Printf("\t\tOpcode Dxyn(%X) DRAW GRAPHICS! - Address I: %d Position V[x]: %d V[y]: %d N: %d bytes\n" , Opcode, I, V[x], V[y], n)
+		OpcMessage = fmt.Sprintf("CHIP-8 Dxyn: DRAW GRAPHICS - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d N: %d", I, x, V[x], y, V[y], n)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
+
+
 
 	// Clean the colision flag
 	V[0xF] = 0
@@ -498,12 +526,14 @@ func opc_chip8_EX9E(x uint16) {
 	if Key[V[x]] == 1 {
 		PC += 4
 		if Debug {
-			fmt.Printf("\t\tOpcode Ex9E executed: Key[%d] pressed, skip one instruction\n",V[x])
+			OpcMessage = fmt.Sprintf("CHIP-8 Ex9E: Key[%d] pressed, skip one instruction", V[x])
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	} else {
 		PC += 2
 		if Debug {
-			fmt.Printf("\t\tOpcode Ex9E executed: Key[%d] NOT pressed, continue\n",V[x])
+			OpcMessage = fmt.Sprintf("CHIP-8 Ex9E: Key[%d] NOT pressed, continue", V[x])
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	}
 }
@@ -515,13 +545,15 @@ func opc_chip8_EXA1(x uint16) {
 	if Key[V[x]] == 0 {
 		PC += 4
 		if Debug {
-			fmt.Printf("\t\tOpcode ExA1 executed: Key[%d] NOT pressed, skip one instruction\n",V[x])
+			OpcMessage = fmt.Sprintf("CHIP-8 ExA1: Key[%d] NOT pressed, skip one instruction", V[x])
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	} else {
 		Key[V[x]] = 0
 		PC += 2
 		if Debug {
-			fmt.Printf("\t\tOpcode ExA1 executed: Key[%d] pressed, continue\n",V[x])
+			OpcMessage = fmt.Sprintf("CHIP-8 ExA1: Key[%d] pressed, continue\n", V[x])
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	}
 }
@@ -535,7 +567,8 @@ func opc_chip8_FX07(x uint16) {
 	V[x] = DelayTimer
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx07 executed: Set V[x(%d)] with value of DelayTimer(%d)\n", x, DelayTimer)
+		OpcMessage = fmt.Sprintf("CHIP-8 Fx07: Set V[x(%d)] with value of DelayTimer(%d)", x, DelayTimer)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -550,7 +583,8 @@ func opc_chip8_FX0A(x uint16) {
 			pressed = 1
 			PC +=2
 			if Debug {
-				fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key (Key[%d]) press -  (PRESSED)\n", i)
+				OpcMessage = fmt.Sprintf("CHIP-8 Fx0A: Wait for a key (Key[%d]) press = (PRESSED)", i)
+				fmt.Printf("\t\t%s\n" , OpcMessage)
 			}
 			// Stop after find the first key pressed
 			break
@@ -558,7 +592,8 @@ func opc_chip8_FX0A(x uint16) {
 	}
 	if pressed == 0 {
 		if Debug {
-			fmt.Printf("\t\tOpcode Fx0A executed: Wait for a key press - (NOT PRESSED)\n")
+			OpcMessage = fmt.Sprintf("CHIP-8 Fx0A: Wait for a key press = (NOT PRESSED)")
+			fmt.Printf("\t\t%s\n" , OpcMessage)
 		}
 	}
 }
@@ -570,7 +605,8 @@ func opc_chip8_FX15(x uint16) {
 	DelayTimer = V[x]
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx15 executed: Set delay timer = V[x(%d):%d]\n", x, V[x])
+		OpcMessage = fmt.Sprintf("CHIP-8 Fx15: Set delay timer = V[x(%d):%d]", x, V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -581,7 +617,8 @@ func opc_chip8_FX18(x uint16) {
 	SoundTimer = V[x]
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx18 executed: Set sound timer = V[x(%d)]:%d\n",x, V[x])
+		OpcMessage = fmt.Sprintf("CHIP-8 Fx18: Set sound timer = V[x(%d)]:%d",x, V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -594,7 +631,8 @@ func opc_chip8_FX18(x uint16) {
 // This undocumented feature of the Chip-8 and used by Spacefight 2091!
 func opc_chip8_FX1E(x uint16) {
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx1E executed: Add the value of V[x(%d)]:%d to I(%d)\n",x, V[x], I)
+		OpcMessage = fmt.Sprintf("CHIP-8 Fx1E: Add the value of V[x(%d)]:%d to I(%d)",x, V[x], I)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 
 	// *** Implement the undocumented feature used by Spacefight 2091
@@ -622,7 +660,8 @@ func opc_chip8_FX29(x uint16) {
 	I = uint16(V[x]) * 5
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx29 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*5)\n", I, x, V[x])
+		OpcMessage = fmt.Sprintf("CHIP-8 Fx29: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*5)", I, x, V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -643,7 +682,8 @@ func opc_chip8_FX33(x uint16) {
 	Memory[I+2] = (V[x] % 100) % 10
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx33 executed: Store BCD representation of V[x(%d)]:%d in memory locations I(%X):%d, I+1(%X):%d, and I+2(%X):%d\n", x, V[x], I, Memory[I], I+1, Memory[I+1], I+2, Memory[I+2])
+		OpcMessage = fmt.Sprintf("CHIP-8 Fx33: Store BCD of V[x(%d)]:%d in memory locations I(%X):%d, I+1(%X):%d, and I+2(%X):%d", x, V[x], I, Memory[I], I+1, Memory[I+1], I+2, Memory[I+2])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -665,7 +705,8 @@ func opc_chip8_FX55(x uint16) {
 	}
 
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx55 executed: Registers V[0] through V[x(%d)] in memory starting at location I(%d)\n",x, I)
+		OpcMessage = fmt.Sprintf("CHIP-8 Fx55: Registers V[0] through V[x(%d)] in memory starting at location I(%d)",x, I)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -688,7 +729,9 @@ func opc_chip8_FX65(x uint16) {
 	}
 
 	if Debug {
-		fmt.Printf("\t\tOpcode Fx65 executed: Read registers V[0] through V[x(%d)] from memory starting at location I(%d)\n",x, I)
+		OpcMessage = fmt.Sprintf("CHIP-8 Fx65: Read registers V[0] through V[x(%d)] from memory starting at location I(%d)",x, I)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
+
 		for i := 0 ; i <= int(x) ; i ++ {
 			fmt.Printf("\t\tV[%d]= %d\n",i, V[i])
 		}
@@ -716,6 +759,7 @@ func opc_chip8_ND_02D8() {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tOpcode 02DB executed (NON DOCUMENTED). - Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.\n", I, I , I+1, I+2)
+		OpcMessage = fmt.Sprintf("CHIP-8 02DB (NON DOCUMENTED): Load from memory at address I(%d) into V[0]= %d, V[1]= %d and V[2]= %d.", I, I , I+1, I+2)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }

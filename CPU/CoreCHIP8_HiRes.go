@@ -25,7 +25,8 @@ func opc_chip8HiRes_0230() {
 	PC += 2
 
 	if Debug {
-		fmt.Println("\t\tHIRES - Opcode 0230 executed. - Clear the display\n")
+		OpcMessage = fmt.Sprintf("HIRES 0230: Clear the display")
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -38,7 +39,8 @@ func opc_chip8HiRes_1NNN() {
 
 	// After show the execution time
 	if Debug {
-		fmt.Printf("\t\tHIRES - Opcode 1260 WITH PC=0x200. Init 64x64 Chip8 hires mode. Opcode=0x12C0, jump to address 0x2c0 -> (PC=0x2c0)\n")
+		OpcMessage = fmt.Sprintf("HIRES 1260 WITH PC=0x200: Init 64x64 mode. PC=0x2C0 (jump to address 0x2c0)")
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -50,6 +52,7 @@ func opc_chip8HiRes_00F0() {
 	PC = Stack[SP] + 2
 	SP --
 	if Debug {
-		fmt.Printf("\t\tCHIP-8X Two-page display (Extension) - Opcode 00F0 executed. - Return from subroutine (replaces 00EE in CHIP-8x).\n")
+		OpcMessage = fmt.Sprintf("CHIP-8X Two-page display 00F0: Return from subroutine (replaces 00EE in CHIP-8x)")
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }

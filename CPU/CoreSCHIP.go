@@ -49,7 +49,8 @@ func opc_schip_00CN(x uint16) {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tSCHIP - Opcode 00CN executed. - Scroll display %d lines down.\n", int(x))
+		OpcMessage = fmt.Sprintf("SCHIP 00CN: Scroll display %d lines down", int(x))
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }
 
@@ -101,7 +102,8 @@ func opc_schip_00FB() {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tSCHIP - Opcode 00FB executed. - Scroll display 4 pixels right.\n")
+		OpcMessage = fmt.Sprintf("SCHIP 00FB: Scroll display 4 pixels right")
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }
 
@@ -147,7 +149,8 @@ func opc_schip_00FC() {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tSCHIP - Opcode 00FC executed. - Scroll display 4 pixels left.\n")
+		OpcMessage = fmt.Sprintf("SCHIP 00FC: Scroll display 4 pixels left")
+		fmt.Printf("\t\t%st.\n", OpcMessage)
 	}
 }
 
@@ -155,7 +158,8 @@ func opc_schip_00FC() {
 // SCHIP - 00FD
 // Exit Emulator
 func opc_schip_00FD() {
-	fmt.Printf("SCHIP - Opcode 00FD executed. - Exit emulator.\n")
+	OpcMessage = fmt.Sprintf("SCHIP 00FD: Exit emulator")
+	fmt.Printf("%s\n", OpcMessage)
 	os.Exit(0)
 }
 
@@ -183,7 +187,8 @@ func opc_schip_00FE() {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tSCHIP - Opcode 00FE executed. - Enable low res (64 x 32) mode.\n")
+		OpcMessage = fmt.Sprintf("SCHIP 00FE: Enable low res (64 x 32) mode")
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }
 
@@ -211,7 +216,8 @@ func opc_schip_00FF() {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tSCHIP - Opcode 00FF executed. - Enable high res (128 x 64) mode.\n")
+		OpcMessage = fmt.Sprintf("SCHIP 00FF: Enable high res (128 x 64) mode")
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }
 
@@ -233,7 +239,8 @@ func opc_schip_DXY0(Opcode uint16) {
 	)
 
 	if Debug {
-		fmt.Printf("\t\tSCHIP - Opcode Dxy0 HI-RES MODE (%X) DRAW GRAPHICS! - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d\n" , Opcode, I, x, V[x], y, V[y])
+		OpcMessage = fmt.Sprintf("SCHIP Dxy0: DRAW GRAPHICS - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d", I, x, V[x], y, V[y])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 
 	// Turn n in 16 (pixel size in SCHIP Mode)
@@ -348,7 +355,8 @@ func opc_schip_FX30(x uint16) {
 	I = 80 + uint16(V[x]) * 10
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tSCHIP Opcode Fx30 executed: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*10)\n", I, x, V[x])
+		OpcMessage = fmt.Sprintf("SCHIP Fx30: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*10)", I, x, V[x])
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -361,7 +369,8 @@ func opc_schip_FX75(x uint16) {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tSCHIP - Opcode Fx75 executed: Read RPL user flags from 0 to %d and store in V[0] through V[x(%d)]\n",x,x)
+		OpcMessage = fmt.Sprintf("SCHIP Fx75: Read RPL user flags from 0 to %d and store in V[0] through V[x(%d)]",x,x)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
 
@@ -374,6 +383,7 @@ func opc_schip_FX85(x uint16) {
 
 	PC += 2
 	if Debug {
-		fmt.Printf("\t\tSCHIP - Opcode Fx85 executed: Read registers V[0] through V[x(%d)] and store in RPL user flags\n",x)
+		OpcMessage = fmt.Sprintf("SCHIP Fx85: Read registers V[0] through V[x(%d)] and store in RPL user flags",x)
+		fmt.Printf("\t\t%s\n" , OpcMessage)
 	}
 }
