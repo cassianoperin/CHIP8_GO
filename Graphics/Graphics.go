@@ -2,6 +2,7 @@ package Graphics
 
 import (
 	"fmt"
+	// "math"
 	"Chip8/CPU"
 	"Chip8/Input"
 	"Chip8/Global"
@@ -32,6 +33,9 @@ var (
 	screenHeight	= float64(480)
 )
 
+type Vec struct {
+    X, Y float64
+}
 
 // Print Graphics on Console
 func drawGraphicsConsole() {
@@ -61,13 +65,15 @@ func renderGraphics() {
 		Resizable: false,
 		Undecorated: false,
 		NoIconify: false,
-		AlwaysOnTop: true,
+		AlwaysOnTop: false,
 	}
 	var err error
 	Global.Win, err = pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
 	}
+
+
 
 	// Disable Smooth
 	Global.Win.SetSmooth(true)
@@ -84,8 +90,53 @@ func renderGraphics() {
 				Monitor: monitors[i],
 				Mode:    &modes[j],
 			})
+
+
 		}
+
+		// Determine monitor size in pixels to center the window
+		Global.MonitorWidth, Global.MonitorHeight = monitors[i].Size()
+		// fmt.Printf("-size: %v px, %v px\n", Global.MonitorWidth, Global.MonitorHeight)
+
 	}
+
+	// Complete monitor info
+	// for i, m := range monitors {
+	//
+	// 		// fmt.Printf("monitor %v:\n", i)
+	// 		//
+	// 		// name := m.Name()
+	// 		// fmt.Printf("-name: %v\n", name)
+	// 		//
+	// 		// bitDepthRed, bitDepthGreen, bitDepthBlue := m.BitDepth()
+	// 		// fmt.Printf("-bitDepth: %v-bit red, %v-bit green, %v-bit blue\n",
+	// 		// 	bitDepthRed, bitDepthGreen, bitDepthBlue)
+	// 		//
+	// 		// physicalSizeWidth, physicalSizeHeight := m.PhysicalSize()
+	// 		// fmt.Printf("-physicalSize: %v mm, %v mm\n",
+	// 		// 	physicalSizeWidth, physicalSizeHeight)
+	// 		//
+	// 		// positionX, positionY := m.Position()
+	// 		// fmt.Printf("-position: %v, %v upper-left corner\n",
+	// 		// 	positionX, positionY)
+	// 		//
+	// 		// refreshRate := m.RefreshRate()
+	// 		// fmt.Printf("-refreshRate: %v Hz\n", refreshRate)
+	//
+	// 		sizeWidth, sizeHeight := m.Size()
+	// 		fmt.Printf("-size: %v px, %v px\n",
+	// 			sizeWidth, sizeHeight)
+	//
+	// 		// videoModes := m.VideoModes()
+	// 		//
+	// 		// for j, vm := range videoModes {
+	// 		//
+	// 		// 	fmt.Printf("-video mode %v: -width: %v px, height: %v px, refresh rate:%v Hz\n",
+	// 		// 		j, vm.Width, vm.Height, vm.RefreshRate)
+	// 		//
+	// 		// }
+	// 	}
+
 
 	// Set Initial resolution
 	Global.ActiveSetting = &Global.Settings[3]
@@ -97,6 +148,9 @@ func renderGraphics() {
 	}
 	Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
 
+	// Center Window
+	Global.CenterWindow()
+
 
 	//Initialize FPS Text
 	textFPS	= text.New(pixel.V(10, 470), atlas)
@@ -106,6 +160,9 @@ func renderGraphics() {
 	// Initialize CPU Debug Message
 	cpuMessage = text.New(pixel.V(10, 150), atlas)
 }
+
+
+
 
 
 func drawGraphics(graphics [128 * 64]byte) {
@@ -163,7 +220,6 @@ func drawGraphics(graphics [128 * 64]byte) {
 	width		:= screenWidth/Global.SizeX
 	height		:= screenHeight/Global.SizeY * Global.SizeYused	// Define the heigh of the pixel, considering the percentage of screen reserved for emulator
 
-
 	// Need to be here to avoid drawing again
 	if CPU.Debug {
 		drawDebugScreen(imd)
@@ -213,6 +269,8 @@ func drawGraphics(graphics [128 * 64]byte) {
 		textMessage.Draw(Global.Win, pixel.IM.Scaled(textMessage.Orig, 1))
 	}
 
+
+
 }
 
 
@@ -221,11 +279,12 @@ func Run() {
 
 	// ----------------------- Pre Loop Stuff -----------------------//
 
+
 	// Set up render system
 	renderGraphics()
 
 	// Disable on screen Mouse Cursor
-	Global.Win.SetCursorVisible(false)
+	Global.Win.SetCursorVisible(true)
 
 	// Create a clean memory needed by some games on reset
 	CPU.MemoryCleanSnapshot = CPU.Memory
@@ -272,9 +331,12 @@ func Run() {
 		fmt.Println("Pause Enabled\n")
 	}
 
+
 	// --------------------- Main Infinite Loop ---------------------//
 	for !Global.Win.Closed() {
 
+		// time.Sleep(25 * time.Millisecond) // ~50fps
+		Global.Win.Update()
 
 		// Esc to quit program
 		if Global.Win.Pressed(pixelgl.KeyEscape) {

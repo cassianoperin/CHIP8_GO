@@ -255,6 +255,8 @@ func Keyboard() {
 				}
 				Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
 
+				Global.CenterWindow()
+
 				// Show messages
 				if CPU.Debug {
 					fmt.Printf("\t\tResolution mode[%d]: %dx%d @ %dHz\n",Global.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)

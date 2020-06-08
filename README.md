@@ -271,12 +271,10 @@ Optional GUI (Graphical user interface) made with fyne.io.
 ## Emulator TODO LIST:
 
 1. When Fullscreen on and off, need to change resolution to stabilize
-2. Center Window
-3. Emulate CHIP-8X
-4. Emulate MEGA-CHIP
-5. Review and test new games
-6. Handle games in hex mode
-7. Improve Fx0A (Keyboard)
+2. Emulate CHIP-8X
+3. Emulate MEGA-CHIP
+4. Handle games in hex mode
+5. Test new CHIP-8 games
 
 
 ## GUI TODO LIST:
