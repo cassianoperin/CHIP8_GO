@@ -273,8 +273,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 1. When Fullscreen on and off, need to change resolution to stabilize
 2. Emulate CHIP-8X
 3. Emulate MEGA-CHIP
-4. Handle games in hex mode
-5. Test new CHIP-8 games
+4. Center Window
+5. Test and improve hex mode
 
 
 ## GUI TODO LIST:
@@ -284,3 +284,4 @@ Optional GUI (Graphical user interface) made with fyne.io.
 4. Make it work on Windows
 5. Add tab for CHIP8 HiRes Games
 6. Add configuration for CHIP8 HIRES ROMs Path
+7. Migrate from beta to fyne 1.3 final

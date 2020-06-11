@@ -7,12 +7,17 @@ import (
 	"log"
 	"flag"
 	"runtime"
+	"strconv"
 	"crypto/md5"
 	"Chip8/CPU"
 	"Chip8/Global"
 	"Chip8/Graphics"
 	"Chip8/Sound"
 	"github.com/faiface/pixel/pixelgl"
+)
+
+var (
+	hexFlag	bool
 )
 
 
@@ -47,11 +52,19 @@ func readROM(filename string) {
 	romsize := fileInfo.Size()
 	fmt.Printf("Size in bytes: %d\n", romsize)
 
-	// Don't run with files bigger than 4KB
-	if romsize >= 4096 {
-		fmt.Printf("File bigger than 4KB, invalid ROM.\n")
-		os.Exit(0)
+	// Don't run with files bigger than 4KB (binary) or 10KB (Hexadecimal)
+	if hexFlag {
+		if romsize >= 10240 {
+			fmt.Printf("Hexadecimal bigger than 10KB, invalid ROM.\n")
+			os.Exit(0)
+		}
+	} else {
+		if romsize >= 4096 {
+			fmt.Printf("Binary file bigger than 4KB, invalid ROM.\n")
+			os.Exit(0)
+		}
 	}
+
 
 	// Open ROM file, insert all bytes into memory
 	file, err := os.Open(filename)
@@ -63,15 +76,81 @@ func readROM(filename string) {
 	// Call ReadContent passing the total size of bytes
 	data := ReadContent(file, int(romsize))
 	// Print raw data
-	//fmt.Printf("%d\n", data)
-	//fmt.Printf("%X\n", data)
+	// fmt.Printf("%d\n", data)
+	// fmt.Printf("%X\n", data)
+	// fmt.Printf("%s\n", data)
 
-	// Load ROM from 0x200 address in memory, or 0x600 for hybrid hardware ETI-600
-	for i := 0; i < len(data); i++ {
-		if Global.Hybrid_ETI_660_HW {
-			CPU.Memory[i+1536] = data[i]	// start at 0x600
-		} else {
-			CPU.Memory[i+512] = data[i]	// start at 0x200
+
+	// If rom format is HEXADECIMAL (.hex)
+	if hexFlag {
+		var (
+			rom_raw	[]byte
+			rom		[]byte
+		)
+
+		// Filter only hexadecimal characters
+		for i := 0; i < len(data); i++ {
+
+			// Put into rom_raw slice if is a number [0-9]
+			for j := 0; j <= 9; j++ {
+				// Compare the value in data[i] with [0-9]
+				if string(data[i]) == strconv.Itoa(j) {
+					tmp := fmt.Sprintf("0x%s",string(data[i]) )
+					d, _ := strconv.ParseInt(tmp, 0, 10)
+					rom_raw = append(rom_raw, byte(d))
+
+				}
+			}
+
+			// Put into rom_raw slice if a letter [A-F]
+			for j := 'A'; j <= 'F'; j++ {
+				// Compare the value in data[i] with [A-F]
+				if string(data[i]) == string(j) {
+					tmp := fmt.Sprintf("0x%s",string(data[i]) )
+					d, _ := strconv.ParseInt(tmp, 0, 10)
+					rom_raw = append(rom_raw, byte(d))
+				}
+			}
+
+			// Put into rom_raw slice if a letter [a-f]
+			for j := 'a'; j <= 'f'; j++ {
+				// Compare the value in data[i] with [a-f]
+				if string(data[i]) == string(j) {
+					tmp := fmt.Sprintf("0x%s",string(data[i]) )
+					d, _ := strconv.ParseInt(tmp, 0, 10)
+					rom_raw = append(rom_raw, byte(d))
+				}
+			}
+		}
+
+		// Agroup each 2 bytes into one
+		for i := 0; i < len(rom_raw); i+=2 {
+				tmp := fmt.Sprintf("0x%02X", uint8(rom_raw[i])<<4 | uint8(rom_raw[i+1]) )
+				d, _ := strconv.ParseInt(tmp, 0, 10)
+				rom = append(rom, byte(d))
+		}
+
+		// Put ROM into the memory (starting at 0x200)
+		for i := 0; i < len(rom); i++ {
+			if Global.Hybrid_ETI_660_HW {
+				CPU.Memory[i+1536] = rom[i]	// start at 0x600
+			} else {
+				CPU.Memory[i+512] = rom[i]	// start at 0x200
+			}
+		}
+
+		// fmt.Printf("\nROM (only Hex characters):\n%d\n", rom_raw)
+		// fmt.Printf("\nROM:\n%02X\n", rom)
+
+	// If rom format is BINARY (.ch8)
+	} else {
+		// Load ROM from 0x200 address in memory, or 0x600 for hybrid hardware ETI-600
+		for i := 0; i < len(data); i++ {
+			if Global.Hybrid_ETI_660_HW {
+				CPU.Memory[i+1536] = data[i]	// start at 0x600
+			} else {
+				CPU.Memory[i+512] = data[i]	// start at 0x200
+			}
 		}
 	}
 
@@ -91,6 +170,7 @@ func checkArgs() {
 	cliRewind			:= flag.Bool("Rewind", false, "Enable Rewind Mode")
 	cliHybridETI660	:= flag.Bool("ETI660", false, "Enable ETI-660 mode for hybrid games made for this hardware")
 	cliPause			:= flag.Bool("Pause", false, "Start emulation Paused")
+	cliHex			:= flag.Bool("Hex", false, "Open roms in Hexadecimal format")
 
 	// wordPtr := flag.String("word", "foo", "a string")
 	// numbPtr := flag.Int("numb", 42, "an int")
@@ -103,7 +183,7 @@ func checkArgs() {
 	flag.Parse()
 
 	if *cliHelp {
-		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -ETI660\n    	Enable ETI-660 mode for hybrid games made for this hardware\n  -Pause\n    	Start emulation Paused\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP DelayTimer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
+		fmt.Printf("Usage: %s [options] ROM_FILE\n  -Debug\n    	Enable Debug Mode\n  -DrawFlag\n    	Enable Draw Graphics on each Drawflag instead @60Hz\n  -ETI660\n    	Enable ETI-660 mode for hybrid games made for this hardware\n  -Hex\n    	Open roms in Hexadecimal format\n  -Pause\n    	Start emulation Paused\n  -Rewind Mode\n    	Enable Rewind Mode\n  -SchipHack\n    	Enable SCHIP DelayTimer hack mode to improve speed\n  -help\n    	Show this menu\n\n", os.Args[0])
 		os.Exit(0)
 	}
 
@@ -134,6 +214,10 @@ func checkArgs() {
 
 	if *cliPause {
 		CPU.Pause = true
+	}
+
+	if *cliHex {
+		hexFlag = true
 	}
 
 }

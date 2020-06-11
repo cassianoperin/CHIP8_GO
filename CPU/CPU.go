@@ -464,7 +464,7 @@ func Interpreter() {
 					opc_chip8_FX07(x)
 					break
 
-				// Fx0A (CHIP-8)
+				// Fx0A (CHIP-*)
 				case 0x000A:
 					opc_chip8_FX0A(x)
 					break
