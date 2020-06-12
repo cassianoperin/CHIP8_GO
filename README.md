@@ -274,8 +274,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 2. Emulate CHIP-8X
 3. Emulate MEGA-CHIP
 4. Center Window
-5. Test and improve hex mode
-
+5. Test new chip8 games and update EmulationStatus
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games
