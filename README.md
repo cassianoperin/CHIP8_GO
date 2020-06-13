@@ -273,8 +273,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 1. When Fullscreen on and off, need to change resolution to stabilize
 2. Emulate CHIP-8X
 3. Emulate MEGA-CHIP
-4. Center Window
-5. Test new chip8 games and update EmulationStatus
+4. Test new chip8 games and update EmulationStatus
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games

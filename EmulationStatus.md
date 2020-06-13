@@ -5,6 +5,7 @@
 | :------------ |:----------------:| :-----|
 | 15 Puzzle [Roger Ivie] | OK | |
 | 15 Puzzle [Roger Ivie] (alt) | OK        | |
+| Acey Deucy | NOT OK | Graphic Glitches |
 | Addition Problems [Paul C. Moews] | OK | Keyboard too fast |
 | Airplane | OK | |
 | Animal Race [Brian Astle] | Almost OK | Graphical glitch after first race |
@@ -14,6 +15,7 @@
 | Blinky [Hans Christian Egeberg] (alt) | OK | |
 | Blitz [David Winter] | OK | |
 | Bowling [Gooitzen van der Wal] | OK | |
+| Breakfree [David Winter] | NOT OK | Opcode E09E - index out of range [22] with length 16	|
 | Breakout (Brix hack) [David Winter, 1997] | OK | |
 | Breakout [Carmelo Cortez, 1979] | OK | |
 | Brick (Brix hack, 1990) | OK | |
@@ -23,18 +25,24 @@
 | Connect 4 [David Winter] | OK | |
 | Craps [Camerlo Cortez, 1978] | OK | |
 | Deflection [John Fort] | OK | |
+| Dog Fight | OK | |
+| Dot-dash | OK | |
 | Figures | OK |  |
 | Filter | OK | |
 | Guess [David Winter] (alt) | OK | |
 | Guess [David Winter] | OK | |
 | Hi-Lo [Jef Winsor, 1978] | OK | |
 | Hidden [David Winter, 1996] | OK | |
+| Jackpot | OK | |
 | Kaleidoscope [Joseph Weisbecker, 1978] | OK | |
+| Knockout | OK | |
 | Landing | OK | |
 | Lunar Lander (Udo Pernisz, 1979) | OK | |
 | Mastermind FourRow (Robert Lindley, 1978) | OK | |
 | Merlin [David Winter] | OK | |
+| Miniature Golf | NOT OK | Need to test better |
 | Missile [David Winter] | OK | |
+| Modified Kaleidoscope [TCNJ S.572.3] | OK | |
 | Most Dangerous Game [Peter Maruhnic] | OK | |
 | Nim [Carmelo Cortez, 1978] | OK | |
 | Paddles | OK | |
@@ -42,6 +50,7 @@
 | Pong (alt) | OK | |
 | Pong 2 (Pong hack) [David Winter, 1997] | OK | |
 | Pong [Paul Vervalin, 1990] | OK | |
+| Private Eye [TCNJ S.572.37] | NOT OK | Graphic Glitches |
 | Programmable Spacefighters [Jef Winsor] | OK | |
 | Puzzle | OK | |
 | Reversi [Philip Baltzer] | OK | |

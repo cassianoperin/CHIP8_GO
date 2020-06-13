@@ -262,6 +262,8 @@ func Keyboard() {
 				Global.TextMessageStr=fmt.Sprintf("Resolution mode[%d]: %dx%d @ %dHz",Global.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
 				Global.ShowMessage = true
 
+				Global.CenterWindow()
+
 			}
 
 			// Fullscreen

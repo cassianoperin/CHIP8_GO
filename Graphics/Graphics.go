@@ -85,7 +85,48 @@ func renderGraphics() {
 				Mode:    &modes[j],
 			})
 		}
+
+		// Determine monitor size in pixels to center the window
+		Global.MonitorWidth, Global.MonitorHeight = monitors[i].Size()
+		// fmt.Printf("-size: %v px, %v px\n", Global.MonitorWidth, Global.MonitorHeight)
 	}
+
+	// Complete monitor info
+	// for i, m := range monitors {
+	//
+	// 		// fmt.Printf("monitor %v:\n", i)
+	// 		//
+	// 		// name := m.Name()
+	// 		// fmt.Printf("-name: %v\n", name)
+	// 		//
+	// 		// bitDepthRed, bitDepthGreen, bitDepthBlue := m.BitDepth()
+	// 		// fmt.Printf("-bitDepth: %v-bit red, %v-bit green, %v-bit blue\n",
+	// 		// 	bitDepthRed, bitDepthGreen, bitDepthBlue)
+	// 		//
+	// 		// physicalSizeWidth, physicalSizeHeight := m.PhysicalSize()
+	// 		// fmt.Printf("-physicalSize: %v mm, %v mm\n",
+	// 		// 	physicalSizeWidth, physicalSizeHeight)
+	// 		//
+	// 		// positionX, positionY := m.Position()
+	// 		// fmt.Printf("-position: %v, %v upper-left corner\n",
+	// 		// 	positionX, positionY)
+	// 		//
+	// 		// refreshRate := m.RefreshRate()
+	// 		// fmt.Printf("-refreshRate: %v Hz\n", refreshRate)
+	//
+	// 		sizeWidth, sizeHeight := m.Size()
+	// 		fmt.Printf("-size: %v px, %v px\n",
+	// 			sizeWidth, sizeHeight)
+	//
+	// 		// videoModes := m.VideoModes()
+	// 		//
+	// 		// for j, vm := range videoModes {
+	// 		//
+	// 		// 	fmt.Printf("-video mode %v: -width: %v px, height: %v px, refresh rate:%v Hz\n",
+	// 		// 		j, vm.Width, vm.Height, vm.RefreshRate)
+	// 		//
+	// 		// }
+	// 	}
 
 	// Set Initial resolution
 	Global.ActiveSetting = &Global.Settings[3]
@@ -97,6 +138,12 @@ func renderGraphics() {
 	}
 	Global.Win.SetBounds(pixel.R(0, 0, float64(Global.ActiveSetting.Mode.Width), float64(Global.ActiveSetting.Mode.Height)))
 
+	// Center Window
+	Global.CenterWindow()
+	// winPos := Global.Win.GetPos()
+	// winPos.X = (Global.MonitorWidth  - float64(Global.ActiveSetting.Mode.Width) ) / 2
+	// winPos.Y = (Global.MonitorHeight - float64(Global.ActiveSetting.Mode.Height) ) / 2
+	// Global.Win.SetPos(winPos)
 
 	//Initialize FPS Text
 	textFPS	= text.New(pixel.V(10, 470), atlas)

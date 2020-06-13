@@ -45,6 +45,9 @@ var (
 	SizeX			float64		// Number of Columns in Graphics
 	SizeY			float64		// Number of Lines in Graphics
 	SizeYused		float64	= 1.0	// Percentage of the Screen Heigh used by the emulator // 1.0 = 100%, 0.0 = 0%
+	// Monitor Size (to center Window)
+	MonitorWidth	float64
+	MonitorHeight	float64
 
 	// ----------------------- SaveStates Variables ----------------------- //
 	SavestateFolder		string = "Savestates"
@@ -57,3 +60,11 @@ var (
 	Hybrid_ETI_660_HW	bool = false
 
 )
+
+// Center Window Function
+func CenterWindow() {
+	winPos := Win.GetPos()
+	winPos.X = (MonitorWidth  - float64(ActiveSetting.Mode.Width) ) / 2
+	winPos.Y = (MonitorHeight - float64(ActiveSetting.Mode.Height) ) / 2
+	Win.SetPos(winPos)
+}
