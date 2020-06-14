@@ -23,16 +23,16 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 
 ## Features
-* Pause and resume emulation
-* Reset emulation
-* Step Forward CPU Cycles for Debug
-* Step Back (Rewind) CPU Cycles for Debug (Need to be activated on command line with -Rewind)
-* Online Debug mode
-* Increase and Decrease CPU Clock Speed
-* Color Themes
-* Save States
-* Fullscreen
-* Optional GUI
+* ![100%](https://progress-bar.dev/100) Pause and resume emulation
+* ![100%](https://progress-bar.dev/100) Reset emulation
+* ![100%](https://progress-bar.dev/100) Step Forward CPU Cycles for Debug
+* ![100%](https://progress-bar.dev/100) Step Back (Rewind) CPU Cycles for Debug (Need to be activated on command line with -Rewind)
+* ![100%](https://progress-bar.dev/100) On-screen Debug mode
+* ![100%](https://progress-bar.dev/100) Increase and Decrease CPU Clock Speed
+* ![100%](https://progress-bar.dev/100) Color Themes
+* ![100%](https://progress-bar.dev/100) Save States
+* ![100%](https://progress-bar.dev/100) Fullscreen
+* ![70%](https://progress-bar.dev/70) Optional GUI
 
 ## EMULATOR Build Instructions
 
