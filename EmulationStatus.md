@@ -15,7 +15,7 @@
 | Blinky [Hans Christian Egeberg] (alt) | OK | |
 | Blitz [David Winter] | OK | |
 | Bowling [Gooitzen van der Wal] | OK | |
-| Breakfree [David Winter] | NOT OK | Opcode E09E - index out of range [22] with length 16	|
+| Breakfree [David Winter] | OK | |
 | Breakout (Brix hack) [David Winter, 1997] | OK | |
 | Breakout [Carmelo Cortez, 1979] | OK | |
 | Brick (Brix hack, 1990) | OK | |

@@ -15,7 +15,7 @@ var (
 	DXY0_loresWideSpriteQuirks	bool	= false		// DXY0_loresWideSpriteQuirks - Draws a 16x16 sprite even in low-resolution (64x32) mode, row-major
 	scrollQuirks_00CN_00FB_00FC	bool	= false		// Shift only 2 lines
 	ETI660_64x32_screen		bool = false		// Enable screen adjustment to 64x32 instead of default 64x48 ETI-660 HW
-	Keyboard_slow_press		bool = false		// Used by some programs that needs a slower key press
+	Keyboard_slow_press		bool = false		// Used by some programs that needs a slower key press rate
 )
 
 func Handle_legacy_opcodes() {

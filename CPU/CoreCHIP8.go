@@ -226,7 +226,7 @@ func opc_chip8_8XY0(x, y uint16) {
 }
 
 // 8xy1 - Set Vx = Vx OR Vy.
-// Performs a bitwise OR on the values of Vx and Vy, then stores the result in Vx. A bitwise OR compares the corrseponding bits from two values,
+// Performs a bitwise OR on the values of Vx and Vy, then stores the result in Vx. A bitwise OR compares the corresponding bits from two values,
 // and if either bit is 1, then the same bit in the result is also 1. Otherwise, it is 0.
 func opc_chip8_8XY1(x, y uint16) {
 	V[x] |= V[y]
@@ -239,7 +239,7 @@ func opc_chip8_8XY1(x, y uint16) {
 
 // 8xy2 - AND Vx, Vy
 // Set Vx = Vx AND Vy.
-// Performs a bitwise AND on the values of Vx and Vy, then stores the result in Vx. A bitwise AND compares the corrseponding bits from two values, and if both bits are 1, then the same bit in the result is also 1. Otherwise, it is 0.
+// Performs a bitwise AND on the values of Vx and Vy, then stores the result in Vx. A bitwise AND compares the corresponding bits from two values, and if both bits are 1, then the same bit in the result is also 1. Otherwise, it is 0.
 func opc_chip8_8XY2(x, y uint16) {
 	V[x] &= V[y]
 	PC += 2
@@ -251,7 +251,7 @@ func opc_chip8_8XY2(x, y uint16) {
 
 // 8xy3 - XOR Vx, Vy
 // Set Vx = Vx XOR Vy.
-// Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx. An exclusive OR compares the corrseponding bits from two values,
+// Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx. An exclusive OR compares the corresponding bits from two values,
 // and if the bits are not both the same, then the corresponding bit in the result is set to 1. Otherwise, it is 0.
 func opc_chip8_8XY3(x, y uint16) {
 	if Debug {
@@ -523,6 +523,13 @@ func opc_chip8_DXYN(opcode uint16) {
 // Skip next instruction if key with the value of Vx is pressed.
 // Checks the keyboard, and if the key corresponding to the value of Vx is currently in the down position, PC is increased by 2.
 func opc_chip8_EX9E(x uint16) {
+
+	// If Key number is bigger than 16, fix it (Ex.: Breakfree game)
+	if int(V[x]) >= len(Key) {
+		V[x] = V[x] - 16
+		fmt.Printf("\n%d\n",x)
+	}
+
 	if Key[V[x]] == 1 {
 		PC += 4
 		if Debug {
