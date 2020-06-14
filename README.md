@@ -13,7 +13,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 :-------------------------:|:-------------------------:
 <img width="430" alt="blinky" src="https://github.com/cassianoperin/CHIP8/blob/master/images/blinky.png"> | <img width="430" alt="singledragon" src="https://github.com/cassianoperin/CHIP8/blob/master/images/singledragon.png">
 
-**CHIP-8 HiRes Astro Dodge** | **On-screen Debug**
+**CHIP-8 HiRes Astro Dodge (Color theme)** | **On-screen Debug (Color theme)**
 :-------------------------:|:-------------------------:
 <img width="430" alt="astro" src="https://github.com/cassianoperin/CHIP8/blob/master/images/astro.png"> | <img width="430" alt="debug" src="https://github.com/cassianoperin/CHIP8/blob/master/images/debug.png">
 
