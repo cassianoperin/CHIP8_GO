@@ -40,7 +40,7 @@
 | Lunar Lander (Udo Pernisz, 1979) | ![100%](https://progress-bar.dev/100) | |
 | Mastermind FourRow (Robert Lindley, 1978) | ![100%](https://progress-bar.dev/100) | |
 | Merlin [David Winter] | ![100%](https://progress-bar.dev/100) | |
-| Miniature Golf | ![100%](https://progress-bar.dev/100) | Need to test better |
+| Miniature Golf | ![100%](https://progress-bar.dev/100) | |
 | Missile [David Winter] | ![100%](https://progress-bar.dev/100) | |
 | Modified Kaleidoscope [TCNJ S.572.3] | ![100%](https://progress-bar.dev/100) | |
 | Most Dangerous Game [Peter Maruhnic] | ![100%](https://progress-bar.dev/100) | |
