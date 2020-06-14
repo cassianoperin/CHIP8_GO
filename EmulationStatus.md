@@ -5,10 +5,10 @@
 | :------------ |:----------------:| :-----|
 | 15 Puzzle [Roger Ivie] | ![100%](https://progress-bar.dev/100) | |
 | 15 Puzzle [Roger Ivie] (alt) | ![100%](https://progress-bar.dev/100) | |
-| Acey Deucy | ![90%](https://progress-bar.dev/90) | Graphic Glitches |
+| Acey Deucy | ![90%](https://progress-bar.dev/90) | Small Graphical Glitches |
 | Addition Problems [Paul C. Moews] | ![100%](https://progress-bar.dev/100) | |
 | Airplane | ![100%](https://progress-bar.dev/100) | |
-| Animal Race [Brian Astle] | ![90%](https://progress-bar.dev/90)| Graphical glitch after first race |
+| Animal Race [Brian Astle] | ![90%](https://progress-bar.dev/90)| Small Graphical Glitch after first race |
 | Astro Dodge [Revival Studios, 2008] | ![100%](https://progress-bar.dev/100) | |
 | Biorhythm [Jef Winsor] | ![100%](https://progress-bar.dev/100) | |
 | Blinky [Hans Christian Egeberg, 1991] | ![100%](https://progress-bar.dev/100) | |
@@ -50,7 +50,7 @@
 | Pong (alt) | ![100%](https://progress-bar.dev/100) | |
 | Pong 2 (Pong hack) [David Winter, 1997] | ![100%](https://progress-bar.dev/100) | |
 | Pong [Paul Vervalin, 1990] | ![100%](https://progress-bar.dev/100) | |
-| Private Eye [TCNJ S.572.37] | ![100%](https://progress-bar.dev/100) | Graphical Glitches |
+| Private Eye [TCNJ S.572.37] | ![100%](https://progress-bar.dev/100) | Small Graphical Glitches |
 | Programmable Spacefighters [Jef Winsor] | ![100%](https://progress-bar.dev/100) | |
 | Puzzle | ![100%](https://progress-bar.dev/100) | |
 | Reversi [Philip Baltzer] | ![100%](https://progress-bar.dev/100) | |
@@ -65,7 +65,7 @@
 | Shooting Stars [Philip Baltzer, 1978] | ![100%](https://progress-bar.dev/100) | |
 | Slide [Joyce Weisbecker] | ![100%](https://progress-bar.dev/100) | |
 | Soccer | ![100%](https://progress-bar.dev/100) | |
-| Space Explorer [TCNJ S.572.2, 3] | ![90%](https://progress-bar.dev/90) | Graphical glitches |
+| Space Explorer [TCNJ S.572.2, 3] | ![90%](https://progress-bar.dev/90) | Small Graphical Glitches |
 | Space Flight | ![100%](https://progress-bar.dev/100) | |
 | Space Intercept [Joseph Weisbecker, 1978] | ![100%](https://progress-bar.dev/100) | |
 | Space Intercept [TCNJ S.572.2, 37] | ![100%](https://progress-bar.dev/100) | |
@@ -104,7 +104,7 @@
 | Name  | Status | Description |
 | :------------ |:----------------:| :-----|
 | Pong (ETI660 Hybrid) | ![100%](https://progress-bar.dev/100) | |
-| Space Invaders (ETI660 Hybrid) [P. Easdown,198x] | ![40%](https://progress-bar.dev/90) | Missing beep frequencies and Collision Detection not working |
+| Space Invaders (ETI660 Hybrid) [P. Easdown,198x] | ![40%](https://progress-bar.dev/40) | Missing beep frequencies and Collision Detection not working |
 
 ## SuperChip / SCHIP
 | Name  | Status | Description |
