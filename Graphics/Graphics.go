@@ -333,7 +333,7 @@ func Run() {
 		}
 
 		// // Handle Keys pressed
-		// Input.Keyboard()
+		Input.Keyboard()
 
 		// Handle Input flags
 		if Global.InputDrawFlag {
@@ -345,10 +345,6 @@ func Run() {
 		// CPU Clock
 		select {
 			case <- CPU.CPU_Clock.C:
-
-
-				// Handle Keys pressed
-				Input.Keyboard()
 
 				//// Calls CPU Interpreter ////
 				// Ignore if in Pause mode

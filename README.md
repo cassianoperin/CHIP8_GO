@@ -273,7 +273,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 ## Emulator TODO LIST:
 
-1. Correct games marked as NOT OK in Emulation Status
+1. Correct minor problems reported in Emulation Status
 2. Emulate CHIP-8X
 3. Emulate MEGA-CHIP
 
