@@ -260,6 +260,11 @@ func Interpreter() {
 							opc_chip8_ND_02D8()
 							break
 
+						// 02E4 (CHIP-8 NON DOCUMENTED)
+						case 0x02E4:
+							opc_chip8_ND_02E4()
+							break
+
 						default:
 							fmt.Printf("\t\tOpcode 0x%04X NOT IMPLEMENTED!!!!\n", Opcode)
 							os.Exit(0)

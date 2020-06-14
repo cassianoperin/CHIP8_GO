@@ -80,7 +80,6 @@
 | Tank Warfare | OK | |
 | Tapeworm [JDR, 1999] | OK | |
 | Tetris [Fran Dachille, 1991] | OK | |
-| Tic-Tac-Toe ([AUD_2464_09_B41_ID23_01] | NOT OK | Opcode Opcode: 02E4 not implemented (RCA Collection)|
 | Tic-Tac-Toe [David Winter] | OK | |
 | Timebomb | OK | |
 | Tron | OK | |
