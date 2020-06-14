@@ -319,17 +319,21 @@ func Run() {
 		fmt.Println("Pause Enabled\n")
 	}
 
+	//  Print Message if Pause is enabled
+	if CPU.Keyboard_slow_press {
+		fmt.Println("Keyboard: Program mode Enabled\n")
+	}
+
 	// --------------------- Main Infinite Loop ---------------------//
 	for !Global.Win.Closed() {
-
 
 		// Esc to quit program
 		if Global.Win.Pressed(pixelgl.KeyEscape) {
 			break
 		}
 
-		// Handle Keys pressed
-		Input.Keyboard()
+		// // Handle Keys pressed
+		// Input.Keyboard()
 
 		// Handle Input flags
 		if Global.InputDrawFlag {
@@ -341,6 +345,10 @@ func Run() {
 		// CPU Clock
 		select {
 			case <- CPU.CPU_Clock.C:
+
+
+				// Handle Keys pressed
+				Input.Keyboard()
 
 				//// Calls CPU Interpreter ////
 				// Ignore if in Pause mode
@@ -355,6 +363,11 @@ func Run() {
 						CPU.Interpreter()
 					}
 				}
+
+				for i:=0 ; i <len(CPU.Key) ; i++ {
+					CPU.Key[i] = 0
+				}
+
 
 				// If necessary, DRAW (every time a draw operation is executed)
 				if Global.OriginalDrawMode {
@@ -463,10 +476,17 @@ func Run() {
 					updateCounter++	// Increment the updates per second counter
 				}
 
+
+			// Used by games that needs a slow key press rate
+			case <-CPU.KeyboardRate.C:
+				// Disable the keyboard timeout to continue handling keys pressed
+				Input.Keyboard_timeout = false
+
+
 			// Once per second count the number of draws and Win Updates
 			case <-CPU.FPSCounter.C:
-				// Update the values to print on screen
 
+				// Update the values to print on screen
 				if Global.OriginalDrawMode {
 					Global.DrawModeMessage="DrawFlag"
 				} else {

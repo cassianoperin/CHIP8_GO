@@ -15,6 +15,7 @@ var (
 	DXY0_loresWideSpriteQuirks	bool	= false		// DXY0_loresWideSpriteQuirks - Draws a 16x16 sprite even in low-resolution (64x32) mode, row-major
 	scrollQuirks_00CN_00FB_00FC	bool	= false		// Shift only 2 lines
 	ETI660_64x32_screen		bool = false		// Enable screen adjustment to 64x32 instead of default 64x48 ETI-660 HW
+	Keyboard_slow_press		bool = false		// Used by some programs that needs a slower key press
 )
 
 func Handle_legacy_opcodes() {
@@ -67,6 +68,12 @@ func Handle_legacy_opcodes() {
 		fmt.Printf("ETI-660 Quirk 64 x 32 resolution Enabled.\n")
 		Global.SizeX = 64
 		Global.SizeY = 32
+	}
+
+	// Enable slow key press
+	// CHIP-8 Game "Addition Problems [Paul C. Moews]"
+	if (Global.Game_signature == "daf2e3f0657e07a8898a78434007d11c") {
+		Keyboard_slow_press = true
 	}
 
 }

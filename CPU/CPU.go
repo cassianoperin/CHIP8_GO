@@ -36,6 +36,7 @@ var (
 	FPS			*time.Ticker		// Frames per second
 	FPSCounter		*time.Ticker		// Count frames per second
 	TimersClock		*time.Ticker		// Delay and Sound Timer
+	KeyboardRate		*time.Ticker		// Used for programs that needs a slow key press rate
 	KeyboardClock		*time.Ticker		// Keyboard Timer to be used with emulator keys
 	CPU_Clock		*time.Ticker		// CPU Clock
 	CPU_Clock_Speed		time.Duration		// Value defined to CPU Clock
@@ -92,6 +93,7 @@ func Initialize() {
 	CPU_Clock		= time.NewTicker(time.Second / CPU_Clock_Speed)
 	SCHIP_TimerClockHack	= time.NewTicker(time.Second / (CPU_Clock_Speed * 10) )
 	KeyboardClock		= time.NewTicker(time.Second / 60)
+	KeyboardRate		= time.NewTicker(time.Second / 2)
 	TimersClock		= time.NewTicker(time.Second / 60)			// Decrease SoundTimer and DelayTimer
 	MessagesClock		= time.NewTicker(time.Second * 5)			// Clock used to display messages on screen
 

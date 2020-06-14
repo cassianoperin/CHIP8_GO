@@ -12,6 +12,7 @@ import (
 
 var (
 	forward_count		int
+	Keyboard_timeout	bool
 
 
 	// Control the Keys Pressed (CHIP8/SCHIP 16 Keys)
@@ -64,7 +65,17 @@ func Keyboard() {
 	// Handle 16 keys from Chip8 / Schip
 	for index, key := range KeyPressedCHIP8 {
 		if Global.Win.Pressed(key) {
-			CPU.Key[index] = 1
+			// Used to slow down key press to some programs
+			if !Keyboard_timeout {
+
+				CPU.Key[index] = 1
+
+				// Just enable if this quirk is enabled
+				if CPU.Keyboard_slow_press {
+					Keyboard_timeout = true
+				}
+
+			}
 		}else {
 			CPU.Key[index] = 0
 		}

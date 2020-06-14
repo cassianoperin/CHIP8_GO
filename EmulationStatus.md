@@ -6,7 +6,7 @@
 | 15 Puzzle [Roger Ivie] | OK | |
 | 15 Puzzle [Roger Ivie] (alt) | OK        | |
 | Acey Deucy | NOT OK | Graphic Glitches |
-| Addition Problems [Paul C. Moews] | Almost OK | Keyboard too fast |
+| Addition Problems [Paul C. Moews] | OK | |
 | Airplane | OK | |
 | Animal Race [Brian Astle] | Almost OK | Graphical glitch after first race |
 | Astro Dodge [Revival Studios, 2008] | OK | |
