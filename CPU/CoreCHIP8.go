@@ -34,8 +34,10 @@
 // FX33: Store the binary-coded decimal equivalent of the value stored in register VX at addresses I, I+1, and I+2
 // FX55: Store the values of registers V0 to VX inclusive in memory starting at address I. I is set to I + X + 1 after operation
 // FX65: Fill registers V0 to VX inclusive with the values stored in memory starting at address I. I is set to I + X + 1 after operation
-// --------------------- 02D8 undocumented opcode (maybe 0NNN 1802 instrunction?) -------------------- //
+// -------------------------------- Undocumented opcode -------------------------------- //
 // 02D8: LDA 02, I // Load from memory at address I into V[00] to V[02]
+// 02E4: LDF I, V[02] // Load into I the address of the 8x5 font with index as value of V[02]
+
 
 package CPU
 
@@ -750,7 +752,6 @@ func opc_chip8_FX65(x uint16) {
 // 02D8
 // NON DOCUMENTED OPCODED, USED BY DEMO CLOCK Program
 // LDA 02, I // Load from memory at address I into V[00] to V[02]
-// Maybe an 0NNN 1802 instruction?
 func opc_chip8_ND_02D8() {
 	x := (Opcode & 0x0F00) >> 8
 
