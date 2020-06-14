@@ -9,10 +9,13 @@ Optional GUI (Graphical user interface) made with fyne.io.
 :-------------------------:|:-------------------------:
 <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP8/blob/master/images/invaders.gif">  |  <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP8/blob/master/images/spacefight2091.gif">
 
-
 **Blinky (Color theme)** | **Single Dragon (Color Theme)**
 :-------------------------:|:-------------------------:
 <img width="430" alt="blinky" src="https://github.com/cassianoperin/CHIP8/blob/master/images/blinky.png"> | <img width="430" alt="singledragon" src="https://github.com/cassianoperin/CHIP8/blob/master/images/singledragon.png">
+
+**CHIP-8 HiRes Astro Dodge** | **On-screen Debug**
+:-------------------------:|:-------------------------:
+<img width="430" alt="astro" src="https://github.com/cassianoperin/CHIP8/blob/master/images/astro.png"> | <img width="430" alt="debug" src="https://github.com/cassianoperin/CHIP8/blob/master/images/debug.png">
 
 **Optional GUI** | **Game selector screen**
 :-------------------------:|:-------------------------:
@@ -270,10 +273,9 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 ## Emulator TODO LIST:
 
-1. When Fullscreen on and off, need to change resolution to stabilize
+1. Correct games marked as NOT OK in Emulation Status
 2. Emulate CHIP-8X
 3. Emulate MEGA-CHIP
-4. Test new chip8 games and update EmulationStatus
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games

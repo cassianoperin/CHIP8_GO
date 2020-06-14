@@ -6,7 +6,7 @@
 | 15 Puzzle [Roger Ivie] | OK | |
 | 15 Puzzle [Roger Ivie] (alt) | OK        | |
 | Acey Deucy | NOT OK | Graphic Glitches |
-| Addition Problems [Paul C. Moews] | OK | Keyboard too fast |
+| Addition Problems [Paul C. Moews] | Almost OK | Keyboard too fast |
 | Airplane | OK | |
 | Animal Race [Brian Astle] | Almost OK | Graphical glitch after first race |
 | Astro Dodge [Revival Studios, 2008] | OK | |
@@ -50,10 +50,11 @@
 | Pong (alt) | OK | |
 | Pong 2 (Pong hack) [David Winter, 1997] | OK | |
 | Pong [Paul Vervalin, 1990] | OK | |
-| Private Eye [TCNJ S.572.37] | NOT OK | Graphic Glitches |
+| Private Eye [TCNJ S.572.37] | Almost OK | Graphical Glitches |
 | Programmable Spacefighters [Jef Winsor] | OK | |
 | Puzzle | OK | |
 | Reversi [Philip Baltzer] | OK | |
+| Reversi [TCNJ S.572.2, 3] | OK | |
 | Rocket Launch [Jonas Lindstedt] | OK | |
 | Rocket Launcher | OK | |
 | Rocket [Joseph Weisbecker, 1978] | OK | |
@@ -64,8 +65,10 @@
 | Shooting Stars [Philip Baltzer, 1978] | OK | |
 | Slide [Joyce Weisbecker] | OK | |
 | Soccer | OK | |
+| Space Explorer [TCNJ S.572.2, 3] | Almost OK | Graphical glitches |
 | Space Flight | OK | |
 | Space Intercept [Joseph Weisbecker, 1978] | OK | |
+| Space Intercept [TCNJ S.572.2, 37] | OK | |
 | Space Invaders [David Winter] (alt) | OK | |
 | Space Invaders [David Winter] | OK | |
 | Spooky Spot [Joseph Weisbecker, 1978] | OK | |
@@ -74,16 +77,20 @@
 | Sum Fun [Joyce Weisbecker] | OK | |
 | Syzygy [Roy Trevino, 1990] | OK | |
 | Tank | OK | |
+| Tank Warfare | OK | |
 | Tapeworm [JDR, 1999] | OK | |
 | Tetris [Fran Dachille, 1991] | OK | |
+| Tic-Tac-Toe ([AUD_2464_09_B41_ID23_01] | NOT OK | Opcode Opcode: 02E4 not implemented (RCA Collection)|
 | Tic-Tac-Toe [David Winter] | OK | |
 | Timebomb | OK | |
 | Tron | OK | |
 | UFO [Lutz V, 1992] | OK | |
 | Vers [JMN, 1991] | OK | |
 | Vertical Brix [Paul Robson, 1996] | OK | |
+| VIP Dogfight.ch8 | OK | |
 | Wall [David Winter] | OK | |
 | Wipe Off [Joseph Weisbecker] | OK | |
+| Wipe Off [TCNJ S.572.2] | OK | |
 | Worm V4 [RB-Revival Studios, 2007] | OK | |
 | X-Mirror | OK | |
 | ZeroPong [zeroZshadow, 2007] | OK | |

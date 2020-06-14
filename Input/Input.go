@@ -273,6 +273,8 @@ func Keyboard() {
 					Global.Win.SetMonitor(nil)
 					Global.IsFullScreen = false
 
+					Global.CenterWindow()
+
 					// Show messages
 					if CPU.Debug {
 						fmt.Printf("\n\t\tFullscreen Disabled\n")

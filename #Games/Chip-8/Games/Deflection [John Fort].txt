@@ -36,7 +36,7 @@ How to Play VIP Deflection
          2           |  up
          3           |  up and to the right
          4           |  left
-         6           |  right
+         5           |  right
          7           |  down and to the left
          8           |  down
          9           |  down and to the right
