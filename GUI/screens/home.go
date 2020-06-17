@@ -10,40 +10,33 @@ import (
 	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
+	"fyne.io/fyne/storage"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 )
 
 
-func fileOpened(f fyne.FileReadCloser) {
+func fileOpened(f fyne.URIReadCloser) {
 	if f == nil {
 		if Debug {
-			fmt.Printf("HOME TAB:\tFileOpen Dialog Cancelled\n")
+			fmt.Println("HOME TAB:\tFileOpen Dialog Cancelled")
 		}
 		return
 	}
 
 	// Extract the extension of the file
-	extension = f.URI()[len(f.URI())-4:]
-
-	// // If is a .CH8 ROM File
-	// if extension == ".ch8" {
-	// 	// code
-	//
-	// // Other extensions
-	// } else {
-	// 	// showText(f)
-	// }
+	extension := f.URI().Extension()
 
 	// Print the Extension
 	if Debug {
-		fmt.Printf("HOME TAB:\tExtension: %s\n",extension)
+		fmt.Println("HOME TAB:\tExtension: ", extension)
 	}
 
 	// Save the full path and file name opened
-	filename = f.URI()[7:]
-	// If opened a valid CH8 file, enable the run button
+	//filename = f.URI()[7:]
+	filename = f.URI().String()[7:]
 
+	// If opened a valid CH8 file, enable the run button
 	// Save the file name opened
 	lastBin := strings.LastIndex( filename, "/" )
 	filename_short = fmt.Sprintf(filename[lastBin+1:])
@@ -53,7 +46,7 @@ func fileOpened(f fyne.FileReadCloser) {
 
 	// Print the File Name
 	if Debug {
-		fmt.Printf("HOME TAB:\tFile name: %s\n",filename)
+		fmt.Println("HOME TAB:\tFile name: ",filename)
 	}
 
 	// Update the status bar
@@ -62,7 +55,7 @@ func fileOpened(f fyne.FileReadCloser) {
 
 	err := f.Close()
 	if err != nil {
-		fyne.LogError("HOME TAB:\tFailed to close stream", err)
+		fyne.LogError("\nHOME TAB:\tFailed to close stream", err)
 	}
 }
 
@@ -81,7 +74,7 @@ func HomeScreen(win fyne.Window) fyne.CanvasObject {
 	// Run button object
 	buttonRun = widget.NewButtonWithIcon("Run", theme.MediaPlayIcon(), func() {
 		if Debug {
-			fmt.Printf("HOME TAB:\tButton Run Tapped! Filename: %s\n", filename)
+			fmt.Println("HOME TAB:\tButton Run Tapped! Filename: ", filename)
 		}
 		buttonRun.Disable()
 		// Update the status bar
@@ -91,7 +84,7 @@ func HomeScreen(win fyne.Window) fyne.CanvasObject {
 		// Open the file and send the stdout and stderr to a Dialog
 		cmd := exec.Command(EMULATOR_PATH, filename)
 		if Debug {
-			fmt.Printf("%s", filename)
+			fmt.Println("Filename: ", filename)
 		}
 		cmd.Dir = EmulatorFolder
 
@@ -108,11 +101,12 @@ func HomeScreen(win fyne.Window) fyne.CanvasObject {
 			dialog.ShowError(execErr, win)
 		}
 
-			// Update the status bar
-			statusLabel.SetText("")
+		// Update the status bar
+		statusLabel.SetText("")
+
 		}
 		if Debug {
-			fmt.Printf("%s\n",stdoutStderr)
+			fmt.Println("StdoutStderr: ", stdoutStderr)
 		}
 
 
@@ -120,18 +114,24 @@ func HomeScreen(win fyne.Window) fyne.CanvasObject {
 	// Start Disabled
 	buttonRun.Disable()
 
-	// Butto Load Rom object
-	buttonLoadRom := widget.NewButtonWithIcon("Load ROM", theme.FolderOpenIcon(), func() {
-			dialog.ShowFileOpen(func(reader fyne.FileReadCloser, err error) {
-			if err != nil {
-				dialog.ShowError(err, win)
-				return
-			}
+	// Button Load Rom object
+	buttonLoadRom := widget.NewButton("Load ROM", func() {
+				fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+					if err == nil && reader == nil {
+						return
+					}
+					if err != nil {
+						dialog.ShowError(err, win)
+						return
+					}
 
-			fileOpened(reader)
+					fileOpened(reader)
 
-			}, win)
-	})
+				}, win)
+				fd.SetFilter(storage.NewExtensionFileFilter([]string{".ch8", ".CH8", ".cH8", ".Ch8"}))
+				fd.Show()
+
+			})
 
 
 

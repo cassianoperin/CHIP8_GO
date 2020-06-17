@@ -6,7 +6,6 @@ import (
 	"strings"
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
-	// "fyne.io/fyne/cmd/fyne_demo/screens"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 
@@ -55,11 +54,14 @@ func main() {
 	// w := a.NewWindow("Chip8 Emulator")
 	w := fyne.CurrentApp().NewWindow("Chip8 Emulator")
 
-	// Needed due to start without buttons bug
-	w.Resize(fyne.NewSize(800, 600))
+	// Resize
+	// w.Resize(fyne.NewSize(800, 600))
 
+	// Fixed window size
 	w.SetFixedSize(true)
 
+	// Center Window
+	w.CenterOnScreen()
 
 	// ---- Main Menu ---- //
 	mainMenu := fyne.NewMainMenu(
@@ -80,7 +82,7 @@ func main() {
 	tabs.SetTabLocation(widget.TabLocationTop)
 	tabs.OnChanged = func(tab *widget.TabItem) {
 		if screens.Debug {
-			fmt.Printf("%s tab selected\n", tab.Text)
+			fmt.Println("Tab selected: ", tab.Text)
 		}
 	}
 	// tabs.SelectTabIndex(a.Preferences().Int(preferenceCurrentTab))

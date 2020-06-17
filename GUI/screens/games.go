@@ -22,14 +22,14 @@ func GamesScreen() fyne.CanvasObject {
 
 	files_chip8, err := ioutil.ReadDir(CHIP8_PATH)
 	if err != nil {
-		fmt.Printf("GAMES TAB:\t Error reading CHIP8 Directory: %s\n", err)
+		fmt.Println("GAMES TAB:\t Error reading CHIP8 Directory: ", err)
 	}
 
 	// -------------------- List SCHIP ROMS -------------------- //
 	// Read the directory (path "SCHIP_PATH")
 	files_schip, err := ioutil.ReadDir(SCHIP_PATH)
 	if err != nil {
-		fmt.Printf("GAMES TAB:\t Error reading SCHIP Directory: %s\n", err)
+		fmt.Println("GAMES TAB:\t Error reading SCHIP Directory: ", err)
 	}
 
 	// -------------------- List CHIP8 ROMS -------------------- //
@@ -125,7 +125,7 @@ func makeButtonList(files []os.FileInfo, path string) []fyne.CanvasObject {
 		if file.Mode().IsRegular() {
 			if filepath.Ext(file.Name()) == ".ch8" || filepath.Ext(file.Name()) == ".CH8" {
 			  if Debug {
-				  fmt.Println("Tab GAME\t", file.Name())
+				  fmt.Println("Tab GAME\tGame: ", file.Name())
 			  }
 
 			  index := file.Name() // capture
@@ -141,7 +141,7 @@ func makeButtonList(files []os.FileInfo, path string) []fyne.CanvasObject {
 
 				// Print the File Name
 				if Debug {
-					fmt.Printf("Tab GAME\tFile name: %s\n",filename)
+					fmt.Println("Tab GAME\tFile name: ", filename)
 				}
 
 				// Update the status bar

@@ -32,6 +32,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 * ![100%](https://progress-bar.dev/100) Color Themes
 * ![100%](https://progress-bar.dev/100) Save States
 * ![100%](https://progress-bar.dev/100) Fullscreen
+* ![100%](https://progress-bar.dev/100) Binary and Hexadecimal rom format
+* ![100%](https://progress-bar.dev/100) Emulation Status from all games I have to test
 * ![70%](https://progress-bar.dev/70) Optional GUI
 
 ## EMULATOR Build Instructions
@@ -66,7 +68,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 * Add GO and Mingw-64 bin folder in PATH variable
 
-* Install library requisites:
+* Install requisites:
 
 	`go get github.com/faiface/pixel/pixelgl`
 
@@ -170,17 +172,13 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	 `brew install go`
 
-* Install library requisites (need fyne beta/develop 1.3):
+* Install requisites:
 
 	`go get gopkg.in/ini.v1`
 
-   	`go get golang.org/x/image/colornames`
+	`go get golang.org/x/image/colornames`
 
-	cd $GOPATH/src
-
-	mkdir fyne.io && cd fyne.io
-
-	git clone https://github.com/fyne-io/fyne.git && cd fyne && git checkout develop
+	`go get fyne.io/fyne`
 
 * Compile:
 
@@ -284,4 +282,4 @@ Optional GUI (Graphical user interface) made with fyne.io.
 4. Make it work on Windows
 5. Add tab for CHIP8 HiRes Games
 6. Add configuration for CHIP8 HIRES ROMs Path
-7. Migrate from beta to fyne 1.3 final
+7. Add support for Hex roms
