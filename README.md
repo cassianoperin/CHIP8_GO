@@ -276,4 +276,5 @@ Optional GUI (Graphical user interface) made with fyne.io.
 1. Games Tab: Show image of the games
 2. Reload game list when update paths
 3. Add support for Hex roms
-4. Its currently not running on windows, apparently others are having same issues
+4. Finish options (Debug, Pause...) in config screen
+5. Its currently not running on windows, apparently others are having same issues

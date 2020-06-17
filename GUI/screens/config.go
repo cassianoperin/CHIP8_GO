@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"fyne.io/fyne"
 	"image/color"
+	"fyne.io/fyne/canvas"
 	"fyne.io/fyne/dialog"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
@@ -54,48 +55,55 @@ func LoadIni(ConfigFile string) (*ini.File, error) {
 	return cfg, err
 }
 
-func makeTextGrid(text string) *widget.TextGrid {
-	grid := widget.NewTextGridFromString(text)
-	grid.SetStyleRange(0, 0, 0, 20,
-		&widget.CustomTextGridStyle{FGColor: color.NRGBA{R: 0, G: 153, B: 255, A: 255}})
-
-	grid.ShowLineNumbers = false
-	grid.ShowWhitespace = false
-
-	return grid
-}
-
-
 func ConfigScreen(a fyne.App, win fyne.Window) fyne.CanvasObject {
+
+	// --------------------- LABELS --------------------- //
 
 	labelNewLine := widget.NewLabel("\n")
 	labelNewLine.Alignment = fyne.TextAlignCenter
 	// labelNewLine.Alignment = fyne.AlignTrailing
 
-	labelEmulator := makeTextGrid("EMULATOR PATH:")
-	// labelEmulator := widget.NewLabel("Emulator Path:")
-	// labelEmulator.Alignment = fyne.TextAlignLeading
+	labelTheme := widget.NewLabel("\nTHEME")
+	labelTheme.Alignment = fyne.TextAlignCenter
+
+	labelOptions := widget.NewLabel("OPTIONS")
+	labelOptions.Alignment = fyne.TextAlignCenter
+
+	labelEmulator := widget.NewLabel("EMULATOR")
+	labelEmulator.Alignment = fyne.TextAlignCenter
+
+	labelROM := widget.NewLabel("ROM LOCATION")
+	labelROM.Alignment = fyne.TextAlignCenter
+
+	// --------------------- OPTIONS --------------------- //
+
+	checkDebug := widget.NewCheck("Debug", func(on bool) { fmt.Println("Debug", on) })
+	checkDebug.Disable()
+
+	checkPause := widget.NewCheck("Start Paused", func(on bool) { fmt.Println("Start Paused", on) })
+	checkPause.Disable()
+
+	checkRewind:= widget.NewCheck("Rewind Mode", func(on bool) { fmt.Println("Rewind mode", on) })
+	checkRewind.Disable()
+
+	checkSchipHack := widget.NewCheck("SCHIP Hack", func(on bool) { fmt.Println("SCHIP Hack", on) })
+	checkSchipHack.Disable()
+
+
+	// --------------------- FORMS --------------------- //
+
 	inputEmulator := widget.NewEntry()
 	inputEmulator.SetPlaceHolder("Ex.: /emulators/chip8, C:" + "\\" + "emulators" + "\\" + "chip8.exe")
 	inputEmulator.SetText(EMULATOR_PATH)
 
-	labelChip8 := makeTextGrid("CHIP-8 ROM PATH:")
-	// labelChip8 := widget.NewLabel("Chip8 Rom Path:")
-	// labelChip8.Alignment = fyne.TextAlignLeading
 	inputChip8 := widget.NewEntry()
 	inputChip8.SetPlaceHolder("Ex.: /roms/chip8, C:" + "\\" + "roms" + "\\" + "chip8")
 	inputChip8.SetText(CHIP8_PATH)
 
-	labelChip8HiRes := makeTextGrid("CHIP-8 HiRes ROM PATH:")
-	// labelChip8HiRes := widget.NewLabel("Chip8 HiRes Rom Path:")
-	// labelChip8HiRes.Alignment = fyne.TextAlignLeading
 	inputChip8HiRes := widget.NewEntry()
 	inputChip8HiRes.SetPlaceHolder("Ex.: /roms/chip8HiRes, C:" + "\\" + "roms" + "\\" + "chip8HiRes")
 	inputChip8HiRes.SetText(CHIP8HIRES_PATH)
 
-	labelSchip := makeTextGrid("SCHIP ROM PATH:")
-	// labelSchip := widget.NewLabel("Schip Rom Path:")
-	// labelSchip.Alignment = fyne.TextAlignLeading
 	inputSchip := widget.NewEntry()
 	inputSchip.SetPlaceHolder("Ex.: /roms/schip, C:" + "\\" + "roms" + "\\" + "schip")
 	inputSchip.SetText(SCHIP_PATH)
@@ -141,33 +149,49 @@ func ConfigScreen(a fyne.App, win fyne.Window) fyne.CanvasObject {
 
 	return widget.NewVBox(
 
-		widget.NewGroup("   THEME   ",
-			fyne.NewContainerWithLayout(layout.NewGridLayout(2),
-				widget.NewButton("Dark", func() {
-					a.Settings().SetTheme(theme.DarkTheme())
-				}),
-				widget.NewButton("Light", func() {
-					a.Settings().SetTheme(theme.LightTheme())
-				}),
-			),
+		labelTheme,
+
+		fyne.NewContainerWithLayout(layout.NewGridLayout(2),
+			widget.NewButton("Dark", func() {
+				a.Settings().SetTheme(theme.DarkTheme())
+			}),
+			widget.NewButton("Light", func() {
+				a.Settings().SetTheme(theme.LightTheme())
+			}),
 		),
+
 
 		labelNewLine,
 
-		widget.NewGroup("   EMULATOR   ",
-			labelEmulator,
+		labelEmulator,
+
+		fyne.NewContainerWithLayout(layout.NewFormLayout(),
+			canvas.NewText("EMULATOR PATH:", color.NRGBA{0, 153, 255, 0xff}),
 			inputEmulator,
 		),
 
 		labelNewLine,
 
-		widget.NewGroup("   ROM LOCATION   ",
-			labelChip8,
+		labelROM,
+
+		fyne.NewContainerWithLayout(layout.NewFormLayout(),
+			canvas.NewText("CHIP-8 ROM PATH:", color.NRGBA{0, 153, 255, 0xff}),
 			inputChip8,
-			labelChip8HiRes,
+			canvas.NewText("CHIP-8 HiRes ROM PATH:", color.NRGBA{0, 153, 255, 0xff}),
 			inputChip8HiRes,
-			labelSchip,
+			canvas.NewText("SCHIP ROM PATH:", color.NRGBA{0, 153, 255, 0xff}),
 			inputSchip,
+		),
+
+		layout.NewSpacer(),
+
+		labelOptions,
+
+		fyne.NewContainerWithLayout(layout.NewGridLayout(2),
+			checkDebug,
+			checkPause,
+			checkRewind,
+			checkSchipHack,
 		),
 
 		layout.NewSpacer(),
