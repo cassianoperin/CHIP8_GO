@@ -17,12 +17,20 @@ import (
 // GamesScreen loads a tab panel for containers and layouts
 func GamesScreen() fyne.CanvasObject {
 
-	// -------------------- List CHIP8 ROMS -------------------- //
+	// -------------------- List CHIP-8 ROMS -------------------- //
 	// Read the directory (path "CHIP8_PATH")
 
 	files_chip8, err := ioutil.ReadDir(CHIP8_PATH)
 	if err != nil {
 		fmt.Println("GAMES TAB:\t Error reading CHIP8 Directory: ", err)
+	}
+
+	// -------------------- List CHIP-8 HiRes ROMS -------------------- //
+	// Read the directory (path "CHIP8_PATH")
+
+	files_chip8hires, err := ioutil.ReadDir(CHIP8HIRES_PATH)
+	if err != nil {
+		fmt.Println("GAMES TAB:\t Error reading CHIP-8 HiRes Directory: ", err)
 	}
 
 	// -------------------- List SCHIP ROMS -------------------- //
@@ -32,7 +40,7 @@ func GamesScreen() fyne.CanvasObject {
 		fmt.Println("GAMES TAB:\t Error reading SCHIP Directory: ", err)
 	}
 
-	// -------------------- List CHIP8 ROMS -------------------- //
+	// -------------------- List CHIP-8 ROMS -------------------- //
 	// Image
 	chip8Background := canvas.NewImageFromFile(images_Pong)
 	chip8Background.SetMinSize(fyne.NewSize(300, 282))
@@ -44,7 +52,7 @@ func GamesScreen() fyne.CanvasObject {
 	gameContainer := widget.NewVScrollContainer(widget.NewVBox(gameButtonList...))
 
 
-	// -------------------- Tab Chip8 Content -------------------- //
+	// -------------------- Tab CHIP-8 Content -------------------- //
 
 	tabChip8 := widget.NewVBox(
 
@@ -63,7 +71,43 @@ func GamesScreen() fyne.CanvasObject {
 			layout.NewSpacer() ),
 	)
 
-	// -------------------- List CHIP8 ROMS -------------------- //
+
+
+
+	// -------------------- List CHIP-8 HiRes ROMS -------------------- //
+	// Image
+	chip8hiresBackground := canvas.NewImageFromFile(images_Pong)
+	chip8hiresBackground.SetMinSize(fyne.NewSize(300, 282))
+
+	// For each file create a button
+	gameButtonList = makeButtonList(files_chip8hires, CHIP8HIRES_PATH)
+
+	// Create a container with the buttons
+	gameContainer = widget.NewVScrollContainer(widget.NewVBox(gameButtonList...))
+
+
+	// -------------------- Tab CHIP-8 HiRes Content -------------------- //
+
+	tabChip8HiRes := widget.NewVBox(
+
+		// Button RUN
+		fyne.NewContainerWithLayout(layout.NewGridLayout(6), buttonRun, ),
+
+		// Game Container
+		widget.NewVBox(
+			layout.NewSpacer(),
+
+			fyne.NewContainerWithLayout(
+					layout.NewAdaptiveGridLayout(1),
+					fyne.NewContainerWithLayout(layout.NewBorderLayout(nil, nil, nil, nil),  gameContainer),
+					chip8Background ),
+
+			layout.NewSpacer() ),
+	)
+
+
+
+	// -------------------- List SCHIP ROMS -------------------- //
 
 	// Image
 	schipBackground := canvas.NewImageFromFile(images_Blinky)
@@ -89,16 +133,19 @@ func GamesScreen() fyne.CanvasObject {
 
 			fyne.NewContainerWithLayout(
 					layout.NewAdaptiveGridLayout(1),
-					fyne.NewContainerWithLayout(layout.NewBorderLayout(nil, nil, nil, nil),  gameContainer),
+					fyne.NewContainerWithLayout(layout.NewBorderLayout(nil, nil, nil, nil), gameContainer),
 					schipBackground ),
 
 			layout.NewSpacer() ),
 	)
 
 
-	// Tabs container (CHIP8/SCHIP)
+
+
+	// Tabs container (CHIP-8/CHIP-8HiRes/SCHIP)
 	tabs := widget.NewTabContainer(
 		widget.NewTabItemWithIcon("Chip8", theme.HomeIcon(), tabChip8 ),
+		widget.NewTabItemWithIcon("Chip8 HiRes", theme.ContentAddIcon(), tabChip8HiRes ),
 		widget.NewTabItemWithIcon("SCHIP", theme.ViewRestoreIcon(), tabSchip) )
 	tabs.SetTabLocation(widget.TabLocationTop)
 

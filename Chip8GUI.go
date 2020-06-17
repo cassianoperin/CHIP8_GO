@@ -43,6 +43,9 @@ func main() {
 	// Get Chip8 Rom Path from .ini
 	screens.CHIP8_PATH = cfg.Section("paths").Key("chip8_roms").String()
 
+	// Get Chip8 Rom Path from .ini
+	screens.CHIP8HIRES_PATH = cfg.Section("paths").Key("chip8hires_roms").String()
+
 	// Get SCHIP Rom Path from .ini
 	screens.SCHIP_PATH = cfg.Section("paths").Key("schip_roms").String()
 

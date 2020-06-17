@@ -184,7 +184,7 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	`go build -ldflags="-s -w" Chip8GUI.go`
 
-2) Windows (**NOT TESTED YET!!**)
+2) Windows
 
 * Install GO:
 
@@ -202,11 +202,8 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
  	 `go get golang.org/x/image/colornames`
 
-        cd $GOPATH/src
+	 `go get fyne.io/fyne`
 
-        mkdir fyne.io && cd fyne.io
-
-        git clone https://github.com/fyne-io/fyne.git && cd fyne && git checkout develop
 
 * Compile:
 
@@ -277,9 +274,6 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 ## GUI TODO LIST:
 1. Games Tab: Show image of the games
-2. Crete an .APP to run directly from Finder on Mac
-3. Reload game list when update paths
-4. Make it work on Windows
-5. Add tab for CHIP8 HiRes Games
-6. Add configuration for CHIP8 HIRES ROMs Path
-7. Add support for Hex roms
+2. Reload game list when update paths
+3. Add support for Hex roms
+4. Its currently not running on windows, apparently others are having same issues
