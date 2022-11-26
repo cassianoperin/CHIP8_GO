@@ -1,37 +1,37 @@
 package Graphics
 
 import (
+	"CHIP8/CPU"
+	"CHIP8/Global"
+	"CHIP8/Input"
+	"CHIP8/Sound"
 	"fmt"
-	"Chip8/CPU"
-	"Chip8/Input"
-	"Chip8/Global"
-	"Chip8/Sound"
+
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/text"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
-	"github.com/faiface/pixel/imdraw"
 )
 
 var (
 	// FPS
-	textFPS		*text.Text	// On screen FPS counter
-	textFPSstr	string		// String with the FPS counter
-	drawCounter	= 0		// imd.Draw per second counter
-	updateCounter	= 0		// Win.Updates per second counter
+	textFPS       *text.Text // On screen FPS counter
+	textFPSstr    string     // String with the FPS counter
+	drawCounter   = 0        // imd.Draw per second counter
+	updateCounter = 0        // Win.Updates per second counter
 
 	// Screen messages
-	textMessage	*text.Text	// On screen Message content
-	cpuMessage  *text.Text	// In screen CPU components debug
+	textMessage *text.Text // On screen Message content
+	cpuMessage  *text.Text // In screen CPU components debug
 	// Fonts
 	atlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
 
 	// Screen Size
-	screenWidth	= float64(640)
-	screenHeight	= float64(480)
+	screenWidth  = float64(640)
+	screenHeight = float64(480)
 )
-
 
 // Print Graphics on Console
 func drawGraphicsConsole() {
@@ -40,10 +40,10 @@ func drawGraphicsConsole() {
 	for index := 0; index < 64*32; index++ {
 		switch index {
 		case newline:
-		  fmt.Printf("\n")
+			fmt.Printf("\n")
 			newline += 64
-	  }
-    if CPU.Graphics[index] == 0 {
+		}
+		if CPU.Graphics[index] == 0 {
 			fmt.Printf(" ")
 		} else {
 			fmt.Printf("#")
@@ -52,15 +52,14 @@ func drawGraphicsConsole() {
 	fmt.Printf("\n")
 }
 
-
 func renderGraphics() {
 	cfg := pixelgl.WindowConfig{
-		Title:  Global.WindowTitle,
-		Bounds: pixel.R(0, 0, screenWidth, screenHeight),
-		VSync:  false,
-		Resizable: false,
+		Title:       Global.WindowTitle,
+		Bounds:      pixel.R(0, 0, screenWidth, screenHeight),
+		VSync:       false,
+		Resizable:   false,
 		Undecorated: false,
-		NoIconify: false,
+		NoIconify:   false,
 		AlwaysOnTop: true,
 	}
 	var err error
@@ -146,19 +145,18 @@ func renderGraphics() {
 	// Global.Win.SetPos(winPos)
 
 	//Initialize FPS Text
-	textFPS	= text.New(pixel.V(10, 470), atlas)
+	textFPS = text.New(pixel.V(10, 470), atlas)
 	//Initialize Messages Text
 	// textMessage	= text.New(pixel.V(10, 10) , atlas)
-	textMessage	= text.New(pixel.V(10, 10 ) , atlas)
+	textMessage = text.New(pixel.V(10, 10), atlas)
 	// Initialize CPU Debug Message
 	cpuMessage = text.New(pixel.V(10, 150), atlas)
 }
 
-
 func drawGraphics(graphics [128 * 64]byte) {
 
 	//Update FPS Text Position for each resolution
-	textFPS	= text.New(pixel.V(10, float64(Global.ActiveSetting.Mode.Height) - 20), atlas)
+	textFPS = text.New(pixel.V(10, float64(Global.ActiveSetting.Mode.Height)-20), atlas)
 
 	// Background color
 	Global.Win.Clear(colornames.Black)
@@ -167,11 +165,10 @@ func drawGraphics(graphics [128 * 64]byte) {
 	textFPS.Color = colornames.Red
 	textMessage.Color = colornames.Red
 
-
 	//Select Color Schema
 	if Global.Color_theme != 0 {
 
-		switch color_theme := Global.Color_theme ; {
+		switch color_theme := Global.Color_theme; {
 
 		case color_theme == 1:
 			Global.Win.Clear(colornames.White)
@@ -205,11 +202,10 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	}
 
-	screenWidth	= Global.Win.Bounds().W()
-	screenHeight	= Global.Win.Bounds().H()
-	width		:= screenWidth/Global.SizeX
-	height		:= screenHeight/Global.SizeY * Global.SizeYused	// Define the heigh of the pixel, considering the percentage of screen reserved for emulator
-
+	screenWidth = Global.Win.Bounds().W()
+	screenHeight = Global.Win.Bounds().H()
+	width := screenWidth / Global.SizeX
+	height := screenHeight / Global.SizeY * Global.SizeYused // Define the heigh of the pixel, considering the percentage of screen reserved for emulator
 
 	// Need to be here to avoid drawing again
 	if CPU.Debug {
@@ -217,8 +213,8 @@ func drawGraphics(graphics [128 * 64]byte) {
 	}
 
 	// If in SCHIP mode, read the entire vector. If in Chip8 mode, read from 0 to 2047 only
-	for gfxindex := 0 ; gfxindex < int(Global.SizeX) * int(Global.SizeY) ; gfxindex++ {
-		if (CPU.Graphics[gfxindex] == 1 ) {
+	for gfxindex := 0; gfxindex < int(Global.SizeX)*int(Global.SizeY); gfxindex++ {
+		if CPU.Graphics[gfxindex] == 1 {
 
 			// Column
 			x := gfxindex % int(Global.SizeX)
@@ -229,8 +225,8 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 			//draw_rectangle(10, 10, 50, 50, red)
 			//screenHeight * (1 - Global.SizeYused))  used to add the draw to the top of screen
-			imd.Push(pixel.V ( width * float64(x)         , (screenHeight * (1 - Global.SizeYused))  + height * float64(y)          ) )
-			imd.Push(pixel.V ( width * float64(x) + width , (screenHeight * (1 - Global.SizeYused))  + height * float64(y) + height ) )
+			imd.Push(pixel.V(width*float64(x), (screenHeight*(1-Global.SizeYused))+height*float64(y)))
+			imd.Push(pixel.V(width*float64(x)+width, (screenHeight*(1-Global.SizeYused))+height*float64(y)+height))
 			imd.Rectangle(0)
 		}
 
@@ -238,7 +234,7 @@ func drawGraphics(graphics [128 * 64]byte) {
 
 	// Draw Graphics to the screen
 	imd.Draw(Global.Win)
-	drawCounter ++	// Increment the draws per second counter
+	drawCounter++ // Increment the draws per second counter
 
 	// Draw FPS into the screen
 	if Global.ShowFPS {
@@ -252,7 +248,6 @@ func drawGraphics(graphics [128 * 64]byte) {
 		drawDebugInfo()
 	}
 
-
 	// Draw messages into the screen
 	if Global.ShowMessage {
 		textMessage.Clear()
@@ -261,8 +256,6 @@ func drawGraphics(graphics [128 * 64]byte) {
 	}
 
 }
-
-
 
 func Run() {
 
@@ -284,8 +277,7 @@ func Run() {
 	Input.Remap_keys()
 
 	// Print initial resolution
-	fmt.Printf("Resolution mode[%d]: %dx%d @ %dHz\n",Global.ResolutionCounter ,Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
-
+	fmt.Printf("Resolution mode[%d]: %dx%d @ %dHz\n", Global.ResolutionCounter, Global.ActiveSetting.Mode.Width, Global.ActiveSetting.Mode.Height, Global.ActiveSetting.Mode.RefreshRate)
 
 	// ------------------------- CLI Messages -------------------------//
 
@@ -344,171 +336,163 @@ func Run() {
 
 		// CPU Clock
 		select {
-			case <- CPU.CPU_Clock.C:
+		case <-CPU.CPU_Clock.C:
 
-				//// Calls CPU Interpreter ////
-				// Ignore if in Pause mode
-				if !CPU.Pause {
-					// If in Rewind Mode, every new cycle forward decrease the Rewind Index
-					if CPU.Rewind_index > 0 {
-						CPU.Interpreter()
-						CPU.Rewind_index -= 1
-						fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
-					} else {
-						// Continue run normally
-						CPU.Interpreter()
+			//// Calls CPU Interpreter ////
+			// Ignore if in Pause mode
+			if !CPU.Pause {
+				// If in Rewind Mode, every new cycle forward decrease the Rewind Index
+				if CPU.Rewind_index > 0 {
+					CPU.Interpreter()
+					CPU.Rewind_index -= 1
+					fmt.Printf("\t\tForward mode - Rewind_index := %d\n", CPU.Rewind_index)
+				} else {
+					// Continue run normally
+					CPU.Interpreter()
+				}
+			}
+
+			for i := 0; i < len(CPU.Key); i++ {
+				CPU.Key[i] = 0
+			}
+
+			// If necessary, DRAW (every time a draw operation is executed)
+			if Global.OriginalDrawMode {
+				if Global.DrawFlag {
+
+					// Draw every DrawFlag
+					drawGraphics(CPU.Graphics)
+					// Update the screen after draw
+					Global.Win.Update()
+
+					updateCounter++ // Increment the updates per second counter
+				}
+			}
+
+			// Draw Graphics on Console
+			// drawGraphicsConsole()
+
+		// Independent of CPU CLOCK, Sound and Delay Timers runs at 60Hz
+		case <-CPU.TimersClock.C:
+			// When ticker run (60 times in a second, check de DelayTimer)
+			// SCHIP Uses a hack to decrease DT faster to gain speed
+			if !CPU.SCHIP_TimerHack {
+				if CPU.DelayTimer > 0 {
+					CPU.DelayTimer--
+				}
+			}
+
+			// When ticker run (60 times in a second, check de SoundTimer)
+			if CPU.SoundTimer > 0 {
+
+				// Necessary to do not hang
+				// fmt.Sprint("")
+
+				if !Global.SpeakerPlaying {
+					// speaker.Lock()
+					Sound.AudioCtrl.Paused = false
+					// Increase / Decrease Volume
+					// volume.Volume += 0.5
+
+					// Increase / Decrease Speed
+					// speedy.SetRatio(speedy.Ratio() + 0.1) // <-- right here
+					// fmt.Println(format.SampleRate.D(Shot.Position()).Round(time.Second))
+					// speaker.Unlock()
+
+					Global.SpeakerPlaying = true  // Avoid multiple sound starts
+					Global.SpeakerStopped = false // Avoid multiple sound stops
+
+					if CPU.Debug {
+						fmt.Print("Start playing sound\n")
 					}
+
 				}
 
-				for i:=0 ; i <len(CPU.Key) ; i++ {
-					CPU.Key[i] = 0
-				}
+				// Decrement SoundTimer
+				CPU.SoundTimer--
 
+			} else {
 
-				// If necessary, DRAW (every time a draw operation is executed)
-				if Global.OriginalDrawMode {
-					if Global.DrawFlag {
-
-						// Draw every DrawFlag
-						drawGraphics(CPU.Graphics)
-						// Update the screen after draw
-						Global.Win.Update()
-
-						updateCounter++	// Increment the updates per second counter
-					}
-				}
-
-				// Draw Graphics on Console
-				// drawGraphicsConsole()
-
-			// Independent of CPU CLOCK, Sound and Delay Timers runs at 60Hz
-			case <-CPU.TimersClock.C:
-				// When ticker run (60 times in a second, check de DelayTimer)
-				// SCHIP Uses a hack to decrease DT faster to gain speed
-				if !CPU.SCHIP_TimerHack {
-					if CPU.DelayTimer > 0 {
-						CPU.DelayTimer--
-					}
-				}
-
-				// When ticker run (60 times in a second, check de SoundTimer)
-				if CPU.SoundTimer > 0 {
+				if !Global.SpeakerStopped {
 
 					// Necessary to do not hang
 					// fmt.Sprint("")
 
-					if !Global.SpeakerPlaying {
-						// speaker.Lock()
-							Sound.AudioCtrl.Paused = false
-							// Increase / Decrease Volume
-							// volume.Volume += 0.5
+					// speaker.Lock()
+					Sound.AudioCtrl.Paused = true
+					// newPos := Sound.Shot.Position()
+					// newPos = 0
+					// Sound.Shot.Seek(newPos)
+					// speaker.Unlock()
 
-							// Increase / Decrease Speed
-							// speedy.SetRatio(speedy.Ratio() + 0.1) // <-- right here
-							// fmt.Println(format.SampleRate.D(Shot.Position()).Round(time.Second))
-						// speaker.Unlock()
+					Global.SpeakerPlaying = false
+					Global.SpeakerStopped = true
 
-
-						Global.SpeakerPlaying = true		// Avoid multiple sound starts
-						Global.SpeakerStopped = false		// Avoid multiple sound stops
-
-						if CPU.Debug {
-							fmt.Print("Start playing sound\n")
-						}
-
-					}
-
-
-					// Decrement SoundTimer
-					CPU.SoundTimer --
-
-				} else {
-
-					if !Global.SpeakerStopped {
-
-						// Necessary to do not hang
-						// fmt.Sprint("")
-
-						// speaker.Lock()
-							Sound.AudioCtrl.Paused = true
-							// newPos := Sound.Shot.Position()
-							// newPos = 0
-							// Sound.Shot.Seek(newPos)
-						// speaker.Unlock()
-
-						Global.SpeakerPlaying = false
-						Global.SpeakerStopped = true
-
-						if CPU.Debug {
-							fmt.Print("Stop playing sound\n")
-						}
-
+					if CPU.Debug {
+						fmt.Print("Stop playing sound\n")
 					}
 
 				}
 
+			}
 
-			//SCHIP Speed hack, decrease DT faster
-			case <-CPU.SCHIP_TimerClockHack.C:
-				if CPU.SCHIP_TimerHack {
-					// Decrease faster than usual 60Hz
-					if CPU.DelayTimer > 0 {
-						CPU.DelayTimer--
-					}
+		//SCHIP Speed hack, decrease DT faster
+		case <-CPU.SCHIP_TimerClockHack.C:
+			if CPU.SCHIP_TimerHack {
+				// Decrease faster than usual 60Hz
+				if CPU.DelayTimer > 0 {
+					CPU.DelayTimer--
 				}
+			}
 
+		// OriginalDrawMode = FALSE - Draw at a regular time (FPS Hz)
+		case <-CPU.FPS.C:
+			if !Global.OriginalDrawMode {
 
-			// OriginalDrawMode = FALSE - Draw at a regular time (FPS Hz)
-			case <-CPU.FPS.C:
-				if  !Global.OriginalDrawMode {
+				// Instead of draw screen every time drawflag is set, draw at 60Hz
+				drawGraphics(CPU.Graphics)
 
-					// Instead of draw screen every time drawflag is set, draw at 60Hz
-					drawGraphics(CPU.Graphics)
+				// Global.Win.Update()
+				// Update the screen after draw
+				Global.Win.Update()
 
-					// Global.Win.Update()
-					// Update the screen after draw
-					Global.Win.Update()
+				updateCounter++ // Increment the updates per second counter
+			}
 
-					updateCounter++	// Increment the updates per second counter
-				}
+		// Used by games that needs a slow key press rate
+		case <-CPU.KeyboardRate.C:
+			// Disable the keyboard timeout to continue handling keys pressed
+			Input.Keyboard_timeout = false
 
+		// Once per second count the number of draws and Win Updates
+		case <-CPU.FPSCounter.C:
 
-			// Used by games that needs a slow key press rate
-			case <-CPU.KeyboardRate.C:
-				// Disable the keyboard timeout to continue handling keys pressed
-				Input.Keyboard_timeout = false
+			// Update the values to print on screen
+			if Global.OriginalDrawMode {
+				Global.DrawModeMessage = "DrawFlag"
+			} else {
+				Global.DrawModeMessage = "@60Hz"
+			}
 
+			if CPU.Pause {
+				textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tDrawFlags: %d\t\t\tCPU Speed: %d Hz\tCPU Cycles: %d\n\nDrawMode: %s - PAUSE", updateCounter, drawCounter, CPU.DrawFlagCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, Global.DrawModeMessage)
 
-			// Once per second count the number of draws and Win Updates
-			case <-CPU.FPSCounter.C:
+			} else {
+				textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tDrawFlags: %d\t\t\tCPU Speed: %d Hz\tCPU Cycles: %d\n\nDrawMode: %s", updateCounter, drawCounter, CPU.DrawFlagCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, Global.DrawModeMessage)
+			}
+			// Restart counting
+			drawCounter = 0
+			updateCounter = 0
+			CPU.CyclesCounter = 0
+			CPU.DrawFlagCounter = 0
 
-				// Update the values to print on screen
-				if Global.OriginalDrawMode {
-					Global.DrawModeMessage="DrawFlag"
-				} else {
-					Global.DrawModeMessage="@60Hz"
-				}
+		case <-CPU.MessagesClock.C:
+			// After some time, stop showing the message
+			Global.ShowMessage = false
 
-				if CPU.Pause {
-					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tDrawFlags: %d\t\t\tCPU Speed: %d Hz\tCPU Cycles: %d\n\nDrawMode: %s - PAUSE", updateCounter, drawCounter, CPU.DrawFlagCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, Global.DrawModeMessage)
-
-				} else {
-					textFPSstr = fmt.Sprintf("FPS: %d\tDraws: %d\tDrawFlags: %d\t\t\tCPU Speed: %d Hz\tCPU Cycles: %d\n\nDrawMode: %s", updateCounter, drawCounter, CPU.DrawFlagCounter, CPU.CPU_Clock_Speed, CPU.CyclesCounter, Global.DrawModeMessage)
-				}
-				// Restart counting
-				drawCounter = 0
-				updateCounter = 0
-				CPU.CyclesCounter = 0
-				CPU.DrawFlagCounter = 0
-
-			case <-CPU.MessagesClock.C:
-				// After some time, stop showing the message
-				Global.ShowMessage = false
-
-			default:
-				// No timer to handle
+		default:
+			// No timer to handle
 		}
-
 
 		// Update Input Events
 		Global.Win.UpdateInput()

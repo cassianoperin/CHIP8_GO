@@ -17,11 +17,6 @@ Optional GUI (Graphical user interface) made with fyne.io.
 :-------------------------:|:-------------------------:
 <img width="430" alt="astro" src="https://github.com/cassianoperin/CHIP8/blob/master/images/astro.png"> | <img width="430" alt="debug" src="https://github.com/cassianoperin/CHIP8/blob/master/images/debug.png">
 
-**Optional GUI** | **Game selector screen**
-:-------------------------:|:-------------------------:
-<img width="430" alt="MainDark" src="https://github.com/cassianoperin/CHIP8/blob/master/GUI/images/git/MainDark.png">  |  <img width="430" alt="GamesDarkSchip" src="https://github.com/cassianoperin/CHIP8/blob/master/GUI/images/git/GamesDarkSchip.png">
-
-
 ## Features
 * ![100%](https://progress-bar.dev/100) Pause and resume emulation
 * ![100%](https://progress-bar.dev/100) Reset emulation
@@ -34,55 +29,6 @@ Optional GUI (Graphical user interface) made with fyne.io.
 * ![100%](https://progress-bar.dev/100) Fullscreen
 * ![100%](https://progress-bar.dev/100) Binary and Hexadecimal rom format
 * ![100%](https://progress-bar.dev/100) Emulation Status from all games I have to test
-* ![70%](https://progress-bar.dev/70) Optional GUI
-
-## EMULATOR Build Instructions
-
-1) MAC
-* Install GO:
-
-	 `brew install go`
-
-* Install library requisites:
-
-	`go get github.com/faiface/pixel/pixelgl`
-
-	`go get github.com/faiface/beep`
-
-	`go get github.com/faiface/beep/wav`
-
-	`go get github.com/faiface/beep/speaker`
-
-* Compile:
-
-	`go build -ldflags="-s -w" chip8.go`
-
-2) Windows
-* Install GO (32 bits):
-
-	https://golang.org/dl/
-
-* Install GCC / mingw-w64
-
-	https://mingw-w64.org/doku.php/download/mingw-builds
-
-* Add GO and Mingw-64 bin folder in PATH variable
-
-* Install requisites:
-
-	`go get github.com/faiface/pixel/pixelgl`
-
-	`go get github.com/faiface/beep`
-
-	`go get github.com/faiface/beep/wav`
-
-	`go get github.com/faiface/beep/speaker`
-
-* If you receive some glfw missing file error, download the zip file from https://github.com/go-gl/glfw and extract the archive into the folder $GOPATH\vendor\github.com\go-gl\glfw\v3.2
-
-* Compile:
-
-	`go build -ldflags="-s -w" chip8.go`
 
 
 ## EMULATOR Usage
@@ -166,55 +112,67 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 	`ESC`: Exit emulator
 
-## GUI Build Instructions
-1) MAC
+## EMULATOR Build Instructions
+
+### MAC
 * Install GO:
 
 	 `brew install go`
 
-* Install requisites:
-
-	`go get gopkg.in/ini.v1`
-
-	`go get golang.org/x/image/colornames`
-
-	`go get fyne.io/fyne`
-
 * Compile:
 
-	`go build -ldflags="-s -w" Chip8GUI.go`
+	`go build -ldflags="-s -w" chip8.go`
 
-2) Windows
+### Windows
 
-* Install GO:
+GO allows to create a Windows executable file using a MacOS:
 
-	https://golang.org/dl/
+#### 1. Install mingw-w64 (support the GCC compiler on Windows systems):
 
-* Install GCC / mingw-w64
+`brew install mingw-w64`
 
-	https://mingw-w64.org/doku.php/download/mingw-builds
+#### 2. Compile:
 
-* Add GO and Mingw-64 bin folder in PATH variable
+- 32 bits:
 
-* Install library requisites (need fyne beta/develop 1.3):
+`env GOOS="windows" GOARCH="386"   CGO_ENABLED="1" CC="i686-w64-mingw32-gcc"   go build -ldflags="-s -w"`
 
-	 `go get gopkg.in/ini.v1`
+- 64 bits:
 
- 	 `go get golang.org/x/image/colornames`
+`env GOOS="windows" GOARCH="amd64" CGO_ENABLED="1" CC="x86_64-w64-mingw32-gcc" go build -ldflags="-s -w"`
 
-	 `go get fyne.io/fyne`
+* If you receive the message when running the executable, you need to ensure that the video drivers supports OpenGL (or the virtual driver in the case of virtualization).
+
+* If you receive this message : "APIUnavailable: WGL: The driver does not appear to support OpenGL", please update your graphics driver os just copy the Mesa3D library from https://fdossena.com/?p=mesa/index.frag  (opengl32.dll) to the executable folder (really slow).
+
+#### 4. Compress binaries
+
+`brew install upx`
+
+`upx <binary_file>`
 
 
-* Compile:
+### Linux
 
-	`go build -ldflags="-s -w" Chip8GUI.go`
+Instructions to build using Ubuntu.
 
+#### 1. Install requisites:
 
-## GUI Usage
+`sudo apt install pkg-config libgl1-mesa-dev licxi-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev mesa-utils build-essential xorg-dev upx`
 
-1. Open the program, configure emulator ROM paths
+#### 2. Build:
 
-2. Restart the program to update the Games Tab
+- 32 bits:
+
+`env GOOS="linux" GOARCH="386"   CGO_ENABLED="1" go build -ldflags="-s -w"`
+
+- 64 bits:
+
+`env GOOS="linux" GOARCH="amd64" CGO_ENABLED="1" go build -ldflags="-s -w"`
+
+#### 3. Compress binaries:
+
+`upx <binary_file>`
 
 
 ## Documentation
@@ -260,21 +218,5 @@ Optional GUI (Graphical user interface) made with fyne.io.
 
 [MegaChip](https://github.com/gcsmith/gchip/blob/master/docs/megachip10.txt)
 
-### GUI
 
-[Fyne.io](https://fyne.io/)
 
-[Go-ini](https://github.com/go-ini/ini)
-
-## Emulator TODO LIST:
-
-1. Correct minor problems reported in Emulation Status
-2. Emulate CHIP-8X
-3. Emulate MEGA-CHIP
-
-## GUI TODO LIST:
-1. Games Tab: Show image of the games
-2. Reload game list when update paths
-3. Add support for Hex roms
-4. Finish options (Debug, Pause...) in config screen
-5. Its currently not running on windows, apparently others are having same issues

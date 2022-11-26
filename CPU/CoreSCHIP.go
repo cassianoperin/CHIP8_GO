@@ -14,10 +14,10 @@
 package CPU
 
 import (
-	"os"
+	"CHIP8/Global"
 	"fmt"
+	"os"
 	"time"
-	"Chip8/Global"
 )
 
 // ---------------------------- SCHIP 0xxx instruction set ---------------------------- //
@@ -31,21 +31,21 @@ func opc_schip_00CN(x uint16) {
 
 	// If in SCHIP Low Res mode, scroll N/2 lines only
 	if scrollQuirks_00CN_00FB_00FC {
-		shift = (int(x) * 128 ) / 2
+		shift = (int(x) * 128) / 2
 	}
 
 	// Shift Right N lines on Graphics Array
-	for i:=len(Graphics) -1 ; i >= shift ; i-- {
-		Graphics[i] = Graphics[i - shift]
+	for i := len(Graphics) - 1; i >= shift; i-- {
+		Graphics[i] = Graphics[i-shift]
 	}
 
 	// Clean the shifted display bytes
-	for i:=0 ; i < shift ; i++ {
+	for i := 0; i < shift; i++ {
 		Graphics[i] = 0
 	}
 
 	Global.DrawFlag = true
-	DrawFlagCounter ++
+	DrawFlagCounter++
 
 	PC += 2
 	if Debug {
@@ -57,7 +57,7 @@ func opc_schip_00CN(x uint16) {
 // SCHIP - 00FB
 // Scroll display 4 pixels right
 func opc_schip_00FB() {
-	shift := 4	// Number of bytes to be shifted
+	shift := 4 // Number of bytes to be shifted
 
 	// If in SCHIP Low Res mode, shift 2 pixels only
 	if scrollQuirks_00CN_00FB_00FC {
@@ -78,18 +78,18 @@ func opc_schip_00FB() {
 	}
 
 	// Run all the array
-	for i := gfx_len -1  ; i >= 0  ; i-- {
+	for i := gfx_len - 1; i >= 0; i-- {
 
 		// Shift values until the last shift bytes for each line
-		if i >=  index + shift {
-			Graphics[i] = Graphics[i - shift]
+		if i >= index+shift {
+			Graphics[i] = Graphics[i-shift]
 		}
 
 		// If find the index, change the last shift(4) bytes to zero and update the index
 		// To process the next line
 		if i == index {
 			//Change the first 4 bytes of each line to zero
-			for j := index + shift - 1; j >= index  ; j-- {
+			for j := index + shift - 1; j >= index; j-- {
 				Graphics[j] = 0
 			}
 			// Update index to next line
@@ -97,8 +97,8 @@ func opc_schip_00FB() {
 		}
 	}
 
-	Global.DrawFlag	= true
-	DrawFlagCounter ++
+	Global.DrawFlag = true
+	DrawFlagCounter++
 
 	PC += 2
 	if Debug {
@@ -127,16 +127,16 @@ func opc_schip_00FC() {
 	}
 
 	// Run all the array
-	for i := 0 ; i < gfx_len ; i++ {
+	for i := 0; i < gfx_len; i++ {
 
 		// Shift values until the last shift(4) bytes for each line
-		if i < rowsize - shift{
+		if i < rowsize-shift {
 			Graphics[i] = Graphics[i+shift]
 		}
 
-		if i == rowsize -1 {
+		if i == rowsize-1 {
 			//Change the last 4 bytes of each line to zero
-			for i := rowsize - shift ; i < rowsize ; i++ {
+			for i := rowsize - shift; i < rowsize; i++ {
 				Graphics[i] = 0
 			}
 			// Update index to next line
@@ -144,8 +144,8 @@ func opc_schip_00FC() {
 		}
 	}
 
-	Global.DrawFlag	= true
-	DrawFlagCounter ++
+	Global.DrawFlag = true
+	DrawFlagCounter++
 
 	PC += 2
 	if Debug {
@@ -153,7 +153,6 @@ func opc_schip_00FC() {
 		fmt.Printf("\t\t%st.\n", OpcMessage)
 	}
 }
-
 
 // SCHIP - 00FD
 // Exit Emulator
@@ -182,7 +181,7 @@ func opc_schip_00FE() {
 
 	if Resize_Quirk_00FE_00FF {
 		// Clear the screen when changing graphic mode
-		Graphics	= [128 * 64]byte{}
+		Graphics = [128 * 64]byte{}
 	}
 
 	PC += 2
@@ -211,7 +210,7 @@ func opc_schip_00FF() {
 
 	if Resize_Quirk_00FE_00FF {
 		// Clear the screen when changing graphic mode
-		Graphics	= [128 * 64]byte{}
+		Graphics = [128 * 64]byte{}
 	}
 
 	PC += 2
@@ -229,18 +228,18 @@ func opc_schip_00FF() {
 func opc_schip_DXY0(Opcode uint16) {
 
 	var (
-		x		uint16 = (Opcode & 0x0F00) >> 8
-		y		uint16 = (Opcode & 0x00F0) >> 4
-		n		uint16 = (Opcode & 0x000F)
-		byte		uint16 = 0
-		gpx_position	uint16 = 0
-		sprite		uint8 = 0
-		sprite2		uint8 = 0
+		x            uint16 = (Opcode & 0x0F00) >> 8
+		y            uint16 = (Opcode & 0x00F0) >> 4
+		n            uint16 = (Opcode & 0x000F)
+		byte         uint16 = 0
+		gpx_position uint16 = 0
+		sprite       uint8  = 0
+		sprite2      uint8  = 0
 	)
 
 	if Debug {
 		OpcMessage = fmt.Sprintf("SCHIP Dxy0: DRAW GRAPHICS - Address I: %d Position V[x(%d)]: %d V[y(%d)]: %d", I, x, V[x], y, V[y])
-		fmt.Printf("\t\t%s\n" , OpcMessage)
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 
 	// Turn n in 16 (pixel size in SCHIP Mode)
@@ -250,7 +249,7 @@ func opc_schip_DXY0(Opcode uint16) {
 	V[0xF] = 0
 
 	// Check if y is out of range and apply module to fit in screen
-	if (V[y] >= uint8(Global.SizeY)) {
+	if V[y] >= uint8(Global.SizeY) {
 		V[y] = V[y] % uint8(Global.SizeY)
 		if Debug {
 			fmt.Printf("\t\tV[y] >= %d, modulus applied", Global.SizeY)
@@ -258,7 +257,7 @@ func opc_schip_DXY0(Opcode uint16) {
 	}
 
 	// Check if y is out of range and apply module to fit in screen
-	if (V[x] >= uint8(Global.SizeX)) {
+	if V[x] >= uint8(Global.SizeX) {
 		V[x] = V[x] % uint8(Global.SizeX)
 		if Debug {
 			fmt.Printf("\t\tV[x] >= %d, modulus applied", Global.SizeX)
@@ -269,37 +268,36 @@ func opc_schip_DXY0(Opcode uint16) {
 	gpx_position = (uint16(V[x]) + (uint16(Global.SizeX) * uint16(V[y])))
 
 	// Print N Bytes from address I in V[x]V[y] position of the screen
-	for byte = 0 ; byte < n ; byte++ {
-
+	for byte = 0; byte < n; byte++ {
 
 		// if in LOW-RES (16x8), update to traditional sprite storage mode in memory
 		if SCHIP_LORES {
-			sprite = Memory[I + byte]
+			sprite = Memory[I+byte]
 		} else {
 			// if in HI-RES (16x16) get the bytes in pairs
-			sprite  = Memory[I + (byte * 2)]
-			sprite2 = Memory[I + (byte * 2) + 1]
+			sprite = Memory[I+(byte*2)]
+			sprite2 = Memory[I+(byte*2)+1]
 		}
 
 		// Print 8 bits from FIRST SPRITE
-		for bit := 0; bit < 8 ; bit++ {
+		for bit := 0; bit < 8; bit++ {
 
 			// Get the value of the byte
 			bit_value := int(sprite) >> (7 - bit) & 1
 
 			// Set the index to write the 8 bits of each pixel
-			gfx_index := uint16(gpx_position) + uint16(bit) + (byte*uint16(Global.SizeX))
+			gfx_index := uint16(gpx_position) + uint16(bit) + (byte * uint16(Global.SizeX))
 
 			// If tryes to draw bits outside the vector size, ignore
-			if ( gfx_index >= uint16(Global.SizeX) * uint16(Global.SizeY) ) {
+			if gfx_index >= uint16(Global.SizeX)*uint16(Global.SizeY) {
 				//fmt.Printf("Bigger than 2048 or 8192\n")
 				continue
 			}
 
 			// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
-			if (bit_value  == 1){
+			if bit_value == 1 {
 				// Set colision case graphics[index] is already 1
-				if (Graphics[gfx_index] == 1){
+				if Graphics[gfx_index] == 1 {
 					V[0xF] = 1
 				}
 				// After, XOR the graphics[index] (DRAW)
@@ -310,24 +308,24 @@ func opc_schip_DXY0(Opcode uint16) {
 
 		if !SCHIP_LORES {
 			// Print 8 bits from SECOND SPRITE
-			for bit := 0; bit < 8 ; bit++ {
+			for bit := 0; bit < 8; bit++ {
 
 				// Get the value of the byte
 				bit_value := int(sprite2) >> (7 - bit) & 1
 
 				// Set the index to write the 8 bits of each pixel
-				gfx_index := uint16(gpx_position) + uint16(8+bit) + (byte*uint16(Global.SizeX))
+				gfx_index := uint16(gpx_position) + uint16(8+bit) + (byte * uint16(Global.SizeX))
 
 				// If tryes to draw bits outside the vector size, ignore
-				if ( gfx_index >= uint16(Global.SizeX) * uint16(Global.SizeY) ) {
+				if gfx_index >= uint16(Global.SizeX)*uint16(Global.SizeY) {
 					//fmt.Printf("Bigger than 2048 or 8192\n")
 					continue
 				}
 
 				// If bit=1, test current graphics[index], if is already set, mark v[F]=1 (colision)
-				if (bit_value  == 1){
+				if bit_value == 1 {
 					// Set colision case graphics[index] is already 1
-					if (Graphics[gfx_index] == 1){
+					if Graphics[gfx_index] == 1 {
 						V[0xF] = 1
 					}
 					// After, XOR the graphics[index] (DRAW)
@@ -341,7 +339,7 @@ func opc_schip_DXY0(Opcode uint16) {
 
 	PC += 2
 	Global.DrawFlag = true
-	DrawFlagCounter ++
+	DrawFlagCounter++
 
 }
 
@@ -352,11 +350,11 @@ func opc_schip_DXY0(Opcode uint16) {
 // The value of I is set to the location for the hexadecimal sprite corresponding to the value of Vx.
 func opc_schip_FX30(x uint16) {
 	// Load SCHIP font. Start from Memory[80]
-	I = 80 + uint16(V[x]) * 10
+	I = 80 + uint16(V[x])*10
 	PC += 2
 	if Debug {
 		OpcMessage = fmt.Sprintf("SCHIP Fx30: Set I(%X) = location of sprite for digit V[x(%d)]:%d (*10)", I, x, V[x])
-		fmt.Printf("\t\t%s\n" , OpcMessage)
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }
 
@@ -369,8 +367,8 @@ func opc_schip_FX75(x uint16) {
 
 	PC += 2
 	if Debug {
-		OpcMessage = fmt.Sprintf("SCHIP Fx75: Read RPL user flags from 0 to %d and store in V[0] through V[x(%d)]",x,x)
-		fmt.Printf("\t\t%s\n" , OpcMessage)
+		OpcMessage = fmt.Sprintf("SCHIP Fx75: Read RPL user flags from 0 to %d and store in V[0] through V[x(%d)]", x, x)
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }
 
@@ -383,7 +381,7 @@ func opc_schip_FX85(x uint16) {
 
 	PC += 2
 	if Debug {
-		OpcMessage = fmt.Sprintf("SCHIP Fx85: Read registers V[0] through V[x(%d)] and store in RPL user flags",x)
-		fmt.Printf("\t\t%s\n" , OpcMessage)
+		OpcMessage = fmt.Sprintf("SCHIP Fx85: Read registers V[0] through V[x(%d)] and store in RPL user flags", x)
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }

@@ -7,8 +7,8 @@
 package CPU
 
 import (
+	"CHIP8/Global"
 	"fmt"
-	"Chip8/Global"
 )
 
 // ---------------------------- CHIP-8 HiRes 0xxx instruction set ---------------------------- //
@@ -26,7 +26,7 @@ func opc_chip8HiRes_0230() {
 
 	if Debug {
 		OpcMessage = fmt.Sprintf("HIRES 0230: Clear the display")
-		fmt.Printf("\t\t%s\n" , OpcMessage)
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }
 
@@ -40,7 +40,7 @@ func opc_chip8HiRes_1NNN() {
 	// After show the execution time
 	if Debug {
 		OpcMessage = fmt.Sprintf("HIRES 1260 WITH PC=0x200: Init 64x64 mode. PC=0x2C0 (jump to address 0x2c0)")
-		fmt.Printf("\t\t%s\n" , OpcMessage)
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }
 
@@ -50,9 +50,9 @@ func opc_chip8HiRes_1NNN() {
 // Also used in some Hybrid ETI-660 programs like "Music Maker"
 func opc_chip8HiRes_00F0() {
 	PC = Stack[SP] + 2
-	SP --
+	SP--
 	if Debug {
 		OpcMessage = fmt.Sprintf("CHIP-8X Two-page display 00F0: Return from subroutine (replaces 00EE in CHIP-8x)")
-		fmt.Printf("\t\t%s\n" , OpcMessage)
+		fmt.Printf("\t\t%s\n", OpcMessage)
 	}
 }

@@ -1,31 +1,30 @@
 package CPU
 
 import (
+	"CHIP8/Global"
 	"fmt"
 	"time"
-	"Chip8/Global"
 )
 
 const (
-	Rewind_buffer	uint16 = 1000	 // Rewind Buffer Size
+	Rewind_buffer uint16 = 1000 // Rewind Buffer Size
 )
 
 var (
 	// Rewind Variables
-	Rewind_mode		bool	= false		// Enable and Disable Rewind Mode to increase emulation speed
-	Rewind_index		uint16	= 0		// Rewind Index
+	Rewind_mode  bool   = false // Enable and Disable Rewind Mode to increase emulation speed
+	Rewind_index uint16 = 0     // Rewind Index
 	// CPU Components
-	PC_track		= new([Rewind_buffer]uint16)
-	SP_track		= new([Rewind_buffer]uint16)
-	I_track			= new([Rewind_buffer]uint16)
-	DT_track		= new([Rewind_buffer]byte)
-	ST_track		= new([Rewind_buffer]byte)
-	DF_track		= new([Rewind_buffer]bool)
-	V_track			= new([Rewind_buffer][16]byte)
-	Stack_track		= new([Rewind_buffer][16]uint16)
-	GFX_track		= new([Rewind_buffer][128 * 64]byte)
+	PC_track    = new([Rewind_buffer]uint16)
+	SP_track    = new([Rewind_buffer]uint16)
+	I_track     = new([Rewind_buffer]uint16)
+	DT_track    = new([Rewind_buffer]byte)
+	ST_track    = new([Rewind_buffer]byte)
+	DF_track    = new([Rewind_buffer]bool)
+	V_track     = new([Rewind_buffer][16]byte)
+	Stack_track = new([Rewind_buffer][16]uint16)
+	GFX_track   = new([Rewind_buffer][128 * 64]byte)
 )
-
 
 func rewind() {
 
@@ -37,33 +36,32 @@ func rewind() {
 	if Rewind_index == 0 {
 		// PC
 		copy(PC_track[1:], PC_track[0:])
-		PC_track[0]	= PC
+		PC_track[0] = PC
 		// SP
 		copy(SP_track[1:], SP_track[0:])
-		SP_track[0]	= SP
+		SP_track[0] = SP
 		// I
 		copy(I_track[1:], I_track[0:])
-		I_track[0]	= I
+		I_track[0] = I
 		// DelayTimer
 		copy(DT_track[1:], DT_track[0:])
-		DT_track[0]	= DelayTimer
+		DT_track[0] = DelayTimer
 		// SoundTimer
 		copy(ST_track[1:], ST_track[0:])
-		ST_track[0]	= SoundTimer
+		ST_track[0] = SoundTimer
 		// DrawFlag
 		copy(DF_track[1:], DF_track[0:])
-		DF_track[0]	= Global.DrawFlag
+		DF_track[0] = Global.DrawFlag
 		// V
 		copy(V_track[1:], V_track[0:])
-		V_track[0]	= V
+		V_track[0] = V
 		// Stack
 		copy(Stack_track[1:], Stack_track[0:])
-		Stack_track[0]	= Stack
+		Stack_track[0] = Stack
 		// GFX_track
 		copy(GFX_track[1:], GFX_track[0:])
-		GFX_track[0]	= Graphics
+		GFX_track[0] = Graphics
 	}
-
 
 	if Debug_L2 {
 		fmt.Printf("\tPC_track: %d\n", PC_track)
@@ -77,7 +75,6 @@ func rewind() {
 		//fmt.Printf("\tGFX_Track: %d\n", GFX_track)
 		fmt.Printf("\n")
 	}
-
 
 	// Debug time execution - Rewind Mode
 	if Debug {

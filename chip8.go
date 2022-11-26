@@ -1,25 +1,25 @@
 package main
 
 import (
-	"io"
-	"os"
-	"fmt"
-	"log"
+	"CHIP8/CPU"
+	"CHIP8/Global"
+	"CHIP8/Graphics"
+	"CHIP8/Sound"
+	"crypto/md5"
 	"flag"
+	"fmt"
+	"io"
+	"log"
+	"os"
 	"runtime"
 	"strconv"
-	"crypto/md5"
-	"Chip8/CPU"
-	"Chip8/Global"
-	"Chip8/Graphics"
-	"Chip8/Sound"
+
 	"github.com/faiface/pixel/pixelgl"
 )
 
 var (
-	hexFlag	bool
+	hexFlag bool
 )
-
 
 // Function used by readROM to avoid 'bytesread' return
 func ReadContent(file *os.File, bytes_number int) []byte {
@@ -33,7 +33,6 @@ func ReadContent(file *os.File, bytes_number int) []byte {
 
 	return bytes
 }
-
 
 // Read ROM and write it to the RAM
 func readROM(filename string) {
@@ -65,7 +64,6 @@ func readROM(filename string) {
 		}
 	}
 
-
 	// Open ROM file, insert all bytes into memory
 	file, err := os.Open(filename)
 	defer file.Close()
@@ -80,12 +78,11 @@ func readROM(filename string) {
 	// fmt.Printf("%X\n", data)
 	// fmt.Printf("%s\n", data)
 
-
 	// If rom format is HEXADECIMAL (.hex)
 	if hexFlag {
 		var (
-			rom_raw	[]byte
-			rom		[]byte
+			rom_raw []byte
+			rom     []byte
 		)
 
 		// Filter only hexadecimal characters
@@ -95,7 +92,7 @@ func readROM(filename string) {
 			for j := 0; j <= 9; j++ {
 				// Compare the value in data[i] with [0-9]
 				if string(data[i]) == strconv.Itoa(j) {
-					tmp := fmt.Sprintf("0x%s",string(data[i]) )
+					tmp := fmt.Sprintf("0x%s", string(data[i]))
 					d, _ := strconv.ParseInt(tmp, 0, 10)
 					rom_raw = append(rom_raw, byte(d))
 
@@ -106,7 +103,7 @@ func readROM(filename string) {
 			for j := 'A'; j <= 'F'; j++ {
 				// Compare the value in data[i] with [A-F]
 				if string(data[i]) == string(j) {
-					tmp := fmt.Sprintf("0x%s",string(data[i]) )
+					tmp := fmt.Sprintf("0x%s", string(data[i]))
 					d, _ := strconv.ParseInt(tmp, 0, 10)
 					rom_raw = append(rom_raw, byte(d))
 				}
@@ -116,7 +113,7 @@ func readROM(filename string) {
 			for j := 'a'; j <= 'f'; j++ {
 				// Compare the value in data[i] with [a-f]
 				if string(data[i]) == string(j) {
-					tmp := fmt.Sprintf("0x%s",string(data[i]) )
+					tmp := fmt.Sprintf("0x%s", string(data[i]))
 					d, _ := strconv.ParseInt(tmp, 0, 10)
 					rom_raw = append(rom_raw, byte(d))
 				}
@@ -124,32 +121,32 @@ func readROM(filename string) {
 		}
 
 		// Agroup each 2 bytes into one
-		for i := 0; i < len(rom_raw); i+=2 {
-				tmp := fmt.Sprintf("0x%02X", uint8(rom_raw[i])<<4 | uint8(rom_raw[i+1]) )
-				d, _ := strconv.ParseInt(tmp, 0, 10)
-				rom = append(rom, byte(d))
+		for i := 0; i < len(rom_raw); i += 2 {
+			tmp := fmt.Sprintf("0x%02X", uint8(rom_raw[i])<<4|uint8(rom_raw[i+1]))
+			d, _ := strconv.ParseInt(tmp, 0, 10)
+			rom = append(rom, byte(d))
 		}
 
 		// Put ROM into the memory (starting at 0x200)
 		for i := 0; i < len(rom); i++ {
 			if Global.Hybrid_ETI_660_HW {
-				CPU.Memory[i+1536] = rom[i]	// start at 0x600
+				CPU.Memory[i+1536] = rom[i] // start at 0x600
 			} else {
-				CPU.Memory[i+512] = rom[i]	// start at 0x200
+				CPU.Memory[i+512] = rom[i] // start at 0x200
 			}
 		}
 
 		// fmt.Printf("\nROM (only Hex characters):\n%d\n", rom_raw)
 		// fmt.Printf("\nROM:\n%02X\n", rom)
 
-	// If rom format is BINARY (.ch8)
+		// If rom format is BINARY (.ch8)
 	} else {
 		// Load ROM from 0x200 address in memory, or 0x600 for hybrid hardware ETI-600
 		for i := 0; i < len(data); i++ {
 			if Global.Hybrid_ETI_660_HW {
-				CPU.Memory[i+1536] = data[i]	// start at 0x600
+				CPU.Memory[i+1536] = data[i] // start at 0x600
 			} else {
-				CPU.Memory[i+512] = data[i]	// start at 0x200
+				CPU.Memory[i+512] = data[i] // start at 0x200
 			}
 		}
 	}
@@ -159,18 +156,18 @@ func readROM(filename string) {
 func checkArgs() {
 
 	if len(os.Args) < 2 {
-		fmt.Printf("Usage: %s [options] ROM_FILE\n\n%s -help for a list of available options\n\n", os.Args[0], os.Args[0] )
+		fmt.Printf("Usage: %s [options] ROM_FILE\n\n%s -help for a list of available options\n\n", os.Args[0], os.Args[0])
 		os.Exit(0)
 	}
 
-	cliHelp			:= flag.Bool("help", false, "Show this menu")
-	cliSchipHack		:= flag.Bool("SchipHack", false, "Enable SCHIP DelayTimer hack mode to improve speed")
-	cliDrawFlag		:= flag.Bool("DrawFlag", false, "Enable Draw Graphics on each Drawflag instead @60Hz")
-	cliDebug			:= flag.Bool("Debug", false, "Enable Debug Mode")
-	cliRewind			:= flag.Bool("Rewind", false, "Enable Rewind Mode")
-	cliHybridETI660	:= flag.Bool("ETI660", false, "Enable ETI-660 mode for hybrid games made for this hardware")
-	cliPause			:= flag.Bool("Pause", false, "Start emulation Paused")
-	cliHex			:= flag.Bool("Hex", false, "Open roms in Hexadecimal format")
+	cliHelp := flag.Bool("help", false, "Show this menu")
+	cliSchipHack := flag.Bool("SchipHack", false, "Enable SCHIP DelayTimer hack mode to improve speed")
+	cliDrawFlag := flag.Bool("DrawFlag", false, "Enable Draw Graphics on each Drawflag instead @60Hz")
+	cliDebug := flag.Bool("Debug", false, "Enable Debug Mode")
+	cliRewind := flag.Bool("Rewind", false, "Enable Rewind Mode")
+	cliHybridETI660 := flag.Bool("ETI660", false, "Enable ETI-660 mode for hybrid games made for this hardware")
+	cliPause := flag.Bool("Pause", false, "Start emulation Paused")
+	cliHex := flag.Bool("Hex", false, "Open roms in Hexadecimal format")
 
 	// wordPtr := flag.String("word", "foo", "a string")
 	// numbPtr := flag.Int("numb", 42, "an int")
@@ -231,7 +228,6 @@ func MaxParallelism() int {
 	return numCPU
 }
 
-
 func testFile(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		fmt.Printf("File '%s' not found.\n\n", filename)
@@ -256,7 +252,6 @@ func get_game_signature(filename string) {
 	fmt.Printf("Game signature: %s\n", Global.Game_signature)
 }
 
-
 // Main function
 func main() {
 
@@ -268,7 +263,7 @@ func main() {
 
 	// Check the number of CPUS to create threads
 	// fmt.Println("MaxParallelism: ", MaxParallelism())
-	runtime.GOMAXPROCS( MaxParallelism() )
+	runtime.GOMAXPROCS(MaxParallelism())
 
 	// Set initial variables values
 	CPU.Initialize()
