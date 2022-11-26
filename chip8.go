@@ -1,10 +1,10 @@
 package main
 
 import (
-	"CHIP8/CPU"
-	"CHIP8/Global"
-	"CHIP8/Graphics"
-	"CHIP8/Sound"
+	"CHIP8_GO/CPU"
+	"CHIP8_GO/Global"
+	"CHIP8_GO/Graphics"
+	"CHIP8_GO/Sound"
 	"crypto/md5"
 	"flag"
 	"fmt"

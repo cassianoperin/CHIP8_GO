@@ -1,8 +1,8 @@
 package Input
 
 import (
-	"CHIP8/CPU"
-	"CHIP8/Global"
+	"CHIP8_GO/CPU"
+	"CHIP8_GO/Global"
 	"fmt"
 	"os"
 	"time"

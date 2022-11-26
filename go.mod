@@ -1,4 +1,4 @@
-module CHIP8
+module CHIP8_GO
 
 go 1.19
 

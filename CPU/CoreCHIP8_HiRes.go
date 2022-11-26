@@ -7,7 +7,7 @@
 package CPU
 
 import (
-	"CHIP8/Global"
+	"CHIP8_GO/Global"
 	"fmt"
 )
 

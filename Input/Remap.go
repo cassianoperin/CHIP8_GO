@@ -1,7 +1,7 @@
 package Input
 
 import (
-	"CHIP8/Global"
+	"CHIP8_GO/Global"
 	"fmt"
 
 	"github.com/faiface/pixel/pixelgl"

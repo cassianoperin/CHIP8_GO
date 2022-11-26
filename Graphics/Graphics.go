@@ -1,10 +1,10 @@
 package Graphics
 
 import (
-	"CHIP8/CPU"
-	"CHIP8/Global"
-	"CHIP8/Input"
-	"CHIP8/Sound"
+	"CHIP8_GO/CPU"
+	"CHIP8_GO/Global"
+	"CHIP8_GO/Input"
+	"CHIP8_GO/Sound"
 	"fmt"
 
 	"github.com/faiface/pixel"
