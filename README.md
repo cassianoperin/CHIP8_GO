@@ -158,7 +158,7 @@ Instructions to build using Ubuntu.
 
 #### 1. Install requisites:
 
-`sudo apt install pkg-config libgl1-mesa-dev licxi-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev mesa-utils build-essential xorg-dev upx`
+`sudo apt install pkg-config libgl1-mesa-dev licxi-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev mesa-utils build-essential xorg-dev libasound2-dev upx`
 
 #### 2. Build:
 
