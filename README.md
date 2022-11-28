@@ -2,9 +2,6 @@
 
 CHIP-8 / CHIP-8 HIRES / SCHIP Emulator writen in GO with simple code to be easy to be studied and understood.
 
-Optional GUI (Graphical user interface) made with fyne.io.
-
-
 **CHIP-8 Space Invaders Game** | **Superchip (SCHIP) Spacefight 2091!**
 :-------------------------:|:-------------------------:
 <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP8/blob/master/images/invaders.gif">  |  <img width="430" alt="invaders" src="https://github.com/cassianoperin/CHIP8/blob/master/images/spacefight2091.gif">
