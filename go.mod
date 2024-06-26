@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/faiface/beep v1.1.0
 	github.com/faiface/pixel v0.10.0
-	golang.org/x/image v0.16.0
+	golang.org/x/image v0.18.0
 )
 
 require (
